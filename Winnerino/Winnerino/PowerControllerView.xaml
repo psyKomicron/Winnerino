@@ -1,0 +1,205 @@
+﻿<UserControl
+    x:Class="Winnerino.PowerControllerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+            
+        <Grid BorderThickness="2" ColumnSpacing="5" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Style TargetType="TextBox" BasedOn="{x:Null}">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                    <Setter Property="FontSize" Value="20"/>
+                    <Setter Property="TextAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="RepeatButton">
+                    <Setter Property="MaxHeight" Value="60"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+                <x:String x:Key="UpButtonsFontIcon">&#xE70E;</x:String>
+                <x:String x:Key="DownButtonsFontIcon">&#xE70D;</x:String>
+            </Grid.Resources>
+
+            <RepeatButton 
+                x:Name="hoursUpButton"
+                CornerRadius="5, 5, 0, 0"
+                Click="hoursUpButton_Click"
+                Grid.Column="0"
+                Grid.Row="0"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}">
+                <FontIcon Glyph="{StaticResource UpButtonsFontIcon}"/>
+            </RepeatButton>
+            <TextBox 
+                x:Name="hoursTextBox"
+                HorizontalTextAlignment="Center"
+                Grid.Column="0"
+                Grid.Row="1"
+                Text="{x:Bind Hours, Mode=TwoWay}"
+                IsReadOnly="{x:Bind IsReadOnly, Mode=OneWay}"
+                BeforeTextChanging="textBox_BeforeTextChanging"/>
+            <RepeatButton 
+                x:Name="hoursDownButton"
+                CornerRadius="0, 0, 5, 5"
+                Grid.Column="0"
+                Grid.Row="2"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}"
+                Click="hoursDownButton_Click">
+                <FontIcon Glyph="{StaticResource DownButtonsFontIcon}"/>
+            </RepeatButton>
+
+
+            <RepeatButton 
+                x:Name="minutesUpButton"
+                CornerRadius="5, 5, 0, 0"
+                Grid.Column="1"
+                Grid.Row="0"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}"
+                Click="minutesUpButton_Click">
+                <FontIcon Glyph="{StaticResource UpButtonsFontIcon}"/>
+            </RepeatButton>
+            <TextBox 
+                x:Name="minutesTextBox"
+                Text="{x:Bind Minutes, Mode=TwoWay}"
+                IsReadOnly="{x:Bind IsReadOnly, Mode=OneWay}"
+                Grid.Column="1"
+                Grid.Row="1"
+                BeforeTextChanging="textBox_BeforeTextChanging"/>
+            <RepeatButton 
+                x:Name="minutesDownButton"
+                CornerRadius="0, 0, 5, 5"
+                Grid.Column="1"
+                Grid.Row="2"
+                Click="minutesDownButton_Click"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}">
+                <FontIcon Glyph="{StaticResource DownButtonsFontIcon}"/>
+            </RepeatButton>
+
+            <RepeatButton 
+                x:Name="secondsUpButton"
+                CornerRadius="5, 5, 0, 0"
+                Grid.Column="2"
+                Grid.Row="0"
+                Click="secondsUpButton_Click"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}">
+                <FontIcon Glyph="{StaticResource UpButtonsFontIcon}"/>
+            </RepeatButton>
+            <TextBox 
+                x:Name="secondsTextBox"
+                Grid.Column="2"
+                Grid.Row="1"
+                Text="{x:Bind Seconds, Mode=TwoWay}"
+                IsReadOnly="{x:Bind IsReadOnly, Mode=OneWay}"
+                BeforeTextChanging="textBox_BeforeTextChanging"/>
+            <RepeatButton 
+                x:Name="secondsDownButton"
+                CornerRadius="0, 0, 5, 5"
+                Click="secondsDownButton_Click"
+                Grid.Column="2"
+                Grid.Row="2"
+                IsEnabled="{x:Bind ButtonsEnabled, Mode=OneWay}">
+                <FontIcon Glyph="{StaticResource DownButtonsFontIcon}"/>
+            </RepeatButton>
+
+            <Border 
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                VerticalAlignment="Stretch"
+                BorderBrush="{ThemeResource SystemAccentColorDark1}"
+                BorderThickness="2"
+                CornerRadius="2"/>
+
+            <StackPanel 
+                Grid.Column="4"
+                Grid.Row="0"
+                Grid.RowSpan="3"
+                HorizontalAlignment="Center"
+                Spacing="{StaticResource StackPanelButtonSpacing}"
+                VerticalAlignment="Center"
+                Orientation="Vertical">
+
+                <Button 
+                    x:Name="startTimerButton"
+                    Padding="2"
+                    Height="39"
+                    Width="39"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Grid.Column="0"
+                    Click="startTimerButton_Click">
+                    <SymbolIcon x:Name="startTimerButtonIcon" Symbol="Play"/>
+                </Button>
+                <Button 
+                    x:Name="restartTimerButton"
+                    Padding="2"
+                    Height="39"
+                    Width="39"
+                    Grid.Column="1"
+                    Click="restartTimerButton_Click">
+                    <SymbolIcon Symbol="Refresh"/>
+                </Button>
+
+            </StackPanel>
+        </Grid>
+
+        <ComboBox 
+            x:Name="actionComboBox"
+            HorizontalAlignment="Stretch"
+            SelectedIndex="0"
+            Margin="0,10,0,10"
+            Grid.Row="1">
+            <ComboBoxItem Tag="Lock">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center"/>
+                    <TextBlock Text="Lock" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Tag="Sleep">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE708;" VerticalAlignment="Center"/>
+                    <TextBlock Text="Sleep" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Tag="Restart">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE777;" VerticalAlignment="Center"/>
+                    <TextBlock Text="Restart" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Tag="Shutdown">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE7E8;" VerticalAlignment="Center"/>
+                    <TextBlock Text="Shutdown" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Tag="Hibernate">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center"/>
+                    <TextBlock Text="Hibernate" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ComboBoxItem>
+        </ComboBox>
+    </Grid>
+</UserControl>

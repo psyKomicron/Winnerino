@@ -1,0 +1,120 @@
+﻿<Page
+    x:Class="Winnerino.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:text="using:Windows.UI.Text"
+    mc:Ignorable="d"
+    Background="{ThemeResource PageBackgroundBrush}">
+    <Page.Resources>
+        <x:Double x:Key="SettingTitleFontSize">25</x:Double>
+        <text:FontWeight x:Key="SettingTitleFontWeight">SemiBold</text:FontWeight>
+    </Page.Resources>
+
+    <Grid ColumnSpacing="5" RowSpacing="10" Margin="10,10,10,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <AutoSuggestBox
+            x:Name="settingSearch"
+            PlaceholderText="Search settings"
+            QueryIcon="Zoom"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            MaxWidth="500"
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+            QuerySubmitted="settingSearch_QuerySubmitted"
+            SuggestionChosen="settingSearch_SuggestionChosen"
+            TextChanged="settingSearch_TextChanged"
+            GotFocus="settingSearch_GotFocus"/>
+        <Button
+            x:Name="saveSettingsButton"
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Click="saveSettingsButton_Click">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                <SymbolIcon Symbol="Save"/>
+                <TextBlock Text="Save"/>
+            </StackPanel>
+        </Button>
+
+        <ListView
+            x:Name="settingsListView"
+            IsItemClickEnabled="False"
+            SelectionMode="None"
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2">
+            <!--#region General settings -->
+            <ListViewHeaderItem x:Name="generalHeader">
+                <TextBlock 
+                    Text="General" 
+                    FontSize="{StaticResource SettingTitleFontSize}"
+                    FontWeight="{StaticResource SettingTitleFontWeight}"/>
+            </ListViewHeaderItem>
+            <ListViewItem Margin="0,0,0,30">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                    <ToggleSwitch
+                        Header="Auto-load setting page"
+                        IsOn="False"
+                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
+
+                    <ToggleSwitch Header="Compact mode" ToolTipService.ToolTip="{x:Bind getCompactModeTooltip()}" Toggled="compactOverlayToggleSwitch_Toggled"/>
+
+                    <Button
+                        Click="openSettingsFile_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xE8A7;"/>
+                            <TextBlock Text="Open setting file (default editor)"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button
+                        Content="Reset/clear settings file"
+                        Click="resetSettingsFile_Click"/>
+
+                    <StackPanel Spacing="15">
+                        <TextBlock Text="Select application theme"/>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton x:Name="darkThemeButton" Click="darkThemeButton_Click" Content="Dark" CornerRadius="5,0,0,5" />
+                            <ToggleButton x:Name="lightThemeButton" Click="lightThemeButton_Click" Content="Light" CornerRadius="0" />
+                            <ToggleButton x:Name="defaultThemeButton" Click="defaultThemeButton_Click" Content="Default" CornerRadius="0,5,5,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ListViewItem>
+            <!--#endregion-->
+
+            <!--#region Miscallenous -->
+            <ListViewHeaderItem x:Name="miscellaneousHeader">
+                <TextBlock
+                    Text="Miscellaneous" 
+                    FontSize="{StaticResource SettingTitleFontSize}" 
+                    FontWeight="{StaticResource SettingTitleFontWeight}"/>
+            </ListViewHeaderItem>
+            <ListViewItem  Margin="0,0,0,30">
+                <StackPanel Orientation="Vertical" Spacing="{StaticResource StackPanelButtonSpacing}">
+                    <HyperlinkButton Content="Go to project repository (GitHub)" NavigateUri="{x:Bind GithubUri}"/>
+                    <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
+                    <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
+                    <HyperlinkButton Content="Open temporary folder (File explorer)" Click="tempDataFolderHyperlink_Click"/>
+
+                    <Button Margin="0,15,0,0" Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
+
+                    <Button Margin="0,0,0,15" Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
+                </StackPanel>
+            </ListViewItem>
+            <!--#endregion-->
+        </ListView>
+    </Grid>
+</Page>

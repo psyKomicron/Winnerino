@@ -1,0 +1,9 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass WidgetsPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        WidgetsPage();
+        Int32 MyProperty;
+    }
+}

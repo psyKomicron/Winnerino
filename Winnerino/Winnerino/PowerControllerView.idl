@@ -1,0 +1,14 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass PowerControllerView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        PowerControllerView();
+
+        Boolean ButtonsEnabled;
+        Boolean IsReadOnly;
+        Int32 Hours;
+        Int32 Minutes;
+        Int32 Seconds;
+    }
+}

@@ -1,0 +1,8 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass LuminosityControllerView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        LuminosityControllerView();
+    }
+}
