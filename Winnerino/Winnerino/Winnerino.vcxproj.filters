@@ -20,6 +20,9 @@
     <Page Include="SettingsPage.xaml">
       <Filter>Pages</Filter>
     </Page>
+    <Page Include="MainPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
