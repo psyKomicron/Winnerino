@@ -16,9 +16,8 @@ namespace winrt::Winnerino::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
         void OnSuspending(IInspectable const&, Windows::ApplicationModel::SuspendingEventArgs const&);
 
-        MainWindow CurrentWindow();
-
     private:
         winrt::Microsoft::UI::Xaml::Window window{ nullptr };
+        static App thisApp;
     };
 }

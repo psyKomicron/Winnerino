@@ -21,7 +21,6 @@ using namespace Winnerino::implementation;
 App::App()
 {
     InitializeComponent();
-
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
     {
@@ -45,9 +44,4 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
     window = make<MainWindow>();
     window.Activate();
-}
-
-winrt::Winnerino::MainWindow winrt::Winnerino::implementation::App::CurrentWindow()
-{
-    return window;
 }
