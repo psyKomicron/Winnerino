@@ -1,26 +1,52 @@
 ﻿#include "pch.h"
 #include "winrt/Windows.Storage.h"
+#include "winrt/Microsoft.UI.Dispatching.h"
+
 #include "MainWindow.xaml.h"
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-using namespace winrt::Windows::Graphics;
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml::Controls;
-using namespace Windows::Storage;
 using namespace Microsoft::UI;
 using namespace Microsoft::UI::Windowing;
+
+using namespace Windows::Graphics;
+using namespace Windows::Storage;
+using namespace Windows::System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
+    Winnerino::MainWindow MainWindow::singleton{ nullptr };
+
     MainWindow::MainWindow()
     {
         InitializeComponent();
+        singleton = *this;
         initWindow();
+    }
+
+    void MainWindow::notifyUser(IInspectable const& message, InfoBarSeverity const& severity)
+    {
+        if (singleton.DispatcherQueue().HasThreadAccess())
+        {
+            updateInforBar(message, severity);
+        }
+        else
+        {
+            DispatcherQueue().TryEnqueue([this, message, severity]()
+                {
+                    updateInforBar(message, severity);
+                });
+        }
+    }
+
+    void MainWindow::updateInforBar(IInspectable const& message,  InfoBarSeverity const& severity)
+    {
     }
 
     void MainWindow::initWindow()
@@ -124,6 +150,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
+#pragma region EventHandlers
     void MainWindow::navigationView_Loaded(IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
     }
@@ -133,13 +160,13 @@ namespace winrt::Winnerino::implementation
         if (args.InvokedItemContainer())
         {
             hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
-            
+
             if (tag == L"Settings")
             {
                 // navigate to settings page.
                 contentFrame().Navigate(winrt::xaml_typename<Winnerino::SettingsPage>());
             }
-            else if (tag == L"Home") 
+            else if (tag == L"Home")
             {
             }
             else if (tag == L"Twitch")
@@ -190,4 +217,6 @@ namespace winrt::Winnerino::implementation
     {
         OutputDebugString(L"Change presenter.\n");
     }
+#pragma endregion
+
 }
