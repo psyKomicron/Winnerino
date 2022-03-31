@@ -8,11 +8,28 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
+                <!--<ResourceDictionary Source="Styles.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
+
             <!-- Other app resources here -->
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
             <x:Double x:Key="StackPanelButtonSpacing">10</x:Double>
             <x:Double x:Key="StackPanelDefaultSpacing">15</x:Double>
+            <x:Double x:Key="HomeTitleFontSize">20</x:Double>
+
+            <Style x:Key="HomeButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            </Style>
+            <Style x:Key="HomeTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextBlockStyle}">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
