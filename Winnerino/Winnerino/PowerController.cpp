@@ -4,7 +4,7 @@
 #include "winuser.h"
 #include "powrprof.h"
 
-namespace winrt::Winnerino
+namespace winrt::Winnerino::Controllers
 {
 	PowerController::PowerController(bool force, DWORD gracePeriod)
 	{

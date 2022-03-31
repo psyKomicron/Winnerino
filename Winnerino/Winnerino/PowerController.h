@@ -1,5 +1,5 @@
 #pragma once
-namespace winrt::Winnerino
+namespace winrt::Winnerino::Controllers
 {
 	class PowerController
 	{
