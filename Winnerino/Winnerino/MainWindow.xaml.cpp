@@ -8,13 +8,16 @@
 #endif
 
 using namespace winrt;
-using namespace Microsoft::UI::Xaml::Controls;
+
 using namespace Microsoft::UI;
 using namespace Microsoft::UI::Windowing;
+using namespace Microsoft::UI::Xaml::Controls;
 
 using namespace Windows::Graphics;
 using namespace Windows::Storage;
 using namespace Windows::System;
+using namespace Windows::Foundation::Collections;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,6 +26,7 @@ namespace winrt::Winnerino::implementation
 {
     Winnerino::MainWindow MainWindow::singleton{ nullptr };
 
+#pragma region public
     MainWindow::MainWindow()
     {
         InitializeComponent();
@@ -30,7 +34,7 @@ namespace winrt::Winnerino::implementation
         initWindow();
     }
 
-    void MainWindow::notifyUser(IInspectable const& message, InfoBarSeverity const& severity)
+    void MainWindow::notifyUser(hstring const& message, InfoBarSeverity const& severity)
     {
         if (singleton.DispatcherQueue().HasThreadAccess())
         {
@@ -44,9 +48,34 @@ namespace winrt::Winnerino::implementation
                 });
         }
     }
+#pragma endregion
 
-    void MainWindow::updateInforBar(IInspectable const& message,  InfoBarSeverity const& severity)
+#pragma region private
+    void MainWindow::updateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
+        infoBar().Severity(severity);
+#if false
+        infoBarContent().Text(message);
+#else
+        infoBar().Message(message);
+#endif // _DEBUG
+
+        switch (severity)
+        {
+            case InfoBarSeverity::Error:
+                infoBar().Title(L"Error:");
+                break;
+            case InfoBarSeverity::Warning:
+                infoBar().Title(L"Warning:");
+                break;
+            case InfoBarSeverity::Success:
+                infoBar().Title(L"Success:");
+                break;
+            case InfoBarSeverity::Informational:
+                infoBar().Title(L"Information:");
+                break;
+        }
+        infoBar().IsOpen(true);
     }
 
     void MainWindow::initWindow()
@@ -118,14 +147,14 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::saveWindowState()
     {
+        IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
         if (!isWindowFullscreen && appWindow != nullptr)
         {
-            ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
 
             ApplicationDataCompositeValue setting = nullptr;
-            if (settings.Values().HasKey(L"windowSize"))
+            if (settings.HasKey(L"windowSize"))
             {
-                setting = settings.Values().Lookup(L"windowSize").as<ApplicationDataCompositeValue>();
+                setting = settings.Lookup(L"windowSize").as<ApplicationDataCompositeValue>();
             }
             else
             {
@@ -133,12 +162,12 @@ namespace winrt::Winnerino::implementation
             }
             setting.Insert(L"width", box_value(appWindow.Size().Width));
             setting.Insert(L"height", box_value(appWindow.Size().Height));
-            settings.Values().Insert(L"windowSize", setting);
+            settings.Insert(L"windowSize", setting);
 
             setting = nullptr;
-            if (settings.Values().HasKey(L"windowPosition"))
+            if (settings.HasKey(L"windowPosition"))
             {
-                setting = settings.Values().Lookup(L"windowPosition").as<ApplicationDataCompositeValue>();
+                setting = settings.Lookup(L"windowPosition").as<ApplicationDataCompositeValue>();
             }
             else
             {
@@ -146,40 +175,93 @@ namespace winrt::Winnerino::implementation
             }
             setting.Insert(L"positionX", box_value(appWindow.Position().X));
             setting.Insert(L"positionY", box_value(appWindow.Position().Y));
-            settings.Values().Insert(L"windowPosition", setting);
+            settings.Insert(L"windowPosition", setting);
         }
+
+        settings.Insert(L"lastPage", box_value(lastPage));
     }
+
+    bool MainWindow::loadPage(hstring page)
+    {
+        bool recognized = false; // remove when application is built enough
+        if (page == L"Settings")
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::SettingsPage>());
+            recognized = true;
+        }
+        else if (page == L"Home")
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+            recognized = true;
+        }
+        else if (page == L"Twitch")
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::TwitchPage2>());
+            recognized = true;
+        }
+        else if (page == L"Chat")
+        {
+            notifyUser(L"Uh oh, this one is not done yet... Try again after an update !", InfoBarSeverity::Error);
+            recognized = true;
+        }
+        else if (page == L"Widgets")
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::WidgetsPage>());
+            recognized = true;
+        }
+        else if (page == L"Power")
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::PowerModePage>());
+            recognized = true;
+        }
+
+        if (recognized)
+        {
+            lastPage = page;
+        }
+        return recognized;
+    }
+#pragma endregion
 
 #pragma region EventHandlers
     void MainWindow::navigationView_Loaded(IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
+        IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
+#if defined _DEBUG
+        hstring pageContainer = unbox_value<hstring>(settings.TryLookup(L"lastPage"));
+        if (!loadPage(pageContainer))
+        {
+            notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Error);
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+        }
+#else
+        IInspectable inspectable = settings.TryLookup(L"loadLastPage");
+        if (inspectable)
+        {
+            //ApplicationDataContainer container = inspectable.try_as<ApplicationDataContainer>();
+            if (unbox_value_or<bool>(inspectable, false))
+            {
+                ApplicationDataContainer pageContainer = settings.TryLookup(L"lastPage").try_as<ApplicationDataContainer>();
+                if (!loadPage(unbox_value_or<hstring>(pageContainer, L"Home")))
+                {
+                    notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Error);
+                }
+            }
+            else
+            {
+                contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+            }
+        }
+#endif // defined _RELEASE
+
     }
 
-    void MainWindow::navigationView_ItemInvoked(NavigationView const&, winrt::Microsoft::UI::Xaml::Controls::NavigationViewItemInvokedEventArgs const& args)
+    void MainWindow::navigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
     {
         if (args.InvokedItemContainer())
         {
             hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
-
-            if (tag == L"Settings")
-            {
-                // navigate to settings page.
-                contentFrame().Navigate(winrt::xaml_typename<Winnerino::SettingsPage>());
-            }
-            else if (tag == L"Home")
-            {
-            }
-            else if (tag == L"Twitch")
-            {
-                contentFrame().Navigate(winrt::xaml_typename<Winnerino::TwitchPage2>());
-            }
-            else if (tag == L"Chat")
-            {
-            }
-            else if (tag == L"Widgets")
-            {
-                contentFrame().Navigate(winrt::xaml_typename<Winnerino::WidgetsPage>());
-            }
+            loadPage(tag);
         }
     }
 
@@ -201,11 +283,6 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const& args)
     {
-        bool presenterChanged = args.DidPresenterChange();
-        bool positionChanged = args.DidPositionChange();
-        bool sizeChanged = args.DidSizeChange();
-        bool visibilityChanged = args.DidVisibilityChange();
-
         if (appWindow.Presenter().Kind() == AppWindowPresenterKind::Overlapped)
         {
             OverlappedPresenter presenter = appWindow.Presenter().as<OverlappedPresenter>();
@@ -213,10 +290,11 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void MainWindow::changePresenterAppBarButton_Click(IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
     {
-        OutputDebugString(L"Change presenter.\n");
+        infoBar().Severity(InfoBarSeverity::Informational);
+        infoBar().Message(L"");
+        infoBar().Title(L"");
     }
 #pragma endregion
-
 }

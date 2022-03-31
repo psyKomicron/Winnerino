@@ -12,7 +12,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <InfoBar x:Name="infoBar" Grid.Row="0"/>
+        <Grid.Transitions>
+            <TransitionCollection>
+                <RepositionThemeTransition/>
+                <PopupThemeTransition/>
+                <RepositionThemeTransition/>
+            </TransitionCollection>
+        </Grid.Transitions>
+
+        <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
 
         <NavigationView
             x:Name="navigationView"
@@ -43,6 +51,12 @@
                 <NavigationViewItem Tag="Widgets" Content="Widgets">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE74C;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Tag="Power" Content="Power modes">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7E8;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
