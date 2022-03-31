@@ -4,5 +4,9 @@ namespace Winnerino
     runtimeclass MainWindow : Microsoft.UI.Xaml.Window
     {
         MainWindow();
+
+        static Winnerino.MainWindow Current{ get; };
+
+        void notifyUser(String message, Microsoft.UI.Xaml.Controls.InfoBarSeverity severity);
     }
 }
