@@ -1,12 +1,14 @@
 ﻿#include "pch.h"
 #include "App.xaml.h"
 #include "SettingsPage.xaml.h"
+#include "MainWindow.xaml.h"
 #if __has_include("SettingsPage.g.cpp")
 #include "SettingsPage.g.cpp"
 #endif
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
+using namespace Microsoft::UI::Xaml::Controls;
 
 using namespace Windows::Foundation;
 
@@ -30,19 +32,19 @@ namespace winrt::Winnerino::implementation
         return { L"Using compact overlay, the window will be more focused on the content and smaller." };
     }
 
-    void SettingsPage::settingSearch_QuerySubmitted(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs const& args)
+    void SettingsPage::settingSearch_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const&)
     {
 
     }
 
 
-    void SettingsPage::settingSearch_SuggestionChosen(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxSuggestionChosenEventArgs const& args)
+    void SettingsPage::settingSearch_SuggestionChosen(AutoSuggestBox const&, AutoSuggestBoxSuggestionChosenEventArgs const&)
     {
 
     }
 
 
-    void SettingsPage::settingSearch_TextChanged(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxTextChangedEventArgs const&)
+    void SettingsPage::settingSearch_TextChanged(AutoSuggestBox const&, AutoSuggestBoxTextChangedEventArgs const&)
     {
 
     }
@@ -56,7 +58,7 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::saveSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-
+        MainWindow::Current().notifyUser(L"Saved settings.", InfoBarSeverity::Success);
     }
 
 
@@ -120,6 +122,7 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::compactOverlayToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        winrt::Winnerino::implementation::App::MainWindow()
+        Winnerino::MainWindow window = Winnerino::MainWindow::Current();
+        window.notifyUser(L"Compact mode switched on", InfoBarSeverity::Informational);
     }
 }
