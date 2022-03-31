@@ -30,6 +30,9 @@
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     VariableSizedWrapGrid.ColumnSpan="1"
                     VariableSizedWrapGrid.RowSpan="1"/>
+                
+                
+                
             </VariableSizedWrapGrid>
         </ScrollViewer>
     </Grid>

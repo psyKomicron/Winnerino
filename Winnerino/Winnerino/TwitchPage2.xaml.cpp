@@ -26,11 +26,11 @@ namespace winrt::Winnerino::implementation
         /*myButton().Content(box_value(L"Clicked"));*/
     }
 
-    void TwitchPage2::searchSuggestBox_QuerySubmitted(AutoSuggestBox const& sender, AutoSuggestBoxQuerySubmittedEventArgs const& args)
+    void TwitchPage2::searchSuggestBox_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const&)
     {
     }
 
-    void TwitchPage2::Page_Loaded(IInspectable const& sender, RoutedEventArgs const& e)
+    void TwitchPage2::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         try
         {
@@ -48,7 +48,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void TwitchPage2::webViewTabView_AddTabButtonClick(TabView const& sender, IInspectable const& args)
+    void TwitchPage2::webViewTabView_AddTabButtonClick(TabView const&, IInspectable const&)
     {
         
     }
