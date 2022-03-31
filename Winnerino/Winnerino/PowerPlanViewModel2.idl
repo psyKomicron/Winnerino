@@ -1,0 +1,11 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass PowerPlanViewModel2 : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        PowerPlanViewModel2();
+    PowerPlanViewModel2(GUID guid, String name);
+    String PowerPlanName{ get; };
+    String PowerPlanGuid{ get; };
+    }
+}
