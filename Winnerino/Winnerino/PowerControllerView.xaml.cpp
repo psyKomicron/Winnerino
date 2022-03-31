@@ -28,19 +28,6 @@ namespace winrt::Winnerino::implementation
 
         dispatcherTimer = DispatcherQueue().CreateTimer();
         dispatcherTimer.Interval(duration(1s));
-        /*dispatcherTimer.Tick([this](const IInspectable&, const IInspectable&)
-            {
-                currentTimeSpan -= seconds(1);
-                updateView(currentTimeSpan);
-
-                if ((currentTimeSpan / seconds(1)) == 0)
-                {
-                    stopTimer();
-                    currentTimeSpan = TimeSpan{ originalTimeSpan };
-                    updateView(currentTimeSpan);
-                    executeController();
-                }
-            });*/
         tickEventToken = dispatcherTimer.Tick({ get_weak(), &PowerControllerView::dispatcherQueueTime_Tick });
     }
 
@@ -230,6 +217,33 @@ namespace winrt::Winnerino::implementation
             updateView(currentTimeSpan);
             executeController();
         }
+        else if ((currentTimeSpan / seconds(30)) == 0)
+        {
+            hstring action;
+            int index = actionComboBox().SelectedIndex();
+            switch (index)
+            {
+                case 0: // Lock
+                    action = L"Computer will lock";
+                    break;
+                case 1: // Sleep
+                    action = L"Computer will sleep";
+                    break;
+                case 2: // Restart
+                    // not yet done.
+                    break;
+                case 3: // Shutdown
+                    action = L"Computer will shutdown";
+                    break;
+                case 4: // Hibenate
+                    action = L"Computer will hibernate";
+                    break;
+                default:
+                    OutputDebugString(L"Controller action not recognized.");
+                    break;
+            }
+            MainWindow::Current().notifyUser(action + L" in 30 seconds.", InfoBarSeverity::Informational);
+        }
     }
 
     void PowerControllerView::hoursUpButton_Click(IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -262,7 +276,7 @@ namespace winrt::Winnerino::implementation
         Seconds(Seconds() - 1);
     }
 
-    void PowerControllerView::textBox_GotFocus(IInspectable const& sender, RoutedEventArgs const&)
+    void PowerControllerView::textBox_GotFocus(IInspectable const&, RoutedEventArgs const&)
     {
         /*TextBox box = sender.try_as<TextBox>();
         if (box.Text() == L"0")

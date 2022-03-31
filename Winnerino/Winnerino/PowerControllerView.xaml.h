@@ -18,7 +18,7 @@ namespace winrt::Winnerino::implementation
         int32_t _hours = 0;
         int32_t _minutes = 0;
         int32_t _seconds = 0;
-        Winnerino::PowerController controller = PowerController(true);
+        Winnerino::Controllers::PowerController controller = Winnerino::Controllers::PowerController(true);
         winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
         winrt::event_token tickEventToken;
         winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer dispatcherTimer = nullptr;
