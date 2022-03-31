@@ -27,3 +27,9 @@
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Interop.h>
+
+#pragma comment(lib, "PowrProf.lib")
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "Dxva2.lib")
+#pragma comment(lib, "Kernel32.lib")
