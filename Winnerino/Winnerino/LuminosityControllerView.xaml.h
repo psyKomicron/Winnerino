@@ -5,14 +5,14 @@
 #include "winrt/Microsoft.UI.Xaml.Input.h"
 #include "winrt/Microsoft.UI.Xaml.Controls.Primitives.h"
 #include "LuminosityControllerView.g.h"
+#include "LuminosityController.h"
 
 namespace winrt::Winnerino::implementation
 {
     struct LuminosityControllerView : LuminosityControllerViewT<LuminosityControllerView>
     {
     private:
-
-        void setLuminosity(double value);
+        Winnerino::Controllers::LuminosityController controller = Winnerino::Controllers::LuminosityController(true);
 
     public:
         LuminosityControllerView();
