@@ -90,7 +90,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void PowerModePage::powerPlanItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    void PowerModePage::powerPlanItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
         hstring tag = unbox_value<hstring>(unbox_value<MenuFlyoutItem>(sender).Tag());
         for (size_t i = 0; i < viewModels.size(); i++)
@@ -104,25 +104,25 @@ namespace winrt::Winnerino::implementation
         MainWindow::Current().notifyUser(L"Could not edit " + tag + L" power plan .", Controls::InfoBarSeverity::Warning);
     }
 
-    void PowerModePage::refreshMenuFlyoutItem_Click(IInspectable const& sender, RoutedEventArgs const& e)
+    void PowerModePage::refreshMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
         // TODO: resync power plans with the system
     }
 
-    void PowerModePage::listPlansMenuFlyoutItem_Click(IInspectable const& sender, RoutedEventArgs const& e)
+    void PowerModePage::listPlansMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
         listPowerPlans();
     }
 
-    void PowerModePage::aboutMenuFlyoutItem_Click(IInspectable const& sender, RoutedEventArgs const& e)
+    void PowerModePage::aboutMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
     }
 
-    void PowerModePage::openWindowsSettingsMenuFlyoutItem_Click(IInspectable const& sender, RoutedEventArgs const& e)
+    void PowerModePage::openWindowsSettingsMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
     }
 
-    void PowerModePage::Page_Loaded(IInspectable const& sender, RoutedEventArgs const& e)
+    void PowerModePage::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         listPowerPlans();
         propertyChangedEvent(*this, PropertyChangedEventArgs{ L"EditPowerPlansButtonEnabled" });

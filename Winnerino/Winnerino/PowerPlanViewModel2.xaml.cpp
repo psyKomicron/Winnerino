@@ -54,8 +54,15 @@ namespace winrt::Winnerino::implementation
 
     void PowerPlanViewModel2::button_Click(winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const& e)
     {
-        /*active = !active;
-        powerModeStatusIcon().Glyph(active ? L"\uE73E" : L"");*/
+        DWORD retCode = PowerSetActiveScheme(NULL, &guid);
+        if (retCode == ERROR_SUCCESS) 
+        {
+            MainWindow::Current().notifyUser(L"Power plan changed to " + planName, Controls::InfoBarSeverity::Success);
+        }
+        else
+        {
+            MainWindow::Current().notifyError(retCode);
+        }
     }
 
     void onPowerModeChange(EFFECTIVE_POWER_MODE mode, void* context)
@@ -103,7 +110,7 @@ namespace winrt::Winnerino::implementation
         {
             effectivePowerModeRegistrationHandle = NULL;
         }
-        HPOWERNOTIFY tempHandle = NULL;
+        /*HPOWERNOTIFY tempHandle = NULL;
         if (PowerSettingRegisterNotification(&GUID_POWERSCHEME_PERSONALITY, DEVICE_NOTIFY_CALLBACK, &callback, &tempHandle))
         {
             OutputDebugString(L"Registered for power setting notifications.");
@@ -112,7 +119,7 @@ namespace winrt::Winnerino::implementation
         {
             hstring message = to_hstring(std::system_category().message(GetLastError()));
             OutputDebugString(message.c_str());
-        }
+        }*/
         //PowerSettingUnregisterNotification()
     }
 }
