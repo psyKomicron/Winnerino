@@ -1,0 +1,8 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass ExplorerPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        ExplorerPage();
+    }
+}

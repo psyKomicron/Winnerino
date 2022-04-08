@@ -1,0 +1,107 @@
+﻿<Page
+    x:Class="Winnerino.ExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Column="0" Grid.Row="0" Margin="5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition MaxWidth="200"/>
+            </Grid.ColumnDefinitions>
+
+            <CommandBar HorizontalAlignment="Left" Grid.Column="0">
+                <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                    <DropDownButton Height="37" Margin="0,0,0,15" Background="Transparent" BorderThickness="0" Click="recentsButton_Click">
+                        <DropDownButton.Content>
+                            <FontIcon Glyph="&#xE823;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                        </DropDownButton.Content>
+                        <DropDownButton.Flyout>
+                            <MenuFlyout x:Name="recentsMenuFlyout" Placement="BottomEdgeAlignedLeft"/>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </AppBarElementContainer>
+                <AppBarButton Icon="Favorite" Label="Save to recents" Width="50"/>
+                
+                <AppBarSeparator/>
+                <AppBarButton Icon="Add" Label="New" Width="50"/>
+
+                <AppBarSeparator/>
+                <AppBarButton x:Name="cutAppBarButton" Icon="Cut" Label="Cut" Width="50" Click="cutAppBarButton_Click"/>
+                <AppBarButton x:Name="copyAppBarButton" Icon="Copy" Label="Copy" Width="50" Click="copyAppBarButton_Click"/>
+                <AppBarButton x:Name="renameAppBarButton" Icon="Rename" Label="Rename" Width="50" Click="renameAppBarButton_Click"/>
+                <AppBarButton x:Name="deleteAppBarButton" Icon="Delete" Label="Delete" Width="50" Click="deleteAppBarButton_Click"/>
+
+                <AppBarSeparator/>
+                <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                    <DropDownButton Margin="0,0,0,15" Background="Transparent" BorderThickness="0" Height="37" IsEnabled="False">
+                        <DropDownButton.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                                <FontIcon Glyph="&#xE8CB;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                                <TextBlock Text="Sort" FontSize="14"/>
+                            </StackPanel>
+                        </DropDownButton.Content>
+                        <DropDownButton.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Alphabetical"/>
+                                <MenuFlyoutItem Text="Size ascending"/>
+                                <MenuFlyoutItem Text="Size descending"/>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </AppBarElementContainer>
+
+                <CommandBar.SecondaryCommands>
+                    <AppBarButton Label="Options" Icon="Setting"/>
+                </CommandBar.SecondaryCommands>
+            </CommandBar>
+            <AutoSuggestBox x:Name="searchBox" Grid.Column="1" MaxHeight="35"/>
+        </Grid>
+
+        <TabView
+            x:Name="tabView" 
+            VerticalAlignment="Stretch"
+            CornerRadius="5"
+            Grid.Column="0"
+            Grid.Row="1">
+            <TabViewItem Header="Default" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid VerticalAlignment="Stretch" RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <AutoSuggestBox 
+                        x:Name="testBox"
+                        PlaceholderText="Path" 
+                        QueryIcon="Zoom" 
+                        Grid.Row="0"
+                        Margin="10,10,10,0"
+                        MinHeight="35"
+                        UpdateTextOnSelect="False"
+                        SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                        GotFocus="AutoSuggestBox_GotFocus"
+                        TextChanged="AutoSuggestBox_TextChanged"
+                        QuerySubmitted="AutoSuggestBox_QuerySubmitted"/>
+
+                    <ListView x:Name="testListView" CornerRadius="5,0,0,0" Grid.Row="1"/>
+                    <ProgressRing 
+                        x:Name="testProgressRing" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Visibility="Collapsed" IsIndeterminate="True"/>
+                </Grid>
+            </TabViewItem>
+        </TabView>
+    </Grid>
+</Page>

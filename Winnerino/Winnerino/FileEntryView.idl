@@ -1,0 +1,15 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass FileEntryView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        FileEntryView();
+    FileEntryView(String cFileName, String extension, Int64 fileSize, Int64 attributes);
+
+    String FileName{ get; };
+    String FileSize{ get; };
+    String FileSizeExtension{ get; };
+    String FileIcon{ get; };
+    Boolean IsDirectory{ get; };
+    }
+}
