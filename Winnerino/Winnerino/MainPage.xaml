@@ -6,38 +6,79 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <VariableSizedWrapGrid ItemWidth="250" ItemHeight="180" Orientation="Horizontal">
-        <Button Style="{StaticResource HomeButtonStyle}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Version:" Grid.Row="0"/>
-                <TextBlock x:Name="versionTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-            </Grid>
-        </Button>
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <Button Style="{StaticResource HomeButtonStyle}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Release type:" Grid.Row="0"/>
-                <TextBlock x:Name="buildTypeTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-            </Grid>
-        </Button>
+            <VariableSizedWrapGrid ItemWidth="250" ItemHeight="180" Orientation="Horizontal" Margin="20,30,10,10">
+                <Button Style="{StaticResource HomeButtonStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Version:" Grid.Row="0"/>
+                        <TextBlock x:Name="versionTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
+                    </Grid>
+                </Button>
 
-        <Button Style="{StaticResource HomeButtonStyle}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="#README" Grid.Row="0"/>
-                <TextBlock Text="GitHub" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-            </Grid>
-        </Button>
-    </VariableSizedWrapGrid>
+                <Button Style="{StaticResource HomeButtonStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Release type:" Grid.Row="0"/>
+                        <TextBlock x:Name="buildTypeTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource HomeButtonStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="#README" Grid.Row="0"/>
+                        <TextBlock Text="GitHub" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
+                    </Grid>
+                </Button>
+            </VariableSizedWrapGrid>
+
+            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="0,0,0,40">
+                <ListView.Header>
+                    <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
+                </ListView.Header>
+
+                <ListViewHeaderItem Content="General"/>
+                <ListViewItem Margin="0,0,0,25">
+                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                        <TextBlock Text="Added update notes !"/>
+                        <TextBlock Text="Added custom title bar, if the system supports it."/>
+                        <TextBlock Text="Added option (in settings) to load the last used page."/>
+                        <TextBlock Text="App title now changes with the currently loaded page."/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <ListViewHeaderItem Content="Explorer"/>
+                <ListViewItem Margin="0,0,0,25">
+                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                        <TextBlock Text="Updated path completion to include drives."/>
+                        <TextBlock Text="Fixed completion from selecting items in the drop down."/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <ListViewHeaderItem/>
+                <ListViewItem Margin="0,0,0,25">
+                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                        <TextBlock Text="Power plans" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+                        <TextBlock Text="Power plan can be changed."/>
+                    </StackPanel>
+                </ListViewItem>
+            </ListView>
+        </Grid>
+    </ScrollViewer>
 </Page>
