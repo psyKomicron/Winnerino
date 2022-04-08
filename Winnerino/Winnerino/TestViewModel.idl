@@ -1,0 +1,10 @@
+namespace Winnerino
+{
+    [bindable]
+    [default_interface]
+    runtimeclass TestViewModel 
+    {
+        TestViewModel();
+        Int32 MyProperty;
+    }
+}

@@ -29,10 +29,19 @@
     <Page Include="PowerPlanViewModel2.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="ExplorerPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="FileEntryView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
+    <Midl Include="TestViewModel.idl">
+      <Filter>Common</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
