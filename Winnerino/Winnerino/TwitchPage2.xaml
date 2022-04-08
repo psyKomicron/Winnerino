@@ -34,7 +34,6 @@
             <TextBlock Text="https://" Opacity="0.6" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
             <AutoSuggestBox 
                 x:Name="searchSuggestBox"
-                PlaceholderText="Search or type a URL"
                 VerticalContentAlignment="Center"
                 MaxHeight="40"
                 QuerySubmitted="searchSuggestBox_QuerySubmitted"
