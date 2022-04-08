@@ -22,39 +22,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <AutoSuggestBox
-            x:Name="settingSearch"
-            PlaceholderText="Search settings"
-            QueryIcon="Zoom"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Stretch"
-            MaxWidth="500"
-            Grid.Row="0"
-            Grid.ColumnSpan="2"
-            QuerySubmitted="settingSearch_QuerySubmitted"
-            SuggestionChosen="settingSearch_SuggestionChosen"
-            TextChanged="settingSearch_TextChanged"
-            GotFocus="settingSearch_GotFocus"/>
-        <Button
-            x:Name="saveSettingsButton"
-            Grid.Row="0"
-            Grid.Column="1"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Click="saveSettingsButton_Click">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                <SymbolIcon Symbol="Save"/>
-                <TextBlock Text="Save"/>
-            </StackPanel>
-        </Button>
 
         <ListView
             x:Name="settingsListView"
             IsItemClickEnabled="False"
             SelectionMode="None"
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.RowSpan="2"
             Grid.ColumnSpan="2">
+
             <!--#region General settings -->
             <ListViewHeaderItem x:Name="generalHeader">
                 <TextBlock 
@@ -80,7 +56,7 @@
                     </Button>
 
                     <Button
-                        Content="Reset/clear settings file"
+                        Content="Reset settings"
                         Click="resetSettingsFile_Click"/>
 
                     <StackPanel Spacing="15">
@@ -104,6 +80,8 @@
             </ListViewHeaderItem>
             <ListViewItem  Margin="0,0,0,30">
                 <StackPanel Orientation="Vertical" Spacing="{StaticResource StackPanelButtonSpacing}">
+                    <ToggleSwitch Header="Load last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
+
                     <HyperlinkButton Content="Go to project repository (GitHub)" NavigateUri="{x:Bind GithubUri}"/>
                     <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
                     <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
@@ -116,5 +94,31 @@
             </ListViewItem>
             <!--#endregion-->
         </ListView>
+        
+        <AutoSuggestBox
+            x:Name="settingSearch"
+            PlaceholderText="Search settings"
+            QueryIcon="Zoom"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            MaxWidth="500"
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+            QuerySubmitted="settingSearch_QuerySubmitted"
+            SuggestionChosen="settingSearch_SuggestionChosen"
+            TextChanged="settingSearch_TextChanged"
+            GotFocus="settingSearch_GotFocus"/>
+        <Button
+            x:Name="saveSettingsButton"
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Click="saveSettingsButton_Click">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                <SymbolIcon Symbol="Save"/>
+                <TextBlock Text="Save"/>
+            </StackPanel>
+        </Button>
     </Grid>
 </Page>
