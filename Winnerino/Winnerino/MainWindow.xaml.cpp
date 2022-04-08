@@ -1,16 +1,16 @@
 ﻿#include "pch.h"
-#include "winrt/Windows.Storage.h"
-#include "winrt/Microsoft.UI.Dispatching.h"
-
 #include "MainWindow.xaml.h"
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+#include "winrt/Microsoft.UI.Dispatching.h"
+
 
 using namespace winrt;
 
 using namespace Microsoft::UI;
 using namespace Microsoft::UI::Windowing;
+using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
 
 using namespace Windows::Graphics;
@@ -30,6 +30,7 @@ namespace winrt::Winnerino::implementation
     MainWindow::MainWindow()
     {
         InitializeComponent();
+        Title(L"Multitool");
         singleton = *this;
         initWindow();
     }
@@ -48,17 +49,70 @@ namespace winrt::Winnerino::implementation
                 });
         }
     }
+
+    void MainWindow::notifyError(DWORD code)
+    {
+        notifyUser(to_hstring(std::system_category().message(code)), InfoBarSeverity::Error);
+    }
+
+#pragma region handlers
+    void MainWindow::navigationView_Loaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
+
+        IInspectable inspectable = settings.TryLookup(L"LoadLastPage");
+        if (unbox_value_or<bool>(inspectable, false))
+        {
+            //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
+            if (!loadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
+            {
+                notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
+            }
+        }
+        else
+        {
+            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+        }
+    }
+
+    void MainWindow::navigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
+    {
+        if (args.InvokedItemContainer())
+        {
+            hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
+            loadPage(tag);
+        }
+    }
+
+    void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
+    {
+        saveWindowState();
+    }
+
+    void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const&)
+    {
+        if (appWindow.Presenter().Kind() == AppWindowPresenterKind::Overlapped)
+        {
+            OverlappedPresenter presenter = appWindow.Presenter().as<OverlappedPresenter>();
+            isWindowFullscreen = presenter.State() == OverlappedPresenterState::Maximized;
+        }
+    }
+
+    void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
+    {
+        infoBar().Severity(InfoBarSeverity::Informational);
+        infoBar().Message(L"");
+        infoBar().Title(L"");
+    }
+#pragma endregion
+
 #pragma endregion
 
 #pragma region private
     void MainWindow::updateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
         infoBar().Severity(severity);
-#if false
-        infoBarContent().Text(message);
-#else
         infoBar().Message(message);
-#endif // _DEBUG
 
         switch (severity)
         {
@@ -80,18 +134,19 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::initWindow()
     {
+#pragma region settings
         int width = 800;
         int height = 600;
         int y = 50;
         int x = 50;
 
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
-        IInspectable windowSize = settings.Values().TryLookup(L"windowSize");
+        IInspectable windowSize = settings.Values().TryLookup(L"WindowSize");
         if (windowSize != nullptr)
         {
             ApplicationDataCompositeValue composite = windowSize.as<ApplicationDataCompositeValue>();
-            IInspectable widthBoxed = composite.Lookup(L"width");
-            IInspectable heightBoxed = composite.Lookup(L"height");
+            IInspectable widthBoxed = composite.Lookup(L"Width");
+            IInspectable heightBoxed = composite.Lookup(L"Height");
             if (widthBoxed)
             {
                 width = unbox_value<int>(widthBoxed);
@@ -101,12 +156,12 @@ namespace winrt::Winnerino::implementation
                 height = unbox_value<int>(heightBoxed);
             }
         }
-        IInspectable windowPosition = settings.Values().TryLookup(L"windowPosition");
+        IInspectable windowPosition = settings.Values().TryLookup(L"WindowPosition");
         if (windowSize != nullptr)
         {
             ApplicationDataCompositeValue composite = windowPosition.as<ApplicationDataCompositeValue>();
-            IInspectable posX = composite.TryLookup(L"positionX");
-            IInspectable posY = composite.Lookup(L"positionY");
+            IInspectable posX = composite.TryLookup(L"PositionX");
+            IInspectable posY = composite.Lookup(L"PositionY");
             if (posX)
             {
                 x = unbox_value<int>(posX);
@@ -116,6 +171,7 @@ namespace winrt::Winnerino::implementation
                 y = unbox_value<int>(posY);
             }
         }
+#pragma endregion
 
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         winrt::check_bool(nativeWindow);
@@ -127,8 +183,6 @@ namespace winrt::Winnerino::implementation
             return;
         }
 
-        //SetWindowPos(handle, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
-
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
         if (appWindow != nullptr)
@@ -139,9 +193,35 @@ namespace winrt::Winnerino::implementation
             rect.X = x;
             rect.Y = y;
             appWindow.MoveAndResize(rect);
-
             appWindow.Closing({ get_weak(), &MainWindow::appWindow_Closing });
             appWindow.Changed({ get_weak(), &MainWindow::appWindow_Changed });
+
+            if (AppWindowTitleBar::IsCustomizationSupported())
+            {
+                appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
+
+                //appWindow.TitleBar().ButtonBackgroundColor = Tool.GetAppRessource<Color>("DarkBlack");
+                appWindow.TitleBar().ButtonBackgroundColor(Colors::Black());
+                appWindow.TitleBar().ButtonForegroundColor(Colors::White());
+                appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
+                appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
+
+                appWindow.TitleBar().ButtonHoverBackgroundColor(
+                    Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
+
+                appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
+                appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
+                appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
+            }
+            else //hide title bar
+            {
+                uint32_t index = 0;
+                if (contentGrid().Children().IndexOf(titleBarGrid(), index))
+                {
+                    contentGrid().Children().RemoveAt(index);
+                }
+                contentGrid().RowDefinitions().RemoveAt(0);
+            }
         }
     }
 
@@ -152,33 +232,33 @@ namespace winrt::Winnerino::implementation
         {
 
             ApplicationDataCompositeValue setting = nullptr;
-            if (settings.HasKey(L"windowSize"))
+            if (settings.HasKey(L"WindowSize"))
             {
-                setting = settings.Lookup(L"windowSize").as<ApplicationDataCompositeValue>();
+                setting = settings.Lookup(L"WindowSize").as<ApplicationDataCompositeValue>();
             }
             else
             {
                 setting = ApplicationDataCompositeValue{};
             }
-            setting.Insert(L"width", box_value(appWindow.Size().Width));
-            setting.Insert(L"height", box_value(appWindow.Size().Height));
-            settings.Insert(L"windowSize", setting);
+            setting.Insert(L"Width", box_value(appWindow.Size().Width));
+            setting.Insert(L"Height", box_value(appWindow.Size().Height));
+            settings.Insert(L"WindowSize", setting);
 
             setting = nullptr;
-            if (settings.HasKey(L"windowPosition"))
+            if (settings.HasKey(L"WindowPosition"))
             {
-                setting = settings.Lookup(L"windowPosition").as<ApplicationDataCompositeValue>();
+                setting = settings.Lookup(L"WindowPosition").as<ApplicationDataCompositeValue>();
             }
             else
             {
                 setting = ApplicationDataCompositeValue{};
             }
-            setting.Insert(L"positionX", box_value(appWindow.Position().X));
-            setting.Insert(L"positionY", box_value(appWindow.Position().Y));
-            settings.Insert(L"windowPosition", setting);
+            setting.Insert(L"PositionX", box_value(appWindow.Position().X));
+            setting.Insert(L"PositionY", box_value(appWindow.Position().Y));
+            settings.Insert(L"WindowPosition", setting);
         }
 
-        settings.Insert(L"lastPage", box_value(lastPage));
+        settings.Insert(L"LastPage", box_value(lastPage));
     }
 
     bool MainWindow::loadPage(hstring page)
@@ -186,17 +266,17 @@ namespace winrt::Winnerino::implementation
         bool recognized = false; // remove when application is built enough
         if (page == L"Settings")
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::SettingsPage>());
+            contentFrame().Navigate(xaml_typename<Winnerino::SettingsPage>());
             recognized = true;
         }
         else if (page == L"Home")
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+            contentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
             recognized = true;
         }
         else if (page == L"Twitch")
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::TwitchPage2>());
+            contentFrame().Navigate(xaml_typename<Winnerino::TwitchPage2>());
             recognized = true;
         }
         else if (page == L"Chat")
@@ -206,95 +286,33 @@ namespace winrt::Winnerino::implementation
         }
         else if (page == L"Widgets")
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::WidgetsPage>());
+            contentFrame().Navigate(xaml_typename<Winnerino::WidgetsPage>());
             recognized = true;
         }
         else if (page == L"Power")
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::PowerModePage>());
+            contentFrame().Navigate(xaml_typename<Winnerino::PowerModePage>());
+            recognized = true;
+        }
+        else if (page == L"Explorer")
+        {
+            contentFrame().Navigate(xaml_typename<Winnerino::ExplorerPage>());
             recognized = true;
         }
 
         if (recognized)
         {
             lastPage = page;
-        }
-        return recognized;
-    }
-#pragma endregion
-
-#pragma region EventHandlers
-    void MainWindow::navigationView_Loaded(IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
-#if defined _DEBUG
-        hstring pageContainer = unbox_value<hstring>(settings.TryLookup(L"lastPage"));
-        if (!loadPage(pageContainer))
-        {
-            notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Error);
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
-        }
-#else
-        IInspectable inspectable = settings.TryLookup(L"loadLastPage");
-        if (inspectable)
-        {
-            //ApplicationDataContainer container = inspectable.try_as<ApplicationDataContainer>();
-            if (unbox_value_or<bool>(inspectable, false))
+            if (AppWindowTitleBar::IsCustomizationSupported())
             {
-                ApplicationDataContainer pageContainer = settings.TryLookup(L"lastPage").try_as<ApplicationDataContainer>();
-                if (!loadPage(unbox_value_or<hstring>(pageContainer, L"Home")))
-                {
-                    notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Error);
-                }
+                loadedPageText().Text(page);
             }
             else
             {
-                contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+                Title(page);
             }
         }
-#endif // defined _RELEASE
-
-    }
-
-    void MainWindow::navigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
-    {
-        if (args.InvokedItemContainer())
-        {
-            hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
-            loadPage(tag);
-        }
-    }
-
-    void MainWindow::Window_Closed(IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args)
-    {
-        //settings.Close();
-    }
-
-    void MainWindow::Window_SizeChanged(IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowSizeChangedEventArgs const& args)
-    {
-        /*width = args.Size().Width;
-        height = args.Size().Height;*/
-    }
-
-    void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const& args)
-    {
-        saveWindowState();
-    }
-
-    void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const& args)
-    {
-        if (appWindow.Presenter().Kind() == AppWindowPresenterKind::Overlapped)
-        {
-            OverlappedPresenter presenter = appWindow.Presenter().as<OverlappedPresenter>();
-            isWindowFullscreen = presenter.State() == OverlappedPresenterState::Maximized;
-        }
-    }
-
-    void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
-    {
-        infoBar().Severity(InfoBarSeverity::Informational);
-        infoBar().Message(L"");
-        infoBar().Title(L"");
+        return recognized;
     }
 #pragma endregion
 }

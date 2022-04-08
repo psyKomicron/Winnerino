@@ -7,22 +7,47 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource PageBackgroundBrush}">
+    <Grid x:Name="contentGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="32" MinHeight="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid.Transitions>
-            <TransitionCollection>
-                <RepositionThemeTransition/>
-                <PopupThemeTransition/>
-                <RepositionThemeTransition/>
-            </TransitionCollection>
-        </Grid.Transitions>
 
-        <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
+        <Grid x:Name="titleBarGrid" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Image
+                HorizontalAlignment="Left"
+                Margin="7,0"
+                Width="20" 
+                Height="20"
+                Source="Images/peepoPoopoo.gif"
+                Grid.Column="0"/>
+            <TextBlock
+                x:Name="loadedPageText"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                VerticalAlignment="Center"
+                Grid.Column="1"/>
+        </Grid>
+        
+        <Grid Background="{ThemeResource PageBackgroundBrush}" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.Transitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition/>
+                    <PopupThemeTransition/>
+                    <RepositionThemeTransition/>
+                </TransitionCollection>
+            </Grid.Transitions>
 
-        <NavigationView
+            <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
+
+            <NavigationView
             x:Name="navigationView"
             Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
             IsPaneOpen="False"
@@ -30,38 +55,46 @@
             Loaded="navigationView_Loaded"
             ItemInvoked="navigationView_ItemInvoked">
 
-            <NavigationView.MenuItems>
-                <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
 
-                <!--#region Twitch -->
-                <NavigationViewItemHeader Content="Twitch"/>
-                <NavigationViewItem Tag="Twitch" Content="Twitch">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8AA;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                    <NavigationViewItem Tag="Widgets" Content="Widgets">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE74C;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
 
-                <NavigationViewItem Tag="Chat" Content="Chat">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8F2;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <!--#endregion-->
+                    <NavigationViewItem Tag="Power" Content="Power modes">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE7E8;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
 
-                <NavigationViewItem Tag="Widgets" Content="Widgets">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE74C;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                    <!--#region Twitch -->
+                    <NavigationViewItemHeader Content="Twitch"/>
+                    <NavigationViewItem Tag="Twitch" Content="Twitch">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE8AA;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
 
-                <NavigationViewItem Tag="Power" Content="Power modes">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE7E8;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-            </NavigationView.MenuItems>
+                    <NavigationViewItem Tag="Chat" Content="Chat">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE8F2;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <!--#endregion-->
 
-            <Frame x:Name="contentFrame"></Frame>
-        </NavigationView>
+                    <NavigationViewItemHeader Content="Explorer"/>
+                    <NavigationViewItem Tag="Explorer" Content="Explorer Page">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xEC50;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </NavigationView.MenuItems>
+
+                <Frame x:Name="contentFrame"></Frame>
+            </NavigationView>
+        </Grid>
     </Grid>
 </Window>

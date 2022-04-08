@@ -8,5 +8,6 @@ namespace Winnerino
         static Winnerino.MainWindow Current{ get; };
 
         void notifyUser(String message, Microsoft.UI.Xaml.Controls.InfoBarSeverity severity);
+        void notifyError(Int32 code);
     }
 }
