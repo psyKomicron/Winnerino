@@ -48,26 +48,34 @@
                 </Button>
             </VariableSizedWrapGrid>
 
-            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="0,0,0,40">
+            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="10,50,0,20">
                 <ListView.Header>
                     <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
                 </ListView.Header>
 
-                <ListViewHeaderItem Content="General"/>
+                <ListViewHeaderItem/>
                 <ListViewItem Margin="0,0,0,25">
                     <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Added update notes !"/>
-                        <TextBlock Text="Added custom title bar, if the system supports it."/>
-                        <TextBlock Text="Added option (in settings) to load the last used page."/>
-                        <TextBlock Text="App title now changes with the currently loaded page."/>
+                        <TextBlock Text="General" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+
+                        <TextBlock Text="- Added update notes !"/>
+                        <TextBlock Text="- Added custom title bar, if the system supports it."/>
+                        <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
+                        <TextBlock Text="- App title now changes with the currently loaded page."/>
                     </StackPanel>
                 </ListViewItem>
 
-                <ListViewHeaderItem Content="Explorer"/>
+                <ListViewHeaderItem/>
                 <ListViewItem Margin="0,0,0,25">
                     <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Updated path completion to include drives."/>
-                        <TextBlock Text="Fixed completion from selecting items in the drop down."/>
+                        <TextBlock Text="Explorer" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+
+                        <TextBlock Text="- Updated path completion to include drives."/>
+                        <TextBlock Text="- Fixed completion from selecting items in the drop down."/>
+                        <TextBlock Text="- Added tab support (and they are saved from session to session)."/>
+                        <TextBlock Text="- Added file type display."/>
+                        <TextBlock Text="- Added recents/favorites."/>
+                        <TextBlock Text="- Added back navigation (forward to come)."/>
                     </StackPanel>
                 </ListViewItem>
 
@@ -75,7 +83,8 @@
                 <ListViewItem Margin="0,0,0,25">
                     <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
                         <TextBlock Text="Power plans" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
-                        <TextBlock Text="Power plan can be changed."/>
+
+                        <TextBlock Text="- Power plan can be changed."/>
                     </StackPanel>
                 </ListViewItem>
             </ListView>
