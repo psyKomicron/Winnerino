@@ -35,11 +35,17 @@
     <Page Include="FileEntryView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FileTabView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="LibraryTabView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
-    <Midl Include="TestViewModel.idl">
+    <Midl Include="DriveSearchModel.idl">
       <Filter>Common</Filter>
     </Midl>
   </ItemGroup>
