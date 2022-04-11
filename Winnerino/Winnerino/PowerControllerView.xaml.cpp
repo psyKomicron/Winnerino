@@ -111,12 +111,12 @@ namespace winrt::Winnerino::implementation
     }
 #pragma endregion
 
-    winrt::event_token PowerControllerView::PropertyChanged(PropertyChangedEventHandler const& value)
+    event_token PowerControllerView::PropertyChanged(PropertyChangedEventHandler const& value)
     {
         return m_propertyChanged.add(value);
     }
 
-    void PowerControllerView::PropertyChanged(winrt::event_token const& token)
+    void PowerControllerView::PropertyChanged(event_token const& token)
     {
         m_propertyChanged.remove(token);
     }

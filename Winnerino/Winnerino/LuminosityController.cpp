@@ -3,10 +3,10 @@
 #include "winuser.h"
 #include "highlevelmonitorconfigurationapi.h"
 
-using namespace std;
-
 #define IOCTL_VIDEO_QUERY_SUPPORTED_BRIGHTNESS \
   CTL_CODE(FILE_DEVICE_VIDEO, 0x125, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+using namespace std;
 
 namespace winrt::Winnerino::Controllers
 {
@@ -49,7 +49,7 @@ namespace winrt::Winnerino::Controllers
 			vector<HMONITOR> monitors = vector<HMONITOR>();
 			EnumDisplayMonitors(NULL, NULL, callback, (LPARAM)&monitors);
 
-			for (HMONITOR monitorHandle : monitors)
+			for (HMONITOR const& monitorHandle : monitors)
 			{
 				LPPHYSICAL_MONITOR monitorArray = NULL;
 				DWORD monitorArraySize = NULL;
@@ -127,7 +127,7 @@ namespace winrt::Winnerino::Controllers
 			devNum++;
 		}
 
-		for (auto& displayDevice : displayDevices)
+		for (auto const& displayDevice : displayDevices)
 		{
 			HANDLE monitorHandle = CreateFile(displayDevice.DeviceName, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (monitorHandle != INVALID_HANDLE_VALUE)
@@ -152,7 +152,7 @@ namespace winrt::Winnerino::Controllers
 			else
 			{
 				OutputDebugString(L"Could not open display device. ");
-				auto message = system_category().message(GetLastError());
+				auto message = std::system_category().message(GetLastError());
 				OutputDebugString(to_hstring(message).c_str());
 				OutputDebugString(L"\n");
 				//throw HRESULT_FROM_WIN32(GetLastError());
