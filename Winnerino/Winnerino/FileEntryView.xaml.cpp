@@ -30,6 +30,31 @@ namespace winrt::Winnerino::implementation
         // get attributes
         isDirectory = attributes & FILE_ATTRIBUTE_DIRECTORY ? 2 : 1;
         InitializeComponent();
+
+        if (isDirectory == 1)
+        {
+            PCWSTR ext = PathFindExtension(cFileName.c_str());
+            if (ext != NULL)
+            {
+                PWSTR perceived = NULL;
+                PERCEIVED perceivedType;
+                PERCEIVEDFLAG perceivedFlag;
+                HRESULT result = AssocGetPerceivedType(ext, &perceivedType, &perceivedFlag, &perceived);
+                if (result == S_OK)
+                {
+                    fileTypeTextBlock().Text(to_hstring(perceived) + L" | " + to_hstring(perceivedType));
+                }
+                else
+                {
+                    MainWindow::Current().notifyError(result);
+                }
+            }
+            else
+            {
+                MainWindow::Current().notifyUser(L"Extension not found", InfoBarSeverity::Warning);
+            }
+        }
+
         getAttributes(attributes);
     }
 
@@ -40,16 +65,20 @@ namespace winrt::Winnerino::implementation
             IInspectable dirIcon = Application::Current().Resources().TryLookup(box_value(L"DirectoryFontIconGlyph"));
             return unbox_value_or(dirIcon, L"\uF142");
         }
+#if FALSE
         else if (isDirectory == 1)
         {
             IInspectable fileIcon = Application::Current().Resources().TryLookup(box_value(L"FileFontIconGlyph"));
             return unbox_value_or(fileIcon, L"\uF142");
         }
+#endif // FALSE
+
         else
         {
-            return L"\uF142";
+            return L"\uF142"; 
         }
     }
+
 
     void FileEntryView::getAttributes(int64_t attributes)
     {

@@ -13,23 +13,63 @@
             <ColumnDefinition Width="20"/>
             <!-- filename -->
             <ColumnDefinition/>
+            <!-- file type -->
+            <ColumnDefinition Width="Auto"/>
             <!-- attributes -->
             <ColumnDefinition Width="Auto"/>
             <!-- size? -->
             <ColumnDefinition Width="55"/>
         </Grid.ColumnDefinitions>
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Text="Open">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="OpenWith"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="Delete">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Delete"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Rename">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Rename"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Copy">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Copy"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Copy as path">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xE816;"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Cut">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="OpenWith"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                
+            </MenuFlyout>
+        </Grid.ContextFlyout>
 
-        <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Left" Style="{StaticResource FileAttributeFontIconStyle}"/>
+        <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Left" Style="{StaticResource FileAttributeFontIconStyle}" Foreground="{ThemeResource SystemAccentColor}"/>
 
         <TextBlock Text="{x:Bind FileName}" Grid.Column="1"/>
 
-        <StackPanel x:Name="attributesStackPanel" Padding="0" Margin="10,0,0,0" Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" Grid.Column="2">
+        <TextBlock x:Name="fileTypeTextBlock" Grid.Column="2"/>
+
+        <StackPanel x:Name="attributesStackPanel" Padding="0" Margin="10,0,0,0" Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" Grid.Column="3">
             <StackPanel.Resources>
                 <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}"/>
             </StackPanel.Resources>
         </StackPanel>
 
-        <Grid Grid.Column="3">
+        <Grid Grid.Column="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
