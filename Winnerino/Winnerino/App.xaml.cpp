@@ -24,11 +24,12 @@ App::App()
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
     {
+        auto errorMessage = e.Message();
+        auto hres = e.Exception();
+        MainWindow::Current().notifyUser(errorMessage, InfoBarSeverity::Error);
+        MainWindow::Current().notifyError(hres);
         if (IsDebuggerPresent())
         {
-            auto errorMessage = e.Message();
-            auto hres = e.Exception();
-            //OutputDebugStringW()
             __debugbreak();
         }
     });
