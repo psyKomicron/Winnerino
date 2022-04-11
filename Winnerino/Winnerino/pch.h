@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <unknwn.h>
 #include <restrictederrorinfo.h>
+#include <system_error>
 #include <hstring.h>
 
 // Undefine GetCurrentTime macro to prevent
@@ -22,14 +23,17 @@
 #include <winrt/Microsoft.UI.Interop.h>
 
 #include <microsoft.ui.xaml.window.h>
+
 #include "winrt/Windows.ApplicationModel.DataTransfer.h"
+#include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.ApplicationModel.Activation.h>
-#include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Windows.UI.Xaml.Documents.h>
-#include <winrt/Windows.System.h>
+#include <winrt/Windows.UI.Xaml.Interop.h>
+#include "winrt/Windows.Security.Cryptography.h"
+#include "winrt/Windows.Security.Cryptography.Core.h"
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.System.h>
 
 #pragma comment(lib, "PowrProf.lib")
 #pragma comment(lib, "user32.lib")
