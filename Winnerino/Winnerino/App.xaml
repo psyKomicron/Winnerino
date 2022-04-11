@@ -58,6 +58,12 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+
+            <Style x:Key="DriveListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                <Setter Property="Padding" Value="0,0,0,0"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Width" Value="90"/>
+            </Style>
             <!--#endregion-->
         </ResourceDictionary>
     </Application.Resources>
