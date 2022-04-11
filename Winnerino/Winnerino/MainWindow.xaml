@@ -48,13 +48,13 @@
             <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
 
             <NavigationView
-            x:Name="navigationView"
-            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-            IsPaneOpen="False"
-            Grid.Row="1"
-            Loaded="navigationView_Loaded"
-            ItemInvoked="navigationView_ItemInvoked">
-
+                x:Name="navigationView"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+                IsPaneOpen="False"
+                PaneDisplayMode="LeftCompact"
+                Grid.Row="1"
+                Loaded="navigationView_Loaded"
+                ItemInvoked="navigationView_ItemInvoked">
                 <NavigationView.MenuItems>
                     <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
 

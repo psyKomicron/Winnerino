@@ -230,7 +230,6 @@ namespace winrt::Winnerino::implementation
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
         if (!isWindowFullscreen && appWindow != nullptr)
         {
-
             ApplicationDataCompositeValue setting = nullptr;
             if (settings.HasKey(L"WindowSize"))
             {
@@ -282,7 +281,6 @@ namespace winrt::Winnerino::implementation
         else if (page == L"Chat")
         {
             notifyUser(L"Uh oh, this one is not done yet... Try again after an update !", InfoBarSeverity::Error);
-            recognized = true;
         }
         else if (page == L"Widgets")
         {
@@ -307,10 +305,7 @@ namespace winrt::Winnerino::implementation
             {
                 loadedPageText().Text(page);
             }
-            else
-            {
-                Title(page);
-            }
+            Title(page);
         }
         return recognized;
     }
