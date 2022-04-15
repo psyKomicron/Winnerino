@@ -26,8 +26,8 @@ App::App()
     {
         auto errorMessage = e.Message();
         auto hres = e.Exception();
-        MainWindow::Current().notifyUser(errorMessage, InfoBarSeverity::Error);
-        MainWindow::Current().notifyError(hres);
+        MainWindow::Current().NotifyUser(errorMessage, InfoBarSeverity::Error);
+        MainWindow::Current().NotifyError(hres);
         if (IsDebuggerPresent())
         {
             __debugbreak();

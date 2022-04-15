@@ -55,7 +55,7 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::saveSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        MainWindow::Current().notifyUser(L"Saved settings.", InfoBarSeverity::Success);
+        MainWindow::Current().NotifyUser(L"Saved settings.", InfoBarSeverity::Success);
     }
 
     void SettingsPage::openSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
@@ -111,7 +111,7 @@ namespace winrt::Winnerino::implementation
     void SettingsPage::compactOverlayToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         Winnerino::MainWindow window = Winnerino::MainWindow::Current();
-        window.notifyUser(L"Compact mode switched on", InfoBarSeverity::Informational);
+        window.NotifyUser(L"Compact mode switched on", InfoBarSeverity::Informational);
     }
 
     void SettingsPage::loadLastPageToggleSwitch_Toggled(IInspectable const& sender, RoutedEventArgs const&)

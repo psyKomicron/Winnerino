@@ -84,7 +84,7 @@ namespace winrt::Winnerino::implementation
                 {
                     OutputDebugString(L"Failed to enumerate power plans.");
                     std::string message = system_category().message(GetLastError());
-                    MainWindow::Current().notifyUser(to_hstring(message), InfoBarSeverity::Error);
+                    MainWindow::Current().NotifyUser(to_hstring(message), InfoBarSeverity::Error);
                 }
             }
         }
@@ -97,11 +97,11 @@ namespace winrt::Winnerino::implementation
         {
             if (viewModels[i].PowerPlanName() == tag)
             {
-                MainWindow::Current().notifyUser(L"You choose to edit " + tag + L".", Controls::InfoBarSeverity::Success);
+                MainWindow::Current().NotifyUser(L"You choose to edit " + tag + L".", Controls::InfoBarSeverity::Success);
                 return;
             }
         }
-        MainWindow::Current().notifyUser(L"Could not edit " + tag + L" power plan .", Controls::InfoBarSeverity::Warning);
+        MainWindow::Current().NotifyUser(L"Could not edit " + tag + L" power plan .", Controls::InfoBarSeverity::Warning);
     }
 
     void PowerModePage::refreshMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)

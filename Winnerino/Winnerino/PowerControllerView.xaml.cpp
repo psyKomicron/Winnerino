@@ -242,7 +242,7 @@ namespace winrt::Winnerino::implementation
                     OutputDebugString(L"Controller action not recognized.");
                     break;
             }
-            MainWindow::Current().notifyUser(action + L" in 30 seconds.", InfoBarSeverity::Informational);
+            MainWindow::Current().NotifyUser(action + L" in 30 seconds.", InfoBarSeverity::Informational);
         }
     }
 
