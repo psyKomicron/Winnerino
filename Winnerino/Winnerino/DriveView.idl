@@ -1,0 +1,17 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass DriveView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        DriveView();
+        DriveView(String driveName);
+
+        String DriveName{ get; };
+        String DriveFreeSpace{ get; };
+        String DriveTotalSpace{ get; };
+        String FileSystemType{ get; };
+        String VolumeSerialNumber{ get; };
+        String MaxFileLength{ get; };
+        String DriveType{ get; };
+    }
+}
