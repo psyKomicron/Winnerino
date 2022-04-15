@@ -91,6 +91,12 @@
                             <FontIcon Glyph="&#xEC50;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
+                    <NavigationViewItem Tag="Drives" Content="Drives explorer">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xeda2;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+
                 </NavigationView.MenuItems>
 
                 <Frame x:Name="contentFrame"></Frame>
