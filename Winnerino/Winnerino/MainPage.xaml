@@ -14,7 +14,7 @@
             </Grid.RowDefinitions>
 
             <VariableSizedWrapGrid ItemWidth="250" ItemHeight="180" Orientation="Horizontal" Margin="20,30,10,10">
-                <Button Style="{StaticResource HomeButtonStyle}">
+                <Button Style="{StaticResource HomeButtonStyle}" ToolTipService.ToolTip="See full change log">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -58,10 +58,27 @@
                     <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
                         <TextBlock Text="General" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
 
-                        <TextBlock Text="- Added update notes !"/>
-                        <TextBlock Text="- Added custom title bar, if the system supports it."/>
-                        <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
+                        <TextBlock Text="- Notifications displayed in the window are now queued, so that they don't overlap themselves."/>
+                        <TextBlock Text="- A new page is available ! The drive page allows you to see info about your drives."/>
                         <TextBlock Text="- App title now changes with the currently loaded page."/>
+                        <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
+                        <TextBlock Text="- Added custom title bar, if the system supports it."/>
+                        <TextBlock Text="- Added update notes !"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <ListViewHeaderItem/>
+                <ListViewItem>
+                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                        <TextBlock Text="Drives explorer" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+
+                        <TextBlock Text="This new page allows you to see information about the drives installed or mounted in your computer." FontWeight="SemiBold"/>
+                        <TextBlock Text="- Drive size."/>
+                        <TextBlock Text="- Drive name."/>
+                        <TextBlock Text="- Drive free space."/>
+                        <TextBlock Text="- Drive type."/>
+                        <TextBlock Text="- Drive filesystem type (NTFS, FAT...)."/>
+                        <TextBlock Text="- Drive serial number."/>
                     </StackPanel>
                 </ListViewItem>
 
