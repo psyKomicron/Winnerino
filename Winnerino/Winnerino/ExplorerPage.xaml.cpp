@@ -84,18 +84,23 @@ namespace winrt::Winnerino::implementation
             {
                 ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
                 hstring path = composite.Lookup(L"TabPath").as<hstring>();
-                IInspectable tabName = composite.Lookup(L"TabName"); // not unboxing to save compute time/memory
+                hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
                 if (path != L"")
                 {
                     TabViewItem tabViewItem{};
-                    tabViewItem.Header(box_value(tabName));
+                    TextBox header{};
+                    header.Text(tabName);
+                    tabViewItem.Header(header);
                     tabViewItem.Content(Winnerino::FileTabView{ path });
                     tabView().TabItems().Append(tabViewItem);
                 }
             }
         }
         // remove the container
+#ifndef _DEBUG
         settings.DeleteContainer(L"ExplorerTabs");
+#endif // _DEBUG
+
 
         // list available drives
         WCHAR drives[512]{};
@@ -166,7 +171,7 @@ namespace winrt::Winnerino::implementation
 
     void ExplorerPage::cutAppBarButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
     {
-        MainWindow::Current().notifyUser(L"Cutting files to clipboard is not supported yet.", InfoBarSeverity::Error);
+        MainWindow::Current().NotifyUser(L"Cutting files to clipboard is not supported yet.", InfoBarSeverity::Error);
     }
 
     void ExplorerPage::copyAppBarButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
@@ -177,7 +182,7 @@ namespace winrt::Winnerino::implementation
         dataPackage.SetStorageItems(items);
         dataPackage.RequestedOperation(DataPackageOperation::Copy);
         Clipboard::SetContent(dataPackage);
-        MainWindow::Current().notifyUser(L"File(s) copied to clipboard.", InfoBarSeverity::Success);
+        MainWindow::Current().NotifyUser(L"File(s) copied to clipboard.", InfoBarSeverity::Success);
     }
 
     void ExplorerPage::renameAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -193,7 +198,9 @@ namespace winrt::Winnerino::implementation
     void ExplorerPage::openFileTabButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         TabViewItem tab{};
-        tab.Header(box_value(L"Empty"));
+        TextBox header{};
+        header.Text(L"Empty");
+        tab.Header(header);
         tab.Content(Winnerino::FileTabView{});
         tabView().TabItems().Append(tab);
     }
@@ -255,7 +262,7 @@ namespace winrt::Winnerino::implementation
         ApplicationDataContainer tabContainer = settings.Containers().TryLookup(L"ExplorerTabs");
         if (!tabContainer)
         {
-            tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);
+            tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Existing);
         }
 
         IVector<IInspectable> tabItems = tabView().TabItems();
@@ -267,7 +274,7 @@ namespace winrt::Winnerino::implementation
                 UserControl control = tab.Content().try_as<Winnerino::FileTabView>();
                 if (control)
                 {
-                    hstring tabName = tab.Header().as<hstring>();
+                    hstring tabName = tab.Header().as<TextBox>().Text();
                     hstring path = control.FindName(L"pathInputBox").as<AutoSuggestBox>().Text();
 
                     ApplicationDataCompositeValue composite{};
