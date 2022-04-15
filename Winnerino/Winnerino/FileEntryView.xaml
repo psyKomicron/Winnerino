@@ -5,7 +5,7 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Margin="0,0,10,0">
+    mc:Ignorable="d" Margin="0,0,10,0" FontWeight="SemiLight">
 
     <Grid ColumnSpacing="10">
         <Grid.ColumnDefinitions>
@@ -13,63 +13,23 @@
             <ColumnDefinition Width="20"/>
             <!-- filename -->
             <ColumnDefinition/>
-            <!-- file type -->
-            <ColumnDefinition Width="Auto"/>
             <!-- attributes -->
             <ColumnDefinition Width="Auto"/>
             <!-- size? -->
             <ColumnDefinition Width="55"/>
         </Grid.ColumnDefinitions>
-        <Grid.ContextFlyout>
-            <MenuFlyout>
-                <MenuFlyoutItem Text="Open">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="OpenWith"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutSeparator/>
-                <MenuFlyoutItem Text="Delete">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Delete"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Rename">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Rename"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Copy">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Copy"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Copy as path">
-                    <MenuFlyoutItem.Icon>
-                        <FontIcon Glyph="&#xE816;"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Cut">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="OpenWith"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                
-            </MenuFlyout>
-        </Grid.ContextFlyout>
 
         <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Left" Style="{StaticResource FileAttributeFontIconStyle}" Foreground="{ThemeResource SystemAccentColor}"/>
 
         <TextBlock Text="{x:Bind FileName}" Grid.Column="1"/>
 
-        <TextBlock x:Name="fileTypeTextBlock" Grid.Column="2"/>
-
-        <StackPanel x:Name="attributesStackPanel" Padding="0" Margin="10,0,0,0" Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" Grid.Column="3">
+        <StackPanel x:Name="attributesStackPanel" Padding="0" Margin="10,0,0,0" Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" Grid.Column="2">
             <StackPanel.Resources>
                 <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}"/>
             </StackPanel.Resources>
         </StackPanel>
 
-        <Grid Grid.Column="4">
+        <Grid Grid.Column="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -78,5 +38,44 @@
             <TextBlock Text="{x:Bind FileSize}" HorizontalAlignment="Right" Grid.Column="0"/>
             <TextBlock Text="{x:Bind FileSizeExtension}" HorizontalAlignment="Left" Grid.Column="1"/>
         </Grid>
+
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutSubItem Text="File">
+                    <MenuFlyoutItem x:Name="openWithFlyoutItem" Text="Open">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="OpenWith"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem Text="Delete">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Delete"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Rename">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Rename"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Copy">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Copy"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Cut">
+                        <MenuFlyoutItem.Icon>
+                            <SymbolIcon Symbol="Cut"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuFlyoutSubItem>
+
+                <MenuFlyoutItem Text="Copy as path" Click="MenuFlyoutItem_Click">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xE816;"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
     </Grid>
 </UserControl>

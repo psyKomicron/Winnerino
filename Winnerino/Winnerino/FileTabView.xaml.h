@@ -14,8 +14,10 @@ namespace winrt::Winnerino::implementation
         std::stack<winrt::hstring> backStack = std::stack<winrt::hstring>();
         std::stack<winrt::hstring> forwardStack = std::stack<winrt::hstring>();
 
-        void loadPath(winrt::hstring const& path);
+        void loadPath(winrt::hstring path);
         void completePath(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::IInspectable> const& suggestions);
+        hstring getRealPath(winrt::hstring dirtyPath);
+        bool showSpecialFolders();
 
     public:
         FileTabView();
@@ -25,7 +27,7 @@ namespace winrt::Winnerino::implementation
         void pathInputBox_GotFocus(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void pathInputBox_TextChanged(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxTextChangedEventArgs const& args);
         void pathInputBox_QuerySubmitted(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs const& args);
-        void listView_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction listView_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
         void backAppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void forwardAppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     };

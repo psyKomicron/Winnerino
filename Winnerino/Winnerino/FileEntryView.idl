@@ -4,9 +4,10 @@ namespace Winnerino
     runtimeclass FileEntryView : Microsoft.UI.Xaml.Controls.UserControl
     {
         FileEntryView();
-    FileEntryView(String cFileName, String extension, Int64 fileSize, Int64 attributes);
+    FileEntryView(String cFileName, String path, Int64 fileSize, Int64 attributes);
 
     String FileName{ get; };
+    String FilePath{ get; };
     String FileSize{ get; };
     String FileSizeExtension{ get; };
     String FileIcon{ get; };

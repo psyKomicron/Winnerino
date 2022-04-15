@@ -2,14 +2,16 @@
 #include "FileEntryView.xaml.h"
 #if __has_include("FileEntryView.g.cpp")
 #include "FileEntryView.g.cpp"
+#endif
 #include "shlwapi.h"
 #include <math.h>
-#endif
-
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::UI::Xaml::Documents;
+using namespace Microsoft::UI::Xaml::Media::Imaging;
+using namespace Windows::ApplicationModel::DataTransfer;
+using namespace Windows::Foundation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -21,61 +23,74 @@ namespace winrt::Winnerino::implementation
         InitializeComponent();
     }
 
-    FileEntryView::FileEntryView(hstring const& cFileName, hstring const&, int64_t fileSize, int64_t attributes)
+    FileEntryView::FileEntryView(hstring const& cFileName, hstring const& path, int64_t fileSize, int64_t attributes)
     {
         fileName = cFileName;
         this->fileSize = fileSize;
+        filePath = path;
         displayFileSize = static_cast<double>(fileSize);
         fileSizeExtension = formatSize(&displayFileSize);
-        // get attributes
-        isDirectory = attributes & FILE_ATTRIBUTE_DIRECTORY ? 2 : 1;
-        InitializeComponent();
+        isDirectory = attributes & FILE_ATTRIBUTE_DIRECTORY;
 
-        if (isDirectory == 1)
+        PCWSTR ext = PathFindExtension(fileName.c_str());
+        getIcon(ext);
+
+        InitializeComponent(); // we can use UI properties from now on
+
+        /*if (result == S_FALSE)
         {
-            PCWSTR ext = PathFindExtension(cFileName.c_str());
-            if (ext != NULL)
+            LPTSTR string = (LPTSTR)malloc(sizeof(LPTSTR) * bufferSize);
+            if (string != NULL)
             {
-                PWSTR perceived = NULL;
-                PERCEIVED perceivedType;
-                PERCEIVEDFLAG perceivedFlag;
-                HRESULT result = AssocGetPerceivedType(ext, &perceivedType, &perceivedFlag, &perceived);
+                result = AssocQueryString(ASSOCF_INIT_FIXED_PROGID | ASSOCF_INIT_FOR_FILE, assocation, ext, L"open", string, &bufferSize);
                 if (result == S_OK)
                 {
-                    fileTypeTextBlock().Text(to_hstring(perceived) + L" | " + to_hstring(perceivedType));
+                    try
+                    {
+                        BitmapImage image{ Uri{ to_hstring(string) }};
+                        iconImage().Source(image);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        OutputDebugString(to_hstring(e.what()).c_str());
+                    }
                 }
-                else
-                {
-                    MainWindow::Current().notifyError(result);
-                }
+                free(string);
             }
-            else
+        }*/
+        getAttributes(attributes);
+        DWORD bufferSize = 0;
+        ASSOCSTR assocation = ASSOCSTR::ASSOCSTR_FRIENDLYAPPNAME;
+        HRESULT result = AssocQueryString(ASSOCF_INIT_FIXED_PROGID | ASSOCF_INIT_FOR_FILE, assocation, ext, L"open", NULL, &bufferSize);
+        if (result == S_FALSE)
+        {
+            LPTSTR string = (LPTSTR)malloc(sizeof(LPTSTR) * bufferSize);
+            if (string != NULL)
             {
-                MainWindow::Current().notifyUser(L"Extension not found", InfoBarSeverity::Warning);
+                result = AssocQueryString(ASSOCF_INIT_FIXED_PROGID | ASSOCF_INIT_FOR_FILE, assocation, ext, L"open", string, &bufferSize);
+                if (result == S_OK)
+                {
+                    hstring mime = to_hstring(string);
+                    openWithFlyoutItem().Text(openWithFlyoutItem().Text() + L" with " + mime);
+                }
+                free(string);
             }
         }
-
-        getAttributes(attributes);
+        
     }
 
-    hstring FileEntryView::FileIcon()
+    void FileEntryView::MenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        if (isDirectory == 2)
+        try
         {
-            IInspectable dirIcon = Application::Current().Resources().TryLookup(box_value(L"DirectoryFontIconGlyph"));
-            return unbox_value_or(dirIcon, L"\uF142");
+            DataPackage dataPackage{};
+            dataPackage.SetText(filePath);
+            Clipboard::SetContent(dataPackage);
+            MainWindow::Current().NotifyUser(L"Path copied to clipboard.", InfoBarSeverity::Success);
         }
-#if FALSE
-        else if (isDirectory == 1)
+        catch (const hresult& result)
         {
-            IInspectable fileIcon = Application::Current().Resources().TryLookup(box_value(L"FileFontIconGlyph"));
-            return unbox_value_or(fileIcon, L"\uF142");
-        }
-#endif // FALSE
-
-        else
-        {
-            return L"\uF142"; 
+            MainWindow::Current().NotifyError(result);
         }
     }
 
@@ -225,5 +240,81 @@ namespace winrt::Winnerino::implementation
             return L" Kb";
         }
         return L" b";
+    }
+
+    void FileEntryView::getIcon(PCWSTR ext)
+    {
+        if (isDirectory)
+        {
+            IInspectable dirIcon = Application::Current().Resources().TryLookup(box_value(L"DirectoryFontIconGlyph"));
+            icon = unbox_value_or(dirIcon, L"\uF142");
+        }
+        else
+        {
+            hstring extension = to_hstring(ext);
+            if (extension == L".pdf")
+            {
+                icon = L"\uea90";
+            }
+            else if (extension == L".gif")
+            {
+                icon = L"\uf4a9";
+            }
+            else if (ext != NULL)
+            {
+                PERCEIVED perceivedType;
+                PERCEIVEDFLAG perceivedFlag;
+                HRESULT result = AssocGetPerceivedType(ext, &perceivedType, &perceivedFlag, NULL);
+                if (result == S_OK)
+                {
+                    hstring key{};
+                    switch (perceivedType)
+                    {
+                        /*case PERCEIVED_TYPE_CUSTOM:
+                            break;
+                        case PERCEIVED_TYPE_UNSPECIFIED:
+                            break;
+                        case PERCEIVED_TYPE_FOLDER:
+                            break;
+                        case PERCEIVED_TYPE_UNKNOWN:
+                            break;*/
+                        case PERCEIVED_TYPE_TEXT:
+                            break;
+                        case PERCEIVED_TYPE_IMAGE:
+                            key = L"\ue8b9";
+                            break;
+                        case PERCEIVED_TYPE_AUDIO:
+                            key = L"\ue8d6";
+                            break;
+                        case PERCEIVED_TYPE_VIDEO:
+                            key = L"\ue714";
+                            break;
+                        case PERCEIVED_TYPE_COMPRESSED:
+                            key = L"\uf012";
+                            break;
+                        case PERCEIVED_TYPE_DOCUMENT:
+                            key = L"\ue8a5";
+                            break;
+                        case PERCEIVED_TYPE_SYSTEM:
+                            key = L"\ue770";
+                            break;
+                        case PERCEIVED_TYPE_APPLICATION:
+                            key = L"\ued35";
+                            break;
+                        case PERCEIVED_TYPE_GAMEMEDIA:
+                            key = L"\ue7fc";
+                            break;
+                        case PERCEIVED_TYPE_CONTACTS:
+                            key = L"\ue77b";
+                            break;
+                    }
+                    icon = key;
+                }
+                else
+                {
+                    icon = L"\uF142";
+                }
+            }
+        }
     }
 }

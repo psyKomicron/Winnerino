@@ -5,13 +5,14 @@
 #include "shlwapi.h"
 #include "fileapi.h"
 #endif
-
 using namespace winrt;
-using namespace Microsoft::UI::Xaml;
-using namespace Microsoft::UI::Xaml::Input;
-using namespace Microsoft::UI::Xaml::Controls;
-using namespace Windows::Foundation;
-using namespace Windows::Foundation::Collections;
+using namespace winrt::Windows::System;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml::Input;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,7 +33,6 @@ namespace winrt::Winnerino::implementation
     void FileTabView::pathInputBox_SuggestionChosen(AutoSuggestBox const& sender, AutoSuggestBoxSuggestionChosenEventArgs const& args)
     {
         std::string s = to_string(sender.Text());
-#ifdef _DEBUG
         if (s.empty())
         {
             sender.Text(unbox_value<hstring>(args.SelectedItem()));
@@ -43,24 +43,12 @@ namespace winrt::Winnerino::implementation
             {
                 if (s[i] == '\\')
                 {
-                    auto substr = s.substr(0, i + 1);
+                    std::string substr = s.substr(0, i + 1);
                     sender.Text(to_hstring(substr) + unbox_value<hstring>(args.SelectedItem()));
                     return;
                 }
             }
         }
-#else
-        for (int i = s.size() - 1; i > 0; i--)
-        {
-            if (s[i] == '\\')
-            {
-                auto substr = s.substr(0, i + 1);
-                sender.Text(to_hstring(substr) + unbox_value<hstring>(args.SelectedItem()));
-                return;
-            }
-        }
-#endif // _DEBUG
-
     }
 
     void FileTabView::pathInputBox_GotFocus(IInspectable const& sender, RoutedEventArgs const&)
@@ -100,7 +88,7 @@ namespace winrt::Winnerino::implementation
 
     }
 
-    void FileTabView::listView_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
+    IAsyncAction FileTabView::listView_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
     {
         FileEntryView entry = listView().SelectedItem().try_as<FileEntryView>();
         if (entry)
@@ -110,6 +98,23 @@ namespace winrt::Winnerino::implementation
             {
                 backStack.push(path);
                 loadPath(path + entry.FileName() + L"\\");
+            }
+            else
+            {
+                // open the file with shell
+                try
+                {
+                    hstring filePath = entry.FilePath();
+                    StorageFile file = co_await StorageFile::GetFileFromPathAsync(filePath);
+                    if (!co_await Launcher::LaunchFileAsync(file))
+                    {
+                        MainWindow::Current().NotifyUser(L"Failed to open file.", InfoBarSeverity::Warning);
+                    }
+                }
+                catch (const hresult& ex)
+                {
+                    MainWindow::Current().NotifyError(ex);
+                }
             }
         }
     }
@@ -123,47 +128,72 @@ namespace winrt::Winnerino::implementation
             forwardStack.push(path);
             loadPath(path);
         }
-#ifdef _DEBUG
-            MainWindow::Current().notifyUser(L"Back queue is empty", InfoBarSeverity::Warning);
-#endif
     }
 
     void FileTabView::forwardAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-
+        if (!forwardStack.empty())
+        {
+            hstring path = forwardStack.top();
+            forwardStack.pop();
+            backStack.push(path);
+            loadPath(path);
+        }
     }
 
 
-    void FileTabView::loadPath(hstring const& path)
+    void FileTabView::loadPath(hstring path)
     {
         if (path == L"")
         {
-            MainWindow::Current().notifyUser(L"Path is empty (Debug)", InfoBarSeverity::Warning);
+#ifdef _DEBUG
+            MainWindow::Current().NotifyUser(L"Path is empty (Debug)", InfoBarSeverity::Warning);
+#endif // _DEBUG
             return;
         }
 
-        listView().Items().Clear();
-        progressRing().Visibility(Visibility::Visible);
-
-        WIN32_FIND_DATA data{};
-        HANDLE handle = FindFirstFile((path + L"*").c_str(), &data);
-        if (handle != INVALID_HANDLE_VALUE)
+        if (PathFileExists(path.c_str()))
         {
-            do
+            path = getRealPath(path); // get the real path with GetFinalPathNameByHandle, can return empty
+            if (path == L"")
             {
-                int64_t size = static_cast<int64_t>(data.nFileSizeHigh) << 32;
-                size += data.nFileSizeLow;
-                listView().Items().Append(FileEntryView(to_hstring(data.cFileName), to_hstring(data.cAlternateFileName), size, data.dwFileAttributes));
-            } while (FindNextFile(handle, &data));
-            FindClose(handle);
+                return;
+            }
+
+            listView().Items().Clear();
+            progressRing().Visibility(Visibility::Visible);
+
+            WIN32_FIND_DATA data{};
+            HANDLE handle = FindFirstFile((path + L"*").c_str(), &data);
+            if (handle != INVALID_HANDLE_VALUE)
+            {
+                do
+                {
+                    hstring fileName = to_hstring(data.cFileName);
+                    if ((fileName != L".." && fileName != L".") || showSpecialFolders())
+                    {
+                        hstring filePath = path + fileName;
+
+                        int64_t size = static_cast<int64_t>(data.nFileSizeHigh) << 32;
+                        size += data.nFileSizeLow;
+
+                        listView().Items().Append(FileEntryView(fileName, filePath, size, data.dwFileAttributes));
+                    }
+                } while (FindNextFile(handle, &data));
+                FindClose(handle);
+            }
+            else
+            {
+                MainWindow::Current().NotifyError(GetLastError());
+            }
+
+            progressRing().Visibility(Visibility::Collapsed);
+            pathInputBox().Text(path);
         }
         else
         {
-            MainWindow::Current().notifyError(GetLastError());
+            MainWindow::Current().NotifyUser(L"Path not found \"" + path + L"\"", InfoBarSeverity::Error);
         }
-
-        progressRing().Visibility(Visibility::Collapsed);
-        pathInputBox().Text(path);
     }
 
     void FileTabView::completePath(hstring const& query, IVector<IInspectable> const& suggestions)
@@ -201,6 +231,68 @@ namespace winrt::Winnerino::implementation
                 suggestions.Append(box_value(hstring{ pointer }));
                 while (*pointer++);
             }
+        }
+    }
+
+    hstring FileTabView::getRealPath(hstring dirtyPath)
+    {
+        HANDLE fileHandle = CreateFile(dirtyPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+        if (fileHandle != INVALID_HANDLE_VALUE)
+        {
+            LPWSTR fullPath = NULL;
+            DWORD stringLength = GetFinalPathNameByHandle(fileHandle, NULL, 0, VOLUME_NAME_DOS);
+            if (stringLength > 0)
+            {
+                fullPath = (LPWSTR)malloc(sizeof(WCHAR) * stringLength);
+                if (fullPath)
+                {
+                    stringLength = GetFinalPathNameByHandle(fileHandle, fullPath, stringLength, VOLUME_NAME_DOS);
+                    if (stringLength > 0)
+                    {
+                        std::string s = to_string(fullPath).substr(4, s.size() - 4);
+                        if (!s.ends_with("\\"))
+                        {
+                            s.append("\\");
+                        }
+                        // free resources before returning
+                        free(fullPath);
+                        CloseHandle(fileHandle);
+                        return to_hstring(s);
+                    }
+                    else
+                    {
+                        MainWindow::Current().NotifyUser(L"Failed to get full path.", InfoBarSeverity::Error);
+                    }
+
+                    // clean up
+                    free(fullPath);
+                }
+            }
+            else
+            {
+                MainWindow::Current().NotifyError(GetLastError());
+            }
+            // clean up
+            CloseHandle(fileHandle);
+        }
+        else
+        {
+            MainWindow::Current().NotifyError(GetLastError());
+        }
+
+        return hstring{}; // if we reach this point, some error occured when trying to get the case sensitive path
+    }
+
+    bool FileTabView::showSpecialFolders()
+    {
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (settings)
+        {
+            return unbox_value_or(settings.Values().TryLookup(L"ShowSpecialFolders"), false);
+        }
+        else
+        {
+            return false;
         }
     }
 }

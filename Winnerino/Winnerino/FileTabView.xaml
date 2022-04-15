@@ -44,9 +44,14 @@
             CornerRadius="5,0,0,0" 
             IsItemClickEnabled="True" 
             IsDoubleTapEnabled="True"
-            DoubleTapped="listView_DoubleTapped" 
+            SelectionMode="Extended"
+            DoubleTapped="listView_DoubleTapped"
             Grid.Row="1" 
-            Grid.ColumnSpan="4"/>
+            Grid.ColumnSpan="4">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
+            </ListView.Resources>
+        </ListView>
         <ProgressRing
             x:Name="progressRing" 
             HorizontalAlignment="Center"
