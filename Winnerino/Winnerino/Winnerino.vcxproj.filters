@@ -41,6 +41,12 @@
     <Page Include="LibraryTabView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="DrivesPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="DriveView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -58,6 +64,9 @@
     <ClCompile Include="PowerController.cpp">
       <Filter>Common\Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="MessageData.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -66,6 +75,9 @@
     </ClInclude>
     <ClInclude Include="PowerController.h">
       <Filter>Common\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageData.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
