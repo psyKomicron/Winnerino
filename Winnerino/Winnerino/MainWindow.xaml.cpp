@@ -4,7 +4,6 @@
 #include "MainWindow.g.cpp"
 #endif
 
-
 using namespace winrt;
 
 using namespace Microsoft::UI;
@@ -29,10 +28,13 @@ namespace winrt::Winnerino::implementation
     MainWindow::MainWindow()
     {
         InitializeComponent();
+#if USING_TIMER
         dispatcherQueueTimer = DispatcherQueue().CreateTimer();
         dispatcherQueueTimer.Interval(TimeSpan{ 2s });
         dispatcherQueueTimer.IsRepeating(true);
-        dispatcherQueueTimer.Tick({ this, &MainWindow::dispatcherQueueTimer_Tick});
+        dispatcherQueueTimer.Tick({ this, &MainWindow::dispatcherQueueTimer_Tick });
+#endif // USING_TIMER
+
 
         Title(L"Multitool");
         singleton = *this;
@@ -41,19 +43,6 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::NotifyUser(hstring const& message, InfoBarSeverity const& severity)
     {
-#if FALSE
-        if (singleton.DispatcherQueue().HasThreadAccess())
-        {
-            updateInforBar(message, severity);
-        }
-        else
-        {
-            DispatcherQueue().TryEnqueue([this, message, severity]()
-            {
-                updateInforBar(message, severity);
-            });
-        }
-#else
         if (!busy)
         {
             updateInforBar(message, severity);
@@ -62,13 +51,14 @@ namespace winrt::Winnerino::implementation
         else
         {
             messagesStack.push(MessageData(message, severity));
+#if USING_TIMER
             if (!dispatcherQueueTimer.IsRunning())
             {
                 dispatcherQueueTimer.Start();
             }
-        }
-#endif // _DEBUG
+#endif // USING_TIMER
 
+        }
     }
 
     void MainWindow::NotifyError(DWORD const& code)
@@ -97,7 +87,7 @@ namespace winrt::Winnerino::implementation
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
 
         IInspectable inspectable = settings.TryLookup(L"LoadLastPage");
-        if (unbox_value_or<bool>(inspectable, false))
+        if (unbox_value_or<bool>(inspectable, true))
         {
             //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
             if (!loadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
@@ -136,13 +126,31 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
     {
+#if USING_TIMER
         infoBar().Severity(InfoBarSeverity::Informational);
         infoBar().Message(L"");
         infoBar().Title(L"");
+#else
+        if (!messagesStack.empty())
+        {
+            MessageData message = messagesStack.front();
+            messagesStack.pop();
+
+            updateInforBar(message.GetDataMessage(), message.GetSeverity());
+        }
+        else
+        {
+            busy = false;
+            infoBar().Severity(InfoBarSeverity::Informational);
+            infoBar().Message(L"");
+            infoBar().Title(L"");
+    }
+#endif // USING_TIMER
     }
 #pragma endregion
 
 
+#if USING_TIMER
     void MainWindow::dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const&, Windows::Foundation::IInspectable const&)
     {
         if (!messagesStack.empty())
@@ -158,6 +166,8 @@ namespace winrt::Winnerino::implementation
             dispatcherQueueTimer.Stop();
         }
     }
+#endif // USING_TIMER
+
 
     void MainWindow::updateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {

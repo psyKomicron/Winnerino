@@ -9,6 +9,8 @@
 
 #pragma pop_macro("GetCurrentTime")
 
+#define USING_TIMER 0
+
 using namespace winrt;
 using namespace std;
 
@@ -62,7 +64,10 @@ namespace winrt::Winnerino::implementation
         bool loadPage(winrt::hstring page);
         void appWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const& args);
         void appWindow_Changed(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args);
+#if USING_TIMER
         void dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const& timer, Windows::Foundation::IInspectable const& args);
+#endif // USING_TIMER
+
     };
 }
 
