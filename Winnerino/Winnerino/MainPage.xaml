@@ -48,62 +48,49 @@
                 </Button>
             </VariableSizedWrapGrid>
 
-            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="10,50,0,20">
+            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="10,50,0,20" ScrollViewer.IsScrollInertiaEnabled="True" ScrollViewer.CanContentRenderOutsideBounds="False">
                 <ListView.Header>
                     <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
                 </ListView.Header>
 
                 <ListViewHeaderItem/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="General" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+                <TextBlock Margin="0,0,0,20" Text="General" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Notifications displayed in the window are now queued, so that they don't overlap themselves."/>
+                <TextBlock Text="- A new page is available ! The drive page allows you to see info about your drives."/>
+                <TextBlock Text="- App title now changes with the currently loaded page."/>
+                <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
+                <TextBlock Text="- Added custom title bar, if the system supports it."/>
+                <TextBlock Text="- Added update notes !"/>
 
-                        <TextBlock Text="- Notifications displayed in the window are now queued, so that they don't overlap themselves."/>
-                        <TextBlock Text="- A new page is available ! The drive page allows you to see info about your drives."/>
-                        <TextBlock Text="- App title now changes with the currently loaded page."/>
-                        <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
-                        <TextBlock Text="- Added custom title bar, if the system supports it."/>
-                        <TextBlock Text="- Added update notes !"/>
-                    </StackPanel>
-                </ListViewItem>
 
                 <ListViewHeaderItem/>
-                <ListViewItem>
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Drives explorer" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+                <TextBlock Margin="0,0,0,20" Text="Twitch chat" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Fixed tab view."/>
+                <TextBlock Text="- Added tab persistency between sessions."/>
 
-                        <TextBlock Text="This new page allows you to see information about the drives installed or mounted in your computer." FontWeight="SemiBold"/>
-                        <TextBlock Text="- Drive size."/>
-                        <TextBlock Text="- Drive name."/>
-                        <TextBlock Text="- Drive free space."/>
-                        <TextBlock Text="- Drive type."/>
-                        <TextBlock Text="- Drive filesystem type (NTFS, FAT...)."/>
-                        <TextBlock Text="- Drive serial number."/>
-                    </StackPanel>
-                </ListViewItem>
 
                 <ListViewHeaderItem/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Explorer" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+                <TextBlock Margin="0,0,0,20" Text="Drives explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Smart health: temperature, power on hours."/>
+                <TextBlock Text="This new page allows you to see information about the drives installed or mounted in your computer."/>
+                <TextBlock Text="- Drive size, name, free space, type, filesystem type (NTFS, FAT...), serial number."/>
+                <TextBlock Text="For NVMe drives." Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBlock Text="- Controller informations: PCI vendor ID, PCI subsystem vendor ID, serial number, model number/name, firmware revision, RAB, resume and entry latency."/>
 
-                        <TextBlock Text="- Updated path completion to include drives."/>
-                        <TextBlock Text="- Fixed completion from selecting items in the drop down."/>
-                        <TextBlock Text="- Added tab support (and they are saved from session to session)."/>
-                        <TextBlock Text="- Added file type display."/>
-                        <TextBlock Text="- Added recents/favorites."/>
-                        <TextBlock Text="- Added back navigation (forward to come)."/>
-                    </StackPanel>
-                </ListViewItem>
 
                 <ListViewHeaderItem/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Power plans" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
+                <TextBlock Margin="0,0,0,20" Text="Explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Updated path completion to include drives."/>
+                <TextBlock Text="- Fixed completion from selecting items in the drop down."/>
+                <TextBlock Text="- Added tab support (and they are saved from session to session)."/>
+                <TextBlock Text="- Added file type display."/>
+                <TextBlock Text="- Added recents/favorites."/>
+                <TextBlock Text="- Added back navigation (forward to come)."/>
 
-                        <TextBlock Text="- Power plan can be changed."/>
-                    </StackPanel>
-                </ListViewItem>
+                
+                <ListViewHeaderItem/>
+                <TextBlock Margin="0,0,0,20" Text="Power plans" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Power plan can be changed."/>
             </ListView>
         </Grid>
     </ScrollViewer>
