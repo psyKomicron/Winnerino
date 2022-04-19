@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
-#include "fileapi.h"
 #include "DrivesPage.xaml.h"
 #if __has_include("DrivesPage.g.cpp")
 #include "DrivesPage.g.cpp"
+#include "fileapi.h"
 #endif
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 

@@ -30,6 +30,12 @@ namespace winrt::Winnerino::implementation
         winrt::hstring MaxFileLength() { return winrt::to_hstring(_maxFileNameLength); };
         winrt::hstring DriveType() { return _driveType; };
         void UserControl_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+
+    private:
+        bool LoadForNVME(HANDLE const& diskHandle);
+        bool LoadForATA(HANDLE const& diskHandle);
+        inline hstring ConvertToHString(UCHAR* const& toConvert, size_t const& length);
+        inline Microsoft::UI::Xaml::Controls::TextBlock CreateTextBlock(hstring const& text);
     };
 }
 
