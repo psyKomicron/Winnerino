@@ -47,6 +47,12 @@
     <Page Include="DriveView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="WebTab.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="ChatView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />

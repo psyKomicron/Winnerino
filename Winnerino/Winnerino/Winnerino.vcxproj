@@ -24,6 +24,7 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
     <UseWinUI>true</UseWinUI>
+    <CppWinRTProjectLanguage>C++/WinRT</CppWinRTProjectLanguage>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -100,6 +101,7 @@
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalDependencies)</AdditionalDependencies>
       <EnableUAC Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableUAC>
       <UACExecutionLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">RequireAdministrator</UACExecutionLevel>
+      <UACUIAccess Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</UACUIAccess>
     </Link>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,6 +122,10 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChatView.xaml.h">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="DriveSearchModel.h">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -186,6 +192,10 @@
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="WebTab.xaml.h">
+      <DependentUpon>WebTab.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="WidgetsPage.xaml.h">
       <DependentUpon>WidgetsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -193,6 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="ChatView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DrivesPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -233,11 +246,18 @@
     <Page Include="TwitchPage2.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="WebTab.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WidgetsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChatView.xaml.cpp">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="DriveSearchModel.cpp">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -307,6 +327,10 @@
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="WebTab.xaml.cpp">
+      <DependentUpon>WebTab.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="WidgetsPage.xaml.cpp">
       <DependentUpon>WidgetsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -316,6 +340,10 @@
     <Midl Include="App.idl">
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
+    </Midl>
+    <Midl Include="ChatView.idl">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Midl>
     <Midl Include="DriveSearchModel.idl">
       <SubType>Designer</SubType>
@@ -374,6 +402,10 @@
     </Midl>
     <Midl Include="TwitchPage2.idl">
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="WebTab.idl">
+      <DependentUpon>WebTab.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="WidgetsPage.idl">
