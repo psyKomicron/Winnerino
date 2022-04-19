@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded">
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded">
 
     <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
@@ -18,34 +19,35 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.ColumnSpan="2" Grid.Row="0" Margin="0,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="160"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="400"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                <AppBarButton Icon="Back" Width="50"/>
-                <AppBarButton Icon="Forward" Width="50"/>
-                <AppBarButton Icon="Refresh" Width="50"/>
-            </StackPanel>
-
-            <TextBlock Text="https://" Opacity="0.6" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
-            <AutoSuggestBox 
-                x:Name="searchSuggestBox"
-                VerticalContentAlignment="Center"
-                MaxHeight="40"
-                QuerySubmitted="searchSuggestBox_QuerySubmitted"
-                Grid.Column="2"/>
-            
-        </Grid>
-
+        <CommandBar Grid.Row="0" Grid.ColumnSpan="2">
+            <AppBarButton Click="AppBarButton_Click">
+                <AppBarButton.Icon>
+                    <SymbolIcon Symbol="Clear"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Click="AppBarButton_Click_1">
+                <AppBarButton.Icon>
+                    <SymbolIcon Symbol="Save"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </CommandBar>
         
-
+        <TabView 
+            x:Name="webTabView" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Grid.Column="0"
+            Grid.Row="1"
+            AddTabButtonClick="webTabView_AddTabButtonClick"
+            TabCloseRequested="TabView_TabCloseRequested"/>
         <TabView
             x:Name="chatTabView"
+            Background="{StaticResource ApplicationPageBackgroundThemeBrush}"
             Grid.Column="1"
-            Grid.Row="1"/>
+            Grid.Row="1"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            AddTabButtonClick="chatTabView_AddTabButtonClick"
+            TabCloseRequested="TabView_TabCloseRequested"/>
     </Grid>
 </Page>
