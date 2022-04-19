@@ -45,62 +45,54 @@ namespace winrt::Winnerino::implementation
     {
         // get last path
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        if (!settings)
+        if (settings)
         {
-            settings = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
+            IReference<bool> regexChecked = settings.Values().TryLookup(L"UseSearchRegex").try_as<IReference<bool>>();
+            useRegexButton().IsChecked(regexChecked ? regexChecked : false);
 
-        IReference<bool> regexChecked = settings.Values().TryLookup(L"UseSearchRegex").try_as<IReference<bool>>();
-        if (regexChecked)
-        {
-            useRegexButton().IsChecked(regexChecked);
+            ApplicationDataContainer recents = settings.Containers().TryLookup(L"ExplorerRecents");
+            if (recents)
+            {
+                auto containers = recents.Values();
+                for (auto const& c : containers)
+                {
+                    hstring recent = unbox_value_or<hstring>(c.Value(), L"");
+                    if (recent != L"")
+                    {
+                        MenuFlyoutItem item{};
+                        item.Text(recent);
+                        recentsMenuFlyout().Items().Append(item);
+                    }
+                }
+            }
+
+            ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
+            if (tabs)
+            {
+                auto containers = tabs.Values();
+                for (auto const& c : containers)
+                {
+                    ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
+                    hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
+                    hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
+                    if (path != L"")
+                    {
+                        TabViewItem tabViewItem{};
+                        TextBox header{};
+                        header.Text(tabName);
+                        tabViewItem.Header(header);
+                        tabViewItem.Content(Winnerino::FileTabView{ path });
+                        tabView().TabItems().Append(tabViewItem);
+                    }
+                }
+            }
+            // remove the container
+            settings.DeleteContainer(L"ExplorerTabs");
         }
         else
         {
-            useRegexButton().IsChecked(IReference<bool>{ false });
+            ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);   
         }
-
-        ApplicationDataContainer recents = settings.Containers().TryLookup(L"ExplorerRecents");
-        if (recents)
-        {
-            auto containers = recents.Values();
-            for (auto const& c : containers)
-            {
-                hstring recent = unbox_value_or<hstring>(c.Value(), L"");
-                if (recent != L"")
-                {
-                    MenuFlyoutItem item{};
-                    item.Text(recent);
-                    recentsMenuFlyout().Items().Append(item);
-                }
-            }
-        }
-
-        ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
-        if (tabs)
-        {
-            auto containers = tabs.Values();
-            for (auto const& c : containers)
-            {
-                ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
-                hstring path = composite.Lookup(L"TabPath").as<hstring>();
-                hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
-                if (path != L"")
-                {
-                    TabViewItem tabViewItem{};
-                    TextBox header{};
-                    header.Text(tabName);
-                    tabViewItem.Header(header);
-                    tabViewItem.Content(Winnerino::FileTabView{ path });
-                    tabView().TabItems().Append(tabViewItem);
-                }
-            }
-        }
-        // remove the container
-#ifndef _DEBUG
-        settings.DeleteContainer(L"ExplorerTabs");
-#endif // _DEBUG
-
 
         // list available drives
         WCHAR drives[512]{};
@@ -227,7 +219,6 @@ namespace winrt::Winnerino::implementation
         searchBox().Width(80);
     }
 
-
     IVector<FileEntryView> ExplorerPage::getSelectedItems()
     {
         IVector<FileEntryView> vect{ single_threaded_vector<FileEntryView>() };
@@ -259,11 +250,7 @@ namespace winrt::Winnerino::implementation
         settings.Values().Insert(L"UseSearchRegex", useRegexButton().IsChecked());
 
         HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
-        ApplicationDataContainer tabContainer = settings.Containers().TryLookup(L"ExplorerTabs");
-        if (!tabContainer)
-        {
-            tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Existing);
-        }
+        ApplicationDataContainer tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);
 
         IVector<IInspectable> tabItems = tabView().TabItems();
         for (IInspectable const& item : tabItems)
