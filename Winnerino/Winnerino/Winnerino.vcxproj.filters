@@ -73,6 +73,9 @@
     <ClCompile Include="MessageData.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="DirectorySizeCalculator.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -83,6 +86,9 @@
       <Filter>Common\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="MessageData.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectorySizeCalculator.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -106,6 +112,7 @@
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
