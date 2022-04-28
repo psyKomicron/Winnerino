@@ -3,13 +3,12 @@
 #if __has_include("ChatView.g.cpp")
 #include "ChatView.g.cpp"
 #endif
-using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
-using namespace winrt::Microsoft::UI::Xaml::Documents;
-using namespace winrt::Microsoft::UI::Xaml::Controls;
-
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace winrt;
+using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
+using namespace winrt::Microsoft::UI::Xaml::Documents;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Dispatching;
@@ -57,19 +56,29 @@ namespace winrt::Winnerino::implementation
 
             imageContainer.KeyTipPlacementMode(KeyTipPlacementMode::Center);
             Image pepeMeltdown{};
-            pepeMeltdown.Height(30);
+            pepeMeltdown.Height(60);
             BitmapImage bitmapImage{};
-            bitmapImage.UriSource(Uri{ L"E:\\julie\\Pictures\\bttv\\pepeMeltdown.gif" });
+            if (!uri)
+            {
+                uri = Uri{ L"E:\\julie\\Pictures\\bttv\\pepeMeltdown.gif" };
+            }
+            bitmapImage.UriSource(uri);
             pepeMeltdown.Source(bitmapImage);
 
             imageContainer.Child(pepeMeltdown);
 
-            p.Inlines().Append(imageContainer);
             r.Text(ChatInput().Text());
             p.Inlines().Append(r);
+
+            p.Inlines().Append(imageContainer);
+
             block.Blocks().Append(p);
 
-            ChatListView().Items().Append(block);
+            ListViewItem item{};
+            //item.IsSelected(true);
+            item.Content(block);
+
+            ChatListView().Items().Append(item);
 
             InfoTextBlock().Text(to_hstring(ChatListView().Items().Size()));
         }
@@ -82,7 +91,11 @@ namespace winrt::Winnerino::implementation
 
     void ChatView::DispatcherQueueTimer_Tick(DispatcherQueueTimer const&, IInspectable const&)
     {
-        InfoTextBlock().Text(L"This is a long ass test");
         InfoPopup().IsOpen(true);
+    }
+
+    void ChatView::UserControl_Unloaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        ChatListView().Items().Clear();
     }
 }

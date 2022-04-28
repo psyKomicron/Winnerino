@@ -5,19 +5,21 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Unloaded="UserControl_Unloaded">
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition MinHeight="50" Height="Auto" MaxHeight="80"/>
         </Grid.RowDefinitions>
-        <Popup x:Name="InfoPopup" Grid.Row="0" HorizontalAlignment="Center" Width="300">
+        <Popup x:Name="InfoPopup" Grid.Row="0" HorizontalAlignment="Center" Width="300" Height="50">
             <Grid
                 Margin="5,5" 
                 Padding="5" 
                 Width="300"
+                Height="50"
                 HorizontalAlignment="Center"
                 CornerRadius="5"
                 ColumnSpacing="10">
@@ -27,7 +29,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.Background>
-                    <AcrylicBrush FallbackColor="MediumPurple" TintColor="{StaticResource AccentAAFillColorDisabled}"/>
+                    <AcrylicBrush 
+                        FallbackColor="MediumPurple"
+                        TintColor="{ThemeResource SystemAccentColor}"
+                        TintLuminosityOpacity="0.1"
+                        TintOpacity="0.5"/>
                 </Grid.Background>
 
                 <FontIcon Glyph="&#xe946;" VerticalAlignment="Center" Grid.Column="0"/>
@@ -42,7 +48,8 @@
         
         <ListView
             x:Name="ChatListView"
-            SelectionMode="None"
+            SelectionMode="Extended"
+            IsItemClickEnabled="False"
             Padding="0"
             Margin="0"
             HorizontalAlignment="Stretch"
@@ -55,6 +62,9 @@
                     <ItemsStackPanel Margin="0" VerticalAlignment="Bottom" ItemsUpdatingScrollMode="KeepLastItemInView"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
+            <ListViewItem IsSelected="True">
+                <TextBlock Text="fsdlkmfsdlkmfsdlkfmsdlkfmsdlkfmsdfijwpofjasoigheorpith093ut50uergtndsfglsndfbkljsn099ur09rqwoeir[pqowvlkn;lknPOIHELFN"/>
+            </ListViewItem>
         </ListView>
 
         <Grid ColumnSpacing="5" Margin="5" Grid.Row="2">
