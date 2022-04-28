@@ -2,9 +2,9 @@
 #include "ExplorerPage.xaml.h"
 #if __has_include("ExplorerPage.g.cpp")
 #include "ExplorerPage.g.cpp"
+#endif
 #include "DriveSearchModel.h"
 #include "FileTabView.xaml.h"
-#endif
 
 using namespace winrt;
 using namespace std;
