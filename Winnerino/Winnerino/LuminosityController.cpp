@@ -59,15 +59,14 @@ namespace winrt::Winnerino::Controllers
 					// throw init error
 					return;
 				}
-				monitorArray = (LPPHYSICAL_MONITOR)malloc(monitorArraySize * sizeof(PHYSICAL_MONITOR));
-				if (monitorArray == NULL)
-				{
-					return; // throw init error
-				}
+
+				//monitorArray = (LPPHYSICAL_MONITOR)malloc(monitorArraySize * sizeof(PHYSICAL_MONITOR));
+				monitorArray = new PHYSICAL_MONITOR[monitorArraySize];
+				
 				if (!GetPhysicalMonitorsFromHMONITOR(monitorHandle, monitorArraySize, monitorArray))
 				{
 					OutputDebugString(L"ERROR: GetPhysicalMonitorsFromHMONITOR failed.");
-					free(monitorArray);
+					delete[] monitorArray;
 					return; // throw init error
 				}
 
@@ -76,10 +75,6 @@ namespace winrt::Winnerino::Controllers
 				if (!GetMonitorCapabilities(monitorArray->hPhysicalMonitor, &monitorCapabilities, &supportedColors))
 				{
 					destroyPhysicalMonitor(monitorArraySize, monitorArray);
-
-					// function failed
-					OutputDebugString(L"ERROR: GetMonitorCapabilities failed.");
-
 					// throw init error
 					throw HRESULT_FROM_WIN32(GetLastError());
 				}
@@ -91,25 +86,11 @@ namespace winrt::Winnerino::Controllers
 					if (!GetMonitorBrightness(monitorArray->hPhysicalMonitor, &minBrightness, &currentBrightness, &maxBrightness))
 					{
 						destroyPhysicalMonitor(monitorArraySize, monitorArray);
-
-						OutputDebugString(L"GetMonitorBrightness failed.");
 						throw HRESULT_FROM_WIN32(GetLastError());
 					}
-
-					OutputDebugString(monitorArray->szPhysicalMonitorDescription);
 				}
 
-#ifdef _DEBUG
 				destroyPhysicalMonitor(monitorArraySize, monitorArray);
-#else
-				else
-				{
-					// clean up
-					destroyPhysicalMonitor(monitorArraySize, monitorArray);
-					OutputDebugString(L"Cannot create LuminosityController, no monitors supports brightness level control.");
-				}
-#endif // DEBUG
-
 			}
 		}
 	}
@@ -163,6 +144,7 @@ namespace winrt::Winnerino::Controllers
 	void LuminosityController::destroyPhysicalMonitor(DWORD size, LPPHYSICAL_MONITOR monitors)
 	{
 		DestroyPhysicalMonitors(size, monitors);
-		free(monitors);
+		//free(monitors);
+		delete[] monitors;
 	}
 }

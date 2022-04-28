@@ -55,7 +55,8 @@ namespace winrt::Winnerino::implementation
                 DWORD friendlyNameBufferSize{};
                 if (PowerReadFriendlyName(NULL, &guid, NULL, NULL, NULL, &friendlyNameBufferSize) == ERROR_SUCCESS)
                 {
-                    PUCHAR nameBuffer = (PUCHAR)malloc(sizeof(UCHAR) * friendlyNameBufferSize);
+                    //PUCHAR nameBuffer = (PUCHAR)malloc(sizeof(UCHAR) * friendlyNameBufferSize);
+                    PUCHAR nameBuffer = new UCHAR[friendlyNameBufferSize];
                     if (PowerReadFriendlyName(NULL, &guid, NULL, NULL, nameBuffer, &friendlyNameBufferSize) == ERROR_SUCCESS)
                     {
                         hstring powerPlanName = to_hstring((wchar_t*)nameBuffer);
@@ -77,7 +78,7 @@ namespace winrt::Winnerino::implementation
                     }
 
                     // always free after malloc
-                    free(nameBuffer);
+                    delete[] nameBuffer;
                     index++;
                 }
                 else
