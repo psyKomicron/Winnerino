@@ -44,7 +44,7 @@ namespace winrt::Winnerino::implementation
         NavigateTo(searchSuggestBox().Text());
     }
 
-    void WebTab::AppBarButton_Click(IInspectable const&, RoutedEventArgs const&WOT)
+    void WebTab::AppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         //webView().CoreWebView2().Stop();
         webView().CoreWebView2().NavigationCompleted(webViewChangedToken);
