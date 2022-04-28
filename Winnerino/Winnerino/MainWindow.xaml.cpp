@@ -35,17 +35,15 @@ namespace winrt::Winnerino::implementation
         dispatcherQueueTimer.Tick({ this, &MainWindow::dispatcherQueueTimer_Tick });
 #endif // USING_TIMER
 
-
-        Title(L"Multitool");
         singleton = *this;
-        initWindow();
+        InitWindow();
     }
 
     void MainWindow::NotifyUser(hstring const& message, InfoBarSeverity const& severity)
     {
         if (!busy)
         {
-            updateInforBar(message, severity);
+            UpdateInforBar(message, severity);
             busy = true;
         }
         else
@@ -81,6 +79,11 @@ namespace winrt::Winnerino::implementation
         NotifyUser(message, InfoBarSeverity::Error);
     }
 
+    void MainWindow::ChangeTheme(Microsoft::UI::Xaml::ElementTheme const& theme)
+    {
+        contentGrid().RequestedTheme(theme);
+    }
+
 #pragma region handlers
     void MainWindow::navigationView_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
@@ -90,7 +93,7 @@ namespace winrt::Winnerino::implementation
         if (unbox_value_or<bool>(inspectable, true))
         {
             //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
-            if (!loadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
+            if (!LoadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
             {
                 NotifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
             }
@@ -106,13 +109,13 @@ namespace winrt::Winnerino::implementation
         if (args.InvokedItemContainer())
         {
             hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
-            loadPage(tag);
+            LoadPage(tag);
         }
     }
 
     void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
     {
-        saveWindowState();
+        SaveWindowState();
     }
 
     void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const&)
@@ -136,7 +139,7 @@ namespace winrt::Winnerino::implementation
             MessageData message = messagesStack.front();
             messagesStack.pop();
 
-            updateInforBar(message.GetDataMessage(), message.GetSeverity());
+            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
         }
         else
         {
@@ -158,7 +161,7 @@ namespace winrt::Winnerino::implementation
             MessageData message = messagesStack.front();
             messagesStack.pop();
 
-            updateInforBar(message.GetDataMessage(), message.GetSeverity());
+            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
         }
         else
         {
@@ -169,7 +172,7 @@ namespace winrt::Winnerino::implementation
 #endif // USING_TIMER
 
 
-    void MainWindow::updateInforBar(hstring const& message, InfoBarSeverity const& severity)
+    void MainWindow::UpdateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
         infoBar().Severity(severity);
         infoBar().Message(message);
@@ -192,7 +195,7 @@ namespace winrt::Winnerino::implementation
         infoBar().IsOpen(true);
     }
 
-    void MainWindow::initWindow()
+    void MainWindow::InitWindow()
     {
 #pragma region settings
         int width = 800;
@@ -233,6 +236,8 @@ namespace winrt::Winnerino::implementation
         }
 #pragma endregion
 
+        //Title(L"Multitool");
+
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         winrt::check_bool(nativeWindow);
         HWND handle{ nullptr };
@@ -245,6 +250,8 @@ namespace winrt::Winnerino::implementation
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
+        appWindow.Title(L"Multitool");
+        appWindow.SetIcon(L"Images/multitool.ico");
         if (appWindow != nullptr)
         {
             RectInt32 rect{};
@@ -285,7 +292,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void MainWindow::saveWindowState()
+    void MainWindow::SaveWindowState()
     {
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
         if (!isWindowFullscreen && appWindow != nullptr)
@@ -320,7 +327,7 @@ namespace winrt::Winnerino::implementation
         settings.Insert(L"LastPage", box_value(lastPage));
     }
 
-    bool MainWindow::loadPage(hstring page)
+    bool MainWindow::LoadPage(hstring page)
     {
         bool recognized = false; // remove when application is built enough
         if (page == L"Settings")

@@ -11,8 +11,6 @@
 
 #define USING_TIMER 0
 
-using namespace winrt;
-using namespace std;
 
 namespace winrt::Winnerino::implementation
 {
@@ -27,8 +25,8 @@ namespace winrt::Winnerino::implementation
         Microsoft::UI::Windowing::AppWindow appWindow = nullptr;
         hstring lastPage;
         bool busy = false;
-        queue<MessageData> messagesStack = queue<MessageData>();
-        winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer dispatcherQueueTimer = nullptr;
+        std::queue<MessageData> messagesStack = std::queue<MessageData>();
+        Microsoft::UI::Dispatching::DispatcherQueueTimer dispatcherQueueTimer = nullptr;
 
         // static methods
     public:
@@ -53,15 +51,16 @@ namespace winrt::Winnerino::implementation
         /// <param name="code">Error code</param>
         /// <param name="additionalMessage">Additional message to prepend to the error code message</param>
         void NotifyError(DWORD const& code, winrt::hstring const& additionalMessage);
-        void navigationView_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void navigationView_ItemInvoked(winrt::Microsoft::UI::Xaml::Controls::NavigationView const& sender, winrt::Microsoft::UI::Xaml::Controls::NavigationViewItemInvokedEventArgs const& args);
-        void infoBar_Closed(winrt::Microsoft::UI::Xaml::Controls::InfoBar const& sender, winrt::Microsoft::UI::Xaml::Controls::InfoBarClosedEventArgs const& args);
+        void ChangeTheme(Microsoft::UI::Xaml::ElementTheme const& theme);
+        void navigationView_Loaded(Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void navigationView_ItemInvoked(Microsoft::UI::Xaml::Controls::NavigationView const& sender, winrt::Microsoft::UI::Xaml::Controls::NavigationViewItemInvokedEventArgs const& args);
+        void infoBar_Closed(Microsoft::UI::Xaml::Controls::InfoBar const& sender, Microsoft::UI::Xaml::Controls::InfoBarClosedEventArgs const& args);
 
     private:
-        void initWindow();
-        void saveWindowState();
-        void updateInforBar(winrt::hstring const& message, Microsoft::UI::Xaml::Controls::InfoBarSeverity const& severity);
-        bool loadPage(winrt::hstring page);
+        void InitWindow();
+        void SaveWindowState();
+        void UpdateInforBar(hstring const& message, Microsoft::UI::Xaml::Controls::InfoBarSeverity const& severity);
+        bool LoadPage(winrt::hstring page);
         void appWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const& args);
         void appWindow_Changed(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args);
 #if USING_TIMER

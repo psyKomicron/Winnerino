@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="contentGrid">
+    <Grid x:Name="contentGrid" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" MinHeight="32"/>
             <RowDefinition/>
@@ -102,5 +102,16 @@
                 <Frame x:Name="contentFrame"></Frame>
             </NavigationView>
         </Grid>
+
+        <TextBlock
+            Text="Developper build" 
+            Opacity="0.2" 
+            FontStretch="Expanded" 
+            FontWeight="Light" 
+            FontSize="12" 
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,5,5"
+            Grid.Row="1"/>
     </Grid>
 </Window>
