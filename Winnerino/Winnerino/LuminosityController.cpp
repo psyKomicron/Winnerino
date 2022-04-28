@@ -3,10 +3,10 @@
 #include "winuser.h"
 #include "highlevelmonitorconfigurationapi.h"
 
-using namespace std;
-
 #define IOCTL_VIDEO_QUERY_SUPPORTED_BRIGHTNESS \
   CTL_CODE(FILE_DEVICE_VIDEO, 0x125, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+using namespace std;
 
 namespace winrt::Winnerino::Controllers
 {
@@ -49,7 +49,7 @@ namespace winrt::Winnerino::Controllers
 			vector<HMONITOR> monitors = vector<HMONITOR>();
 			EnumDisplayMonitors(NULL, NULL, callback, (LPARAM)&monitors);
 
-			for (HMONITOR monitorHandle : monitors)
+			for (HMONITOR const& monitorHandle : monitors)
 			{
 				LPPHYSICAL_MONITOR monitorArray = NULL;
 				DWORD monitorArraySize = NULL;
@@ -59,15 +59,14 @@ namespace winrt::Winnerino::Controllers
 					// throw init error
 					return;
 				}
-				monitorArray = (LPPHYSICAL_MONITOR)malloc(monitorArraySize * sizeof(PHYSICAL_MONITOR));
-				if (monitorArray == NULL)
-				{
-					return; // throw init error
-				}
+
+				//monitorArray = (LPPHYSICAL_MONITOR)malloc(monitorArraySize * sizeof(PHYSICAL_MONITOR));
+				monitorArray = new PHYSICAL_MONITOR[monitorArraySize];
+				
 				if (!GetPhysicalMonitorsFromHMONITOR(monitorHandle, monitorArraySize, monitorArray))
 				{
 					OutputDebugString(L"ERROR: GetPhysicalMonitorsFromHMONITOR failed.");
-					free(monitorArray);
+					delete[] monitorArray;
 					return; // throw init error
 				}
 
@@ -76,10 +75,6 @@ namespace winrt::Winnerino::Controllers
 				if (!GetMonitorCapabilities(monitorArray->hPhysicalMonitor, &monitorCapabilities, &supportedColors))
 				{
 					destroyPhysicalMonitor(monitorArraySize, monitorArray);
-
-					// function failed
-					OutputDebugString(L"ERROR: GetMonitorCapabilities failed.");
-
 					// throw init error
 					throw HRESULT_FROM_WIN32(GetLastError());
 				}
@@ -91,25 +86,11 @@ namespace winrt::Winnerino::Controllers
 					if (!GetMonitorBrightness(monitorArray->hPhysicalMonitor, &minBrightness, &currentBrightness, &maxBrightness))
 					{
 						destroyPhysicalMonitor(monitorArraySize, monitorArray);
-
-						OutputDebugString(L"GetMonitorBrightness failed.");
 						throw HRESULT_FROM_WIN32(GetLastError());
 					}
-
-					OutputDebugString(monitorArray->szPhysicalMonitorDescription);
 				}
 
-#ifdef _DEBUG
 				destroyPhysicalMonitor(monitorArraySize, monitorArray);
-#else
-				else
-				{
-					// clean up
-					destroyPhysicalMonitor(monitorArraySize, monitorArray);
-					OutputDebugString(L"Cannot create LuminosityController, no monitors supports brightness level control.");
-				}
-#endif // DEBUG
-
 			}
 		}
 	}
@@ -127,7 +108,7 @@ namespace winrt::Winnerino::Controllers
 			devNum++;
 		}
 
-		for (auto& displayDevice : displayDevices)
+		for (auto const& displayDevice : displayDevices)
 		{
 			HANDLE monitorHandle = CreateFile(displayDevice.DeviceName, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (monitorHandle != INVALID_HANDLE_VALUE)
@@ -152,7 +133,7 @@ namespace winrt::Winnerino::Controllers
 			else
 			{
 				OutputDebugString(L"Could not open display device. ");
-				auto message = system_category().message(GetLastError());
+				auto message = std::system_category().message(GetLastError());
 				OutputDebugString(to_hstring(message).c_str());
 				OutputDebugString(L"\n");
 				//throw HRESULT_FROM_WIN32(GetLastError());
@@ -163,6 +144,7 @@ namespace winrt::Winnerino::Controllers
 	void LuminosityController::destroyPhysicalMonitor(DWORD size, LPPHYSICAL_MONITOR monitors)
 	{
 		DestroyPhysicalMonitors(size, monitors);
-		free(monitors);
+		//free(monitors);
+		delete[] monitors;
 	}
 }

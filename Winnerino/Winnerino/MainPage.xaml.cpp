@@ -17,7 +17,7 @@ namespace winrt::Winnerino::implementation
     {
         InitializeComponent();
         PackageVersion version = Package::Current().Id().Version();
-        versionTextBlock().Text(to_hstring(version.Major) + L"." + to_hstring(version.Minor) + L"." + to_hstring(version.Build) + L"." + to_hstring(version.Revision));
+        versionTextBlock().Text(to_hstring(version.Major) + L"." + to_hstring(version.Minor) + L"." + to_hstring(version.Build));
 #if defined _DEBUG
         buildTypeTextBlock().Text(L"Debug");
 #else

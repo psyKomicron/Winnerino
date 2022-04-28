@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="contentGrid">
+    <Grid x:Name="contentGrid" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" MinHeight="32"/>
             <RowDefinition/>
@@ -48,13 +48,13 @@
             <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
 
             <NavigationView
-            x:Name="navigationView"
-            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-            IsPaneOpen="False"
-            Grid.Row="1"
-            Loaded="navigationView_Loaded"
-            ItemInvoked="navigationView_ItemInvoked">
-
+                x:Name="navigationView"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+                IsPaneOpen="False"
+                PaneDisplayMode="LeftCompact"
+                Grid.Row="1"
+                Loaded="navigationView_Loaded"
+                ItemInvoked="navigationView_ItemInvoked">
                 <NavigationView.MenuItems>
                     <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
 
@@ -91,10 +91,27 @@
                             <FontIcon Glyph="&#xEC50;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
+                    <NavigationViewItem Tag="Drives" Content="Drives explorer">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xeda2;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+
                 </NavigationView.MenuItems>
 
                 <Frame x:Name="contentFrame"></Frame>
             </NavigationView>
         </Grid>
+
+        <TextBlock
+            Text="Developper build" 
+            Opacity="0.2" 
+            FontStretch="Expanded" 
+            FontWeight="Light" 
+            FontSize="12" 
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,5,5"
+            Grid.Row="1"/>
     </Grid>
 </Window>

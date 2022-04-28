@@ -57,11 +57,11 @@ namespace winrt::Winnerino::implementation
         DWORD retCode = PowerSetActiveScheme(NULL, &guid);
         if (retCode == ERROR_SUCCESS) 
         {
-            MainWindow::Current().notifyUser(L"Power plan changed to " + planName, Controls::InfoBarSeverity::Success);
+            MainWindow::Current().NotifyUser(L"Power plan changed to " + planName, Controls::InfoBarSeverity::Success);
         }
         else
         {
-            MainWindow::Current().notifyError(retCode);
+            MainWindow::Current().NotifyError(retCode);
         }
     }
 

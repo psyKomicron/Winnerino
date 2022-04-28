@@ -3,8 +3,6 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-#include "winrt/Microsoft.UI.Dispatching.h"
-
 
 using namespace winrt;
 
@@ -17,6 +15,7 @@ using namespace Windows::Graphics;
 using namespace Windows::Storage;
 using namespace Windows::System;
 using namespace Windows::Foundation::Collections;
+using namespace Windows::Foundation;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -26,33 +25,63 @@ namespace winrt::Winnerino::implementation
 {
     Winnerino::MainWindow MainWindow::singleton{ nullptr };
 
-#pragma region public
     MainWindow::MainWindow()
     {
         InitializeComponent();
-        Title(L"Multitool");
+#if USING_TIMER
+        dispatcherQueueTimer = DispatcherQueue().CreateTimer();
+        dispatcherQueueTimer.Interval(TimeSpan{ 2s });
+        dispatcherQueueTimer.IsRepeating(true);
+        dispatcherQueueTimer.Tick({ this, &MainWindow::dispatcherQueueTimer_Tick });
+#endif // USING_TIMER
+
         singleton = *this;
-        initWindow();
+        InitWindow();
     }
 
-    void MainWindow::notifyUser(hstring const& message, InfoBarSeverity const& severity)
+    void MainWindow::NotifyUser(hstring const& message, InfoBarSeverity const& severity)
     {
-        if (singleton.DispatcherQueue().HasThreadAccess())
+        if (!busy)
         {
-            updateInforBar(message, severity);
+            UpdateInforBar(message, severity);
+            busy = true;
         }
         else
         {
-            DispatcherQueue().TryEnqueue([this, message, severity]()
-                {
-                    updateInforBar(message, severity);
-                });
+            messagesStack.push(MessageData(message, severity));
+#if USING_TIMER
+            if (!dispatcherQueueTimer.IsRunning())
+            {
+                dispatcherQueueTimer.Start();
+            }
+#endif // USING_TIMER
+
         }
     }
 
-    void MainWindow::notifyError(DWORD code)
+    void MainWindow::NotifyError(DWORD const& code)
     {
-        notifyUser(to_hstring(std::system_category().message(code)), InfoBarSeverity::Error);
+        hstring message = to_hstring(std::system_category().message(code));
+#ifdef _DEBUG
+        OutputDebugString((message + L"\n").c_str());
+#endif // _DEBUG
+
+        NotifyUser(message, InfoBarSeverity::Error);
+    }
+
+    void MainWindow::NotifyError(DWORD const& code, hstring const& additionalMessage)
+    {
+        hstring message = additionalMessage + L": " + to_hstring(std::system_category().message(code));
+#ifdef _DEBUG
+        OutputDebugString((message + L"\n").c_str());
+#endif // _DEBUG
+
+        NotifyUser(message, InfoBarSeverity::Error);
+    }
+
+    void MainWindow::ChangeTheme(Microsoft::UI::Xaml::ElementTheme const& theme)
+    {
+        contentGrid().RequestedTheme(theme);
     }
 
 #pragma region handlers
@@ -61,12 +90,12 @@ namespace winrt::Winnerino::implementation
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
 
         IInspectable inspectable = settings.TryLookup(L"LoadLastPage");
-        if (unbox_value_or<bool>(inspectable, false))
+        if (unbox_value_or<bool>(inspectable, true))
         {
             //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
-            if (!loadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
+            if (!LoadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
             {
-                notifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
+                NotifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
             }
         }
         else
@@ -80,13 +109,13 @@ namespace winrt::Winnerino::implementation
         if (args.InvokedItemContainer())
         {
             hstring tag = args.InvokedItemContainer().Tag().as<hstring>();
-            loadPage(tag);
+            LoadPage(tag);
         }
     }
 
     void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
     {
-        saveWindowState();
+        SaveWindowState();
     }
 
     void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const&)
@@ -100,16 +129,50 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
     {
+#if USING_TIMER
         infoBar().Severity(InfoBarSeverity::Informational);
         infoBar().Message(L"");
         infoBar().Title(L"");
+#else
+        if (!messagesStack.empty())
+        {
+            MessageData message = messagesStack.front();
+            messagesStack.pop();
+
+            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
+        }
+        else
+        {
+            busy = false;
+            infoBar().Severity(InfoBarSeverity::Informational);
+            infoBar().Message(L"");
+            infoBar().Title(L"");
+    }
+#endif // USING_TIMER
     }
 #pragma endregion
 
-#pragma endregion
 
-#pragma region private
-    void MainWindow::updateInforBar(hstring const& message, InfoBarSeverity const& severity)
+#if USING_TIMER
+    void MainWindow::dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const&, Windows::Foundation::IInspectable const&)
+    {
+        if (!messagesStack.empty())
+        {
+            MessageData message = messagesStack.front();
+            messagesStack.pop();
+
+            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
+        }
+        else
+        {
+            busy = false;
+            dispatcherQueueTimer.Stop();
+        }
+    }
+#endif // USING_TIMER
+
+
+    void MainWindow::UpdateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
         infoBar().Severity(severity);
         infoBar().Message(message);
@@ -132,7 +195,7 @@ namespace winrt::Winnerino::implementation
         infoBar().IsOpen(true);
     }
 
-    void MainWindow::initWindow()
+    void MainWindow::InitWindow()
     {
 #pragma region settings
         int width = 800;
@@ -173,6 +236,8 @@ namespace winrt::Winnerino::implementation
         }
 #pragma endregion
 
+        //Title(L"Multitool");
+
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         winrt::check_bool(nativeWindow);
         HWND handle{ nullptr };
@@ -185,6 +250,8 @@ namespace winrt::Winnerino::implementation
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
+        appWindow.Title(L"Multitool");
+        appWindow.SetIcon(L"Images/multitool.ico");
         if (appWindow != nullptr)
         {
             RectInt32 rect{};
@@ -225,12 +292,11 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void MainWindow::saveWindowState()
+    void MainWindow::SaveWindowState()
     {
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
         if (!isWindowFullscreen && appWindow != nullptr)
         {
-
             ApplicationDataCompositeValue setting = nullptr;
             if (settings.HasKey(L"WindowSize"))
             {
@@ -261,7 +327,7 @@ namespace winrt::Winnerino::implementation
         settings.Insert(L"LastPage", box_value(lastPage));
     }
 
-    bool MainWindow::loadPage(hstring page)
+    bool MainWindow::LoadPage(hstring page)
     {
         bool recognized = false; // remove when application is built enough
         if (page == L"Settings")
@@ -281,8 +347,7 @@ namespace winrt::Winnerino::implementation
         }
         else if (page == L"Chat")
         {
-            notifyUser(L"Uh oh, this one is not done yet... Try again after an update !", InfoBarSeverity::Error);
-            recognized = true;
+            NotifyUser(L"Uh oh, this one is not done yet... Try again after an update !", InfoBarSeverity::Error);
         }
         else if (page == L"Widgets")
         {
@@ -299,6 +364,11 @@ namespace winrt::Winnerino::implementation
             contentFrame().Navigate(xaml_typename<Winnerino::ExplorerPage>());
             recognized = true;
         }
+        else if (page == L"Drives")
+        {
+            contentFrame().Navigate(xaml_typename<Winnerino::DrivesPage>());
+            recognized = true;
+        }
 
         if (recognized)
         {
@@ -307,12 +377,8 @@ namespace winrt::Winnerino::implementation
             {
                 loadedPageText().Text(page);
             }
-            else
-            {
-                Title(page);
-            }
+            Title(page);
         }
         return recognized;
     }
-#pragma endregion
 }

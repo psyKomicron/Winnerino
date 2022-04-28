@@ -1,0 +1,67 @@
+﻿<UserControl
+    x:Class="Winnerino.FileTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid VerticalAlignment="Stretch" RowSpacing="10" ColumnSpacing="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <AppBarButton Icon="Back" Width="50" Height="50" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Click="backAppBarButton_Click"/>
+        <AppBarButton Icon="Forward" Width="50" Height="50" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Click="forwardAppBarButton_Click"/>
+
+        <AutoSuggestBox 
+            x:Name="pathInputBox"
+            PlaceholderText="Path"
+            MinHeight="35"
+            MaxHeight="35"
+            UpdateTextOnSelect="False"
+            VerticalAlignment="Center"
+            MaxSuggestionListHeight="200"
+            Grid.Row="0"
+            Grid.Column="2"
+            SuggestionChosen="pathInputBox_SuggestionChosen"
+            GotFocus="pathInputBox_GotFocus"
+            TextChanged="pathInputBox_TextChanged"
+            QuerySubmitted="pathInputBox_QuerySubmitted"/>
+
+        <AppBarButton Icon="Sync" Width="50" Height="50" VerticalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="3" Grid.Row="0"/>
+
+        <ListView 
+            x:Name="listView" 
+            CornerRadius="5,0,0,0" 
+            IsItemClickEnabled="True" 
+            IsDoubleTapEnabled="True"
+            SelectionMode="Extended"
+            DoubleTapped="listView_DoubleTapped"
+            Grid.Row="1" 
+            Grid.ColumnSpan="4">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
+            </ListView.Resources>
+        </ListView>
+        <ProgressRing
+            x:Name="progressRing" 
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Height="50"
+            Width="50"
+            Visibility="Collapsed"
+            IsIndeterminate="True"
+            IsHitTestVisible="False"
+            Grid.Row="1"
+            Grid.ColumnSpan="4"/>
+    </Grid>
+</UserControl>

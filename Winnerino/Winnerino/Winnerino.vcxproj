@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.props')" />
-  <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.props')" />
-  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props')" />
+  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props')" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
@@ -21,9 +21,10 @@
     <AppxPackage>false</AppxPackage>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
     <UseWinUI>true</UseWinUI>
+    <CppWinRTProjectLanguage>C++/WinRT</CppWinRTProjectLanguage>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -77,6 +78,9 @@
     <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -95,6 +99,9 @@
     <Link>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableUAC Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableUAC>
+      <UACExecutionLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">RequireAdministrator</UACExecutionLevel>
+      <UACUIAccess Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</UACUIAccess>
     </Link>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,6 +111,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -114,12 +122,37 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChatView.xaml.h">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="DirectorySizeCalculator.h" />
+    <ClInclude Include="DriveSearchModel.h">
+      <DependentUpon>DriveSearchModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="DrivesPage.xaml.h">
+      <DependentUpon>DrivesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="DriveView.xaml.h">
+      <DependentUpon>DriveView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="ExplorerPage.xaml.h">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="FileEntryView.xaml.h">
       <DependentUpon>FileEntryView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="FileTabView.xaml.h">
+      <DependentUpon>FileTabView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="LibraryTabView.xaml.h">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="LuminosityController.h" />
@@ -131,6 +164,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="MessageData.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -155,12 +189,12 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="TestViewModel.h">
-      <DependentUpon>TestViewModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="TwitchPage2.xaml.h">
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="WebTab.xaml.h">
+      <DependentUpon>WebTab.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="WidgetsPage.xaml.h">
@@ -170,10 +204,25 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="ChatView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DrivesPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DriveView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ExplorerPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="FileEntryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FileTabView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LibraryTabView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="LuminosityControllerView.xaml">
@@ -198,17 +247,45 @@
     <Page Include="TwitchPage2.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="WebTab.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WidgetsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChatView.xaml.cpp">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="DirectorySizeCalculator.cpp" />
+    <ClCompile Include="DriveSearchModel.cpp">
+      <DependentUpon>DriveSearchModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="DrivesPage.xaml.cpp">
+      <DependentUpon>DrivesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="DriveView.xaml.cpp">
+      <DependentUpon>DriveView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="ExplorerPage.xaml.cpp">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="FileEntryView.xaml.cpp">
       <DependentUpon>FileEntryView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="FileTabView.xaml.cpp">
+      <DependentUpon>FileTabView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="LibraryTabView.xaml.cpp">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="LuminosityController.cpp" />
@@ -220,6 +297,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="MessageData.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -247,12 +325,12 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="TestViewModel.cpp">
-      <DependentUpon>TestViewModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="TwitchPage2.xaml.cpp">
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="WebTab.xaml.cpp">
+      <DependentUpon>WebTab.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="WidgetsPage.xaml.cpp">
@@ -265,12 +343,35 @@
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
+    <Midl Include="ChatView.idl">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="DriveSearchModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="DrivesPage.idl">
+      <DependentUpon>DrivesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="DriveView.idl">
+      <DependentUpon>DriveView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="ExplorerPage.idl">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="FileEntryView.idl">
       <DependentUpon>FileEntryView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="FileTabView.idl">
+      <DependentUpon>FileTabView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="LibraryTabView.idl">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="LuminosityControllerView.idl">
@@ -301,11 +402,12 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="TestViewModel.idl">
-      <SubType>Designer</SubType>
-    </Midl>
     <Midl Include="TwitchPage2.idl">
       <DependentUpon>TwitchPage2.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="WebTab.idl">
+      <DependentUpon>WebTab.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="WidgetsPage.idl">
@@ -314,6 +416,7 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
     <Text Include="readme.txt">
@@ -325,21 +428,21 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" />
-    <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220331.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22581-preview\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.0.1\build\native\Microsoft.WindowsAppSDK.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets'))" />
   </Target>
 </Project>

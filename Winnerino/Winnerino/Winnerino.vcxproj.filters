@@ -35,11 +35,29 @@
     <Page Include="FileEntryView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FileTabView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="LibraryTabView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="DrivesPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="DriveView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="WebTab.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="ChatView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
-    <Midl Include="TestViewModel.idl">
+    <Midl Include="DriveSearchModel.idl">
       <Filter>Common</Filter>
     </Midl>
   </ItemGroup>
@@ -52,6 +70,12 @@
     <ClCompile Include="PowerController.cpp">
       <Filter>Common\Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="MessageData.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectorySizeCalculator.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -60,6 +84,12 @@
     </ClInclude>
     <ClInclude Include="PowerController.h">
       <Filter>Common\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageData.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectorySizeCalculator.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +112,7 @@
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

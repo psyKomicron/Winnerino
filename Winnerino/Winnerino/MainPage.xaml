@@ -10,11 +10,12 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
             <VariableSizedWrapGrid ItemWidth="250" ItemHeight="180" Orientation="Horizontal" Margin="20,30,10,10">
-                <Button Style="{StaticResource HomeButtonStyle}">
+                <Button Style="{StaticResource HomeButtonStyle}" ToolTipService.ToolTip="See full change log">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -48,36 +49,59 @@
                 </Button>
             </VariableSizedWrapGrid>
 
-            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="0,0,0,40">
+            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="10,50,0,20" ScrollViewer.CanContentRenderOutsideBounds="False">
                 <ListView.Header>
                     <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
                 </ListView.Header>
 
-                <ListViewHeaderItem Content="General"/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Added update notes !"/>
-                        <TextBlock Text="Added custom title bar, if the system supports it."/>
-                        <TextBlock Text="Added option (in settings) to load the last used page."/>
-                        <TextBlock Text="App title now changes with the currently loaded page."/>
-                    </StackPanel>
-                </ListViewItem>
+                <ListViewHeaderItem/>
+                <TextBlock Margin="0,0,0,20" Text="General" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Notifications displayed in the window are now queued, so that they don't overlap themselves."/>
+                <TextBlock Text="- A new page is available ! The drive page allows you to see info about your drives."/>
+                <TextBlock Text="- App title now changes with the currently loaded page."/>
+                <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
+                <TextBlock Text="- Added custom title bar, if the system supports it."/>
+                <TextBlock Text="- Added update notes !"/>
 
-                <ListViewHeaderItem Content="Explorer"/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Updated path completion to include drives."/>
-                        <TextBlock Text="Fixed completion from selecting items in the drop down."/>
-                    </StackPanel>
-                </ListViewItem>
 
                 <ListViewHeaderItem/>
-                <ListViewItem Margin="0,0,0,25">
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                        <TextBlock Text="Power plans" Style="{ThemeResource TitleTextBlockStyle}" FontSize="22"/>
-                        <TextBlock Text="Power plan can be changed."/>
-                    </StackPanel>
-                </ListViewItem>
+                <TextBlock Margin="0,0,0,20" Text="Explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Updated path completion to include drives."/>
+                <TextBlock Text="- Fixed completion from selecting items in the drop down (not for drives using arrow keys)."/>
+                <TextBlock Text="- Added directory size display (and directory size calculation progress)."/>
+                <TextBlock Text="- Added tab support (saved from session to session)."/>
+                <TextBlock Text="- Added possibility to pin directories."/>
+                <TextBlock Text="- Added back and forth navigation."/>
+                
+
+                <ListViewHeaderItem/>
+                <TextBlock Margin="0,0,0,20" Text="Twitch chat" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Fixed tab view."/>
+                <TextBlock Text="- Added tab persistency between sessions."/>
+
+
+                <ListViewHeaderItem/>
+                <TextBlock Margin="0,0,0,20" Text="Drives explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Smart health: temperature, power on hours."/>
+                <TextBlock Text="- Drive size, name, free space, type, filesystem type (NTFS, FAT...), serial number."/>
+                <TextBlock Text="For NVMe drives." Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBlock Text="- Controller informations: PCI vendor ID, PCI subsystem vendor ID, serial number, model number/name, firmware revision, RAB, resume and entry latency."/>
+
+
+                <ListViewHeaderItem/>
+                <TextBlock Margin="0,0,0,20" Text="Power plans" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                <TextBlock Text="- Power plans can be changed."/>
+            </ListView>
+
+            <ListView SelectionMode="None" Grid.Row="2" Margin="10,50,0,20" ScrollViewer.CanContentRenderOutsideBounds="True">
+                <ListView.Header>
+                    <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Known issues" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </ListView.Header>
+
+                <ListViewHeaderItem/>
+                <TextBlock Text="- Application may crash on window close when using Twich page (some settings of this page may be lost when this happens)."/>
+                <TextBlock Text="- Scrolling through a long list may cause the application to crash."/>
+                <TextBlock Text="- Application becomes unresponsive when loading directory with a lot of files (Explorer page)."/>
             </ListView>
         </Grid>
     </ScrollViewer>

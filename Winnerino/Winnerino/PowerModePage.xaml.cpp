@@ -55,7 +55,8 @@ namespace winrt::Winnerino::implementation
                 DWORD friendlyNameBufferSize{};
                 if (PowerReadFriendlyName(NULL, &guid, NULL, NULL, NULL, &friendlyNameBufferSize) == ERROR_SUCCESS)
                 {
-                    PUCHAR nameBuffer = (PUCHAR)malloc(sizeof(UCHAR) * friendlyNameBufferSize);
+                    //PUCHAR nameBuffer = (PUCHAR)malloc(sizeof(UCHAR) * friendlyNameBufferSize);
+                    PUCHAR nameBuffer = new UCHAR[friendlyNameBufferSize];
                     if (PowerReadFriendlyName(NULL, &guid, NULL, NULL, nameBuffer, &friendlyNameBufferSize) == ERROR_SUCCESS)
                     {
                         hstring powerPlanName = to_hstring((wchar_t*)nameBuffer);
@@ -77,14 +78,14 @@ namespace winrt::Winnerino::implementation
                     }
 
                     // always free after malloc
-                    free(nameBuffer);
+                    delete[] nameBuffer;
                     index++;
                 }
                 else
                 {
                     OutputDebugString(L"Failed to enumerate power plans.");
                     std::string message = system_category().message(GetLastError());
-                    MainWindow::Current().notifyUser(to_hstring(message), InfoBarSeverity::Error);
+                    MainWindow::Current().NotifyUser(to_hstring(message), InfoBarSeverity::Error);
                 }
             }
         }
@@ -97,11 +98,11 @@ namespace winrt::Winnerino::implementation
         {
             if (viewModels[i].PowerPlanName() == tag)
             {
-                MainWindow::Current().notifyUser(L"You choose to edit " + tag + L".", Controls::InfoBarSeverity::Success);
+                MainWindow::Current().NotifyUser(L"You choose to edit " + tag + L".", Controls::InfoBarSeverity::Success);
                 return;
             }
         }
-        MainWindow::Current().notifyUser(L"Could not edit " + tag + L" power plan .", Controls::InfoBarSeverity::Warning);
+        MainWindow::Current().NotifyUser(L"Could not edit " + tag + L" power plan .", Controls::InfoBarSeverity::Warning);
     }
 
     void PowerModePage::refreshMenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)

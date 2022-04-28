@@ -36,9 +36,9 @@ namespace winrt::Winnerino::implementation
             int64_t errCode = HRESULT_CODE(result);
             int64_t facilityCode = HRESULT_CODE(result);*/
 
-            //MainWindow::Current().notifyUser(L"Luminosity cannot be changed on this computer: " + winrt::to_hstring(severity) + L"_" + winrt::to_hstring(errCode) + L"_" + winrt::to_hstring(facilityCode), InfoBarSeverity::Error);
+            //MainWindow::Current().NotifyUser(L"Luminosity cannot be changed on this computer: " + winrt::to_hstring(severity) + L"_" + winrt::to_hstring(errCode) + L"_" + winrt::to_hstring(facilityCode), InfoBarSeverity::Error);
             auto message = system_category().message(result);
-            MainWindow::Current().notifyUser(to_hstring(message), InfoBarSeverity::Error);
+            MainWindow::Current().NotifyUser(to_hstring(message), InfoBarSeverity::Error);
         }
     }
 

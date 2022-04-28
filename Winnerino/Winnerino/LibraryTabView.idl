@@ -1,0 +1,9 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass LibraryTabView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        LibraryTabView();
+        Int32 MyProperty;
+    }
+}

@@ -1,0 +1,8 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass ChatView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        ChatView();
+    }
+}

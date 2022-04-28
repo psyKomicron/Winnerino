@@ -6,8 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:text="using:Windows.UI.Text"
-    mc:Ignorable="d"
-    Background="{ThemeResource PageBackgroundBrush}">
+    mc:Ignorable="d">
     <Page.Resources>
         <x:Double x:Key="SettingTitleFontSize">25</x:Double>
         <text:FontWeight x:Key="SettingTitleFontWeight">SemiBold</text:FontWeight>
@@ -15,12 +14,11 @@
 
     <Grid ColumnSpacing="5" RowSpacing="10" Margin="10,10,10,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition />
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <ListView
@@ -32,7 +30,7 @@
             Grid.ColumnSpan="2">
 
             <!--#region General settings -->
-            <ListViewHeaderItem x:Name="generalHeader">
+            <ListViewHeaderItem x:Name="GeneralHeader">
                 <TextBlock 
                     Text="General" 
                     FontSize="{StaticResource SettingTitleFontSize}"
@@ -44,20 +42,22 @@
                         Header="Auto-load setting page"
                         IsOn="False"
                         ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-
+                    <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
                     <ToggleSwitch Header="Compact mode" ToolTipService.ToolTip="{x:Bind getCompactModeTooltip()}" Toggled="compactOverlayToggleSwitch_Toggled"/>
 
                     <Button
                         Click="openSettingsFile_Click">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xE8A7;"/>
-                            <TextBlock Text="Open setting file (default editor)"/>
+                            <TextBlock Text="Export settings"/>
                         </StackPanel>
                     </Button>
-
-                    <Button
-                        Content="Reset settings"
-                        Click="resetSettingsFile_Click"/>
+                    <Button Click="resetSettingsFile_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xe845;"/>
+                            <TextBlock Text="Reset settings"/>
+                        </StackPanel>
+                    </Button>
 
                     <StackPanel Spacing="15">
                         <TextBlock Text="Select application theme"/>
@@ -71,6 +71,36 @@
             </ListViewItem>
             <!--#endregion-->
 
+            <ListViewHeaderItem x:Name="TwitchHeader">
+                <TextBlock Text="Twitch" FontSize="{StaticResource SettingTitleFontSize}" FontWeight="{StaticResource SettingTitleFontWeight}"/>
+            </ListViewHeaderItem>
+            <ListViewItem Margin="0,0,0,30">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                    <ToggleSwitch x:Name="UseSpecificLayoutToggleSwitch" Header="Use special layout" Toggled="UseSpecificLayoutToggleSwitch_Toggled"/>
+                    <ToggleSwitch x:Name="UseAnimatedEmotesToggleSwitch" Header="Use animated emotes" Toggled="UseAnimatedEmotesToggleSwitch_Toggled"/>
+
+                    <PasswordBox Header="Twitch 2OAuth" HorizontalAlignment="Left" MinWidth="250" MaxWidth="400"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                        <TextBox x:Name="ChatMentionTextBlock" PlaceholderText="Chat mentions" VerticalAlignment="Center" MinWidth="250" MaxWidth="400"/>
+                        <ToggleButton Content="Use regex" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Slider x:Name="EmoteSizeSlider" Header="Emote size (pixels)" HorizontalAlignment="Left" MinWidth="250" Width="300" MaxWidth="500"/>
+                    <Slider x:Name="ChatLengthSlider" Header="Chat length (messages)" HorizontalAlignment="Left" MinWidth="250" Width="300" MaxWidth="500" Maximum="5000"/>
+                </StackPanel>
+            </ListViewItem>
+
+            <ListViewHeaderItem x:Name="ExplorerHeader">
+                <TextBlock Text="Explorer" FontSize="{StaticResource SettingTitleFontSize}" FontWeight="{StaticResource SettingTitleFontWeight}"/>
+            </ListViewHeaderItem>
+            <ListViewItem Margin="0,0,0,30">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+                    <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
+                    <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                </StackPanel>
+            </ListViewItem>
+
             <!--#region Miscallenous -->
             <ListViewHeaderItem x:Name="miscellaneousHeader">
                 <TextBlock
@@ -78,10 +108,8 @@
                     FontSize="{StaticResource SettingTitleFontSize}" 
                     FontWeight="{StaticResource SettingTitleFontWeight}"/>
             </ListViewHeaderItem>
-            <ListViewItem  Margin="0,0,0,30">
+            <ListViewItem Margin="0,0,0,0">
                 <StackPanel Orientation="Vertical" Spacing="{StaticResource StackPanelButtonSpacing}">
-                    <ToggleSwitch Header="Load last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
-
                     <HyperlinkButton Content="Go to project repository (GitHub)" NavigateUri="{x:Bind GithubUri}"/>
                     <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
                     <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
@@ -100,25 +128,29 @@
             PlaceholderText="Search settings"
             QueryIcon="Zoom"
             VerticalAlignment="Center"
-            HorizontalAlignment="Stretch"
-            MaxWidth="500"
+            MaxWidth="400"
             Grid.Row="0"
             Grid.ColumnSpan="2"
             QuerySubmitted="settingSearch_QuerySubmitted"
             SuggestionChosen="settingSearch_SuggestionChosen"
             TextChanged="settingSearch_TextChanged"
             GotFocus="settingSearch_GotFocus"/>
-        <Button
-            x:Name="saveSettingsButton"
-            Grid.Row="0"
-            Grid.Column="1"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Click="saveSettingsButton_Click">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                <SymbolIcon Symbol="Save"/>
-                <TextBlock Text="Save"/>
-            </StackPanel>
-        </Button>
+
+        <!--#region ContentDialogue -->
+        <ContentDialog x:Name="contentDialog" Title="Export settings" PrimaryButtonText="Export" SecondaryButtonText="Cancel" DefaultButton="Primary">
+            <Grid RowSpacing="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Choose file format for settings export:" Grid.Row="0"/>
+                <ComboBox HorizontalAlignment="Stretch" SelectedIndex="1" Grid.Row="1">
+                    <ComboBoxItem Content="JSON" Tag="json" IsEnabled="False"/>
+                    <ComboBoxItem Content="XML" Tag="xml"/>
+                </ComboBox>
+            </Grid>
+        </ContentDialog>
+        <!--#endregion-->
     </Grid>
 </Page>
