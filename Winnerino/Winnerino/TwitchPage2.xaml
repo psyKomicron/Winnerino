@@ -15,36 +15,22 @@
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <CommandBar Grid.Row="0" Grid.ColumnSpan="2">
-            <AppBarButton Click="AppBarButton_Click">
-                <AppBarButton.Icon>
-                    <SymbolIcon Symbol="Clear"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton Click="AppBarButton_Click_1">
-                <AppBarButton.Icon>
-                    <SymbolIcon Symbol="Save"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-        </CommandBar>
-        
         <TabView 
             x:Name="webTabView" 
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             Grid.Column="0"
-            Grid.Row="1"
+            Grid.Row="0"
             AddTabButtonClick="webTabView_AddTabButtonClick"
             TabCloseRequested="TabView_TabCloseRequested"/>
         <TabView
             x:Name="chatTabView"
             Background="{StaticResource ApplicationPageBackgroundThemeBrush}"
             Grid.Column="1"
-            Grid.Row="1"
+            Grid.Row="0"
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             AddTabButtonClick="chatTabView_AddTabButtonClick"
