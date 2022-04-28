@@ -10,5 +10,6 @@ namespace Winnerino
         void NotifyUser(String message, Microsoft.UI.Xaml.Controls.InfoBarSeverity severity);
         void NotifyError(Int32 code);
         void NotifyError(Int32 code, String additionalMessage);
+        void ChangeTheme(Microsoft.UI.Xaml.ElementTheme theme);
     }
 }
