@@ -14,11 +14,6 @@ namespace winrt::Winnerino::implementation
         std::stack<winrt::hstring> backStack = std::stack<winrt::hstring>();
         std::stack<winrt::hstring> forwardStack = std::stack<winrt::hstring>();
 
-        void loadPath(winrt::hstring path);
-        void completePath(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::IInspectable> const& suggestions);
-        hstring getRealPath(winrt::hstring dirtyPath);
-        bool showSpecialFolders();
-
     public:
         FileTabView();
         FileTabView(winrt::hstring path);
@@ -30,6 +25,12 @@ namespace winrt::Winnerino::implementation
         winrt::Windows::Foundation::IAsyncAction listView_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
         void backAppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void forwardAppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+
+    private:
+        void loadPath(winrt::hstring path);
+        void completePath(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::IInspectable> const& suggestions);
+        hstring getRealPath(winrt::hstring dirtyPath);
+        bool showSpecialFolders();
     };
 }
 

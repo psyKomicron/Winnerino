@@ -2,9 +2,11 @@
 #include "FileTabView.xaml.h"
 #if __has_include("FileTabView.g.cpp")
 #include "FileTabView.g.cpp"
+#endif
 #include "shlwapi.h"
 #include "fileapi.h"
-#endif
+#include "DirectorySizeCalculator.h"
+
 using namespace winrt;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::Storage;
@@ -39,7 +41,7 @@ namespace winrt::Winnerino::implementation
         }
         else
         {
-            for (int i = s.size() - 1; i > 0; i--)
+            for (int16_t i = s.size() - 1; i > 0; i--)
             {
                 if (s[i] == '\\')
                 {
@@ -172,7 +174,9 @@ namespace winrt::Winnerino::implementation
                     hstring fileName = to_hstring(data.cFileName);
                     if ((fileName != L".." && fileName != L".") || showSpecialFolders())
                     {
-                        hstring filePath = path + fileName;
+                        WCHAR combinedPath[MAX_PATH]{ 0 };
+                        PathCombine(combinedPath, path.c_str(), fileName.c_str());
+                        hstring filePath = to_hstring(combinedPath);
 
                         int64_t size = static_cast<int64_t>(data.nFileSizeHigh) << 32;
                         size += data.nFileSizeLow;
@@ -243,30 +247,28 @@ namespace winrt::Winnerino::implementation
             DWORD stringLength = GetFinalPathNameByHandle(fileHandle, NULL, 0, VOLUME_NAME_DOS);
             if (stringLength > 0)
             {
-                fullPath = (LPWSTR)malloc(sizeof(WCHAR) * stringLength);
-                if (fullPath)
+                // malloc
+                fullPath = new WCHAR[stringLength];
+                stringLength = GetFinalPathNameByHandle(fileHandle, fullPath, stringLength, VOLUME_NAME_DOS);
+                if (stringLength > 0)
                 {
-                    stringLength = GetFinalPathNameByHandle(fileHandle, fullPath, stringLength, VOLUME_NAME_DOS);
-                    if (stringLength > 0)
+                    std::string s = to_string(fullPath).substr(4, s.size() - 4);
+                    if (!s.ends_with("\\"))
                     {
-                        std::string s = to_string(fullPath).substr(4, s.size() - 4);
-                        if (!s.ends_with("\\"))
-                        {
-                            s.append("\\");
-                        }
-                        // free resources before returning
-                        free(fullPath);
-                        CloseHandle(fileHandle);
-                        return to_hstring(s);
+                        s.append("\\");
                     }
-                    else
-                    {
-                        MainWindow::Current().NotifyUser(L"Failed to get full path.", InfoBarSeverity::Error);
-                    }
-
-                    // clean up
-                    free(fullPath);
+                    // free resources before returning
+                    delete[] fullPath;
+                    CloseHandle(fileHandle);
+                    return to_hstring(s);
                 }
+                else
+                {
+                    MainWindow::Current().NotifyUser(L"Failed to get full path.", InfoBarSeverity::Error);
+                }
+
+                // clean up
+                delete[] fullPath;
             }
             else
             {
