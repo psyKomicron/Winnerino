@@ -87,11 +87,6 @@ namespace winrt::Winnerino::implementation
 
     void DriveView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
-#if FALSE
-        MainWindow::Current().NotifyUser(to_hstring(sizeof(int64_t)), InfoBarSeverity::Warning);
-        UCHAR data[16]{ 164U, 29U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U };
-#endif
-
         double ratio = (static_cast<double>(_driveSize - _driveFreeBytes) / _driveSize);
         double width = (ActualWidth() - Padding().Right) * ratio;
 
@@ -357,8 +352,9 @@ namespace winrt::Winnerino::implementation
     {
         char* original = (char*)toConvert;
         size_t convertedChars = 0;
-        wchar_t* wideString = new wchar_t[length + 1];
-        mbstowcs_s(&convertedChars, wideString, length + 1, original, _TRUNCATE);
-        return to_hstring(wideString);
+        std::unique_ptr<wchar_t> wideString(new wchar_t[length + 1]);
+        mbstowcs_s(&convertedChars, wideString.get(), length + 1, original, _TRUNCATE);
+        hstring converted = to_hstring(wideString.get());
+        return converted;
     }
 }
