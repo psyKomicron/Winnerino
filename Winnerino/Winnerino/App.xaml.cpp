@@ -2,6 +2,7 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include "DirectorySizeCalculator.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -20,6 +21,7 @@ using namespace Winnerino::implementation;
 /// </summary>
 App::App()
 {
+    
     InitializeComponent();
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)

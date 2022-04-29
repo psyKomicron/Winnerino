@@ -65,7 +65,7 @@
                 <Setter Property="Width" Value="90"/>
             </Style>
             <Style x:Key="FileListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-                <Setter Property="Padding" Value="15,0,10,0"/>
+                <Setter Property="Padding" Value="10,0,5,0"/>
                 <Setter Property="Margin" Value="0"/>
             </Style>
             <!--#endregion-->
