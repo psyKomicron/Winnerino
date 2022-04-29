@@ -175,24 +175,40 @@ namespace winrt::Winnerino::implementation
     void SettingsPage::UseSpecificLayoutToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"TwitchSettings", ApplicationDataCreateDisposition::Always);
+        }
         container.Values().Insert(L"UseSpecificLayout", box_value(UseSpecificLayoutToggleSwitch().IsOn()));
     }
 
     void SettingsPage::UseAnimatedEmotesToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"TwitchSettings", ApplicationDataCreateDisposition::Always);
+        }
         container.Values().Insert(L"UseAnimatedEmotes", box_value(UseAnimatedEmotesToggleSwitch().IsOn()));
     }
 
     void SettingsPage::ShowSpecialsFolderToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
         container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsOn()));
     }
 
     void SettingsPage::CalculateDirectorySizeToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
         container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsOn()));
     }
 
@@ -223,22 +239,41 @@ namespace winrt::Winnerino::implementation
 
         // Twitch
         ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"TwitchSettings");
-        inspectable = specificSettings.Values().TryLookup(L"UseSpecificLayout");
-        UseSpecificLayoutToggleSwitch().IsOn(unbox_value_or(inspectable, false));
-        inspectable = specificSettings.Values().TryLookup(L"UseAnimatedEmotes");
-        UseAnimatedEmotesToggleSwitch().IsOn(unbox_value_or(inspectable, true));
-        inspectable = specificSettings.Values().TryLookup(L"ChatMention");
-        ChatMentionTextBlock().Text(unbox_value_or<hstring>(inspectable, L""));
-        inspectable = specificSettings.Values().TryLookup(L"EmoteSize");
-        EmoteSizeSlider().Value(unbox_value_or<uint8_t>(inspectable, 0));
-        inspectable = specificSettings.Values().TryLookup(L"ChatLength");
-        ChatLengthSlider().Value(unbox_value_or<uint16_t>(inspectable, 500));
+        if (specificSettings)
+        {
+            inspectable = specificSettings.Values().TryLookup(L"UseSpecificLayout");
+            UseSpecificLayoutToggleSwitch().IsOn(unbox_value_or(inspectable, false));
+            inspectable = specificSettings.Values().TryLookup(L"UseAnimatedEmotes");
+            UseAnimatedEmotesToggleSwitch().IsOn(unbox_value_or(inspectable, true));
+            inspectable = specificSettings.Values().TryLookup(L"ChatMention");
+            ChatMentionTextBlock().Text(unbox_value_or<hstring>(inspectable, L""));
+            inspectable = specificSettings.Values().TryLookup(L"EmoteSize");
+            EmoteSizeSlider().Value(unbox_value_or<uint8_t>(inspectable, 0));
+            inspectable = specificSettings.Values().TryLookup(L"ChatLength");
+            ChatLengthSlider().Value(unbox_value_or<uint16_t>(inspectable, 500));
+        }
+        else
+        {
+            UseSpecificLayoutToggleSwitch().IsOn(false);
+            UseAnimatedEmotesToggleSwitch().IsOn(true);
+            ChatMentionTextBlock().Text(L"");
+            EmoteSizeSlider().Value(0);
+            ChatLengthSlider().Value(500);
+        }
 
         // Explorer
         specificSettings = settings.Containers().TryLookup(L"Explorer");
-        inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
-        ShowSpecialsFolderToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, false));
-        inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
-        CalculateDirectorySizeToggleSwitch().IsOn(unbox_value_or(inspectable, true));
+        if (specificSettings)
+        {
+            inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
+            ShowSpecialsFolderToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, false));
+            inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
+            CalculateDirectorySizeToggleSwitch().IsOn(unbox_value_or(inspectable, true));
+        }
+        else
+        {
+            ShowSpecialsFolderToggleSwitch().IsOn(false);
+            CalculateDirectorySizeToggleSwitch().IsOn(true);
+        }
     }
 }
