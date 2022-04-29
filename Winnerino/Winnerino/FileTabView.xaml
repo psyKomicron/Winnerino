@@ -48,9 +48,14 @@
             DoubleTapped="listView_DoubleTapped"
             Grid.Row="1" 
             Grid.ColumnSpan="4">
-            <ListView.Resources>
+            <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
-            </ListView.Resources>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel GroupPadding="0"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
         </ListView>
         <ProgressRing
             x:Name="progressRing" 

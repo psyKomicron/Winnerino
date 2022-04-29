@@ -6,6 +6,7 @@
 #include "shlwapi.h"
 #include <math.h>
 #include "DirectorySizeCalculator.h"
+#include "FilePropertiesWindow.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -52,6 +53,9 @@ namespace winrt::Winnerino::implementation
                         {
                             FileSizeTextBlock().Text(to_hstring(displayFileSize));
                             FileSizeExtensionTextBlock().Text(fileSizeExtension);
+
+                            FileSizeProgressRing().IsIndeterminate(false);
+                            FileSizeProgressRing().Visibility(Visibility::Collapsed);
                         });
                     }
                     catch (const std::exception& error)
@@ -94,6 +98,9 @@ namespace winrt::Winnerino::implementation
                 }
                 delete[] string;
             }
+
+            FileSizeProgressRing().IsIndeterminate(false);
+            FileSizeProgressRing().Visibility(Visibility::Collapsed);
         }
 
         getAttributes(attributes);
@@ -116,7 +123,8 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::FileSizeFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        OutputDebugString((to_hstring(fileSize) + L"\n").c_str());
+        Window propertiesWindow = make<Winnerino::implementation::FilePropertiesWindow>();
+        propertiesWindow.Activate();
     }
 
     void FileEntryView::ProgressHandler(Windows::Foundation::IInspectable const&, IReference<uint_fast64_t> const& args)
@@ -133,7 +141,6 @@ namespace winrt::Winnerino::implementation
                 FileSizeTextBlock().Text(to_hstring(c_newSize));
             });
         }
-        
     }
 
     void FileEntryView::getAttributes(int64_t attributes)

@@ -70,7 +70,9 @@ namespace winrt::Winnerino::implementation
         /// </summary>
         /// <returns>True if the file is managed by the system</returns>
         bool IsSystem() { return isSystem; };
+
         void MenuFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void FileSizeFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
     private:
         void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
@@ -78,9 +80,6 @@ namespace winrt::Winnerino::implementation
         void getIcon(PCWSTR const& ext);
         inline hstring formatSize(double* size);
         inline void updateSize(uint_fast64_t const& size);
-        inline double formatSize(double const& size);
-    public:
-        void FileSizeFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 

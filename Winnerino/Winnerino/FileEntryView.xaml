@@ -5,41 +5,46 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Margin="0,0,10,0" FontWeight="SemiLight" x:DefaultBindMode="OneWay">
+    mc:Ignorable="d" FontWeight="SemiLight" x:DefaultBindMode="OneWay">
 
-    <Grid ColumnSpacing="10">
+    <Grid ColumnSpacing="10" Padding="3,0" Background="{x:Bind Background}">
         <Grid.ColumnDefinitions>
             <!-- icon -->
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="22"/>
             <!-- filename -->
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
             <!-- file type -->
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
             <!-- attributes -->
             <ColumnDefinition Width="Auto"/>
             <!-- size? -->
             <ColumnDefinition MinWidth="20" MaxWidth="66"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-        <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Left" Style="{StaticResource FileAttributeFontIconStyle}" Foreground="{ThemeResource SystemAccentColor}"/>
+        <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Center" Style="{StaticResource FileAttributeFontIconStyle}" Foreground="{ThemeResource SystemAccentColor}"/>
+        <ProgressRing x:Name="FileSizeProgressRing" Grid.Row="0" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
 
-        <TextBlock Text="{x:Bind FileName}" Grid.Column="1"/>
+        <TextBlock Text="{x:Bind FileName}" VerticalAlignment="Center" Grid.Column="1"/>
 
-        <TextBlock x:Name="FileTypeName" Text="File type" HorizontalAlignment="Right" Grid.Column="2"/>
+        <TextBlock x:Name="FileTypeName" Text="File type" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
 
         <StackPanel
             x:Name="attributesStackPanel" 
             Padding="0" 
             Margin="10,0,0,0" 
             Spacing="{StaticResource StackPanelButtonSpacing}" 
-            Orientation="Horizontal" 
+            Orientation="Horizontal"
+            VerticalAlignment="Center"
             Grid.Column="3">
             <StackPanel.Resources>
                 <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}"/>
             </StackPanel.Resources>
         </StackPanel>
 
-        <Grid Grid.Column="4">
+        <Grid Grid.Column="4" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -85,7 +90,7 @@
                         <FontIcon Glyph="&#xE816;"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="FileSizeFlyoutItem" Click="FileSizeFlyoutItem_Click"/>
+                <MenuFlyoutItem x:Name="FileSizeFlyoutItem" Text="Properties" Click="FileSizeFlyoutItem_Click"/>
             </MenuFlyout>
         </Grid.ContextFlyout>
     </Grid>
