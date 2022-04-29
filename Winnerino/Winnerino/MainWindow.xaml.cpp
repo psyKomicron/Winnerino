@@ -236,8 +236,6 @@ namespace winrt::Winnerino::implementation
         }
 #pragma endregion
 
-        //Title(L"Multitool");
-
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         winrt::check_bool(nativeWindow);
         HWND handle{ nullptr };
