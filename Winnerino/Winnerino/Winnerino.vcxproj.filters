@@ -53,6 +53,7 @@
     <Page Include="ChatView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FilePropertiesWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />

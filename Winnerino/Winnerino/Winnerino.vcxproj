@@ -147,6 +147,10 @@
       <DependentUpon>FileEntryView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="FilePropertiesWindow.xaml.h">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="FileTabView.xaml.h">
       <DependentUpon>FileTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -219,6 +223,9 @@
     <Page Include="FileEntryView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="FilePropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="FileTabView.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -278,6 +285,10 @@
     </ClCompile>
     <ClCompile Include="FileEntryView.xaml.cpp">
       <DependentUpon>FileEntryView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="FilePropertiesWindow.xaml.cpp">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="FileTabView.xaml.cpp">
@@ -364,6 +375,10 @@
     </Midl>
     <Midl Include="FileEntryView.idl">
       <DependentUpon>FileEntryView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="FilePropertiesWindow.idl">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="FileTabView.idl">
