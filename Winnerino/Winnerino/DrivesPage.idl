@@ -1,8 +1,0 @@
-namespace Winnerino
-{
-    [default_interface]
-    runtimeclass DrivesPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        DrivesPage();
-    }
-}
