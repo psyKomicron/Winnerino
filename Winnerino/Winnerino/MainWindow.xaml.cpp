@@ -93,7 +93,40 @@ namespace winrt::Winnerino::implementation
         if (unbox_value_or<bool>(inspectable, true))
         {
             //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
-            if (!LoadPage(unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home")))
+            hstring savedTag = unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home");
+            if (LoadPage(savedTag))
+            {
+                auto&& items = PageNavigationView().MenuItems();
+                for (auto&& item : items)
+                {
+                    NavigationViewItem navViewItem = item.try_as<NavigationViewItem>();
+                    if (navViewItem)
+                    {
+                        hstring tag = navViewItem.Tag().as<hstring>();
+                        if (tag == savedTag)
+                        {
+                            PageNavigationView().SelectedItem(item);
+                            break;
+                        }
+                    }
+                }
+
+                items = PageNavigationView().FooterMenuItems();
+                for (auto&& item : items)
+                {
+                    NavigationViewItem navViewItem = item.try_as<NavigationViewItem>();
+                    if (navViewItem)
+                    {
+                        hstring tag = navViewItem.Tag().as<hstring>();
+                        if (tag == savedTag)
+                        {
+                            PageNavigationView().SelectedItem(item);
+                            break;
+                        }
+                    }
+                }
+            }
+            else
             {
                 NotifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
             }
@@ -248,10 +281,11 @@ namespace winrt::Winnerino::implementation
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
-        appWindow.Title(L"Multitool");
-        appWindow.SetIcon(L"Images/multitool.ico");
         if (appWindow != nullptr)
         {
+            appWindow.SetIcon(L"Images/multitool.ico");
+            appWindow.Title(L"Multitool");
+
             RectInt32 rect{};
             rect.Height = height;
             rect.Width = width;
@@ -263,10 +297,13 @@ namespace winrt::Winnerino::implementation
 
             if (AppWindowTitleBar::IsCustomizationSupported())
             {
+                //appWindow.TitleBar().PreferredHeightOption(TitleBarHeightOption::Tall);
+
                 appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
 
-                //appWindow.TitleBar().ButtonBackgroundColor = Tool.GetAppRessource<Color>("DarkBlack");
-                appWindow.TitleBar().ButtonBackgroundColor(Colors::Black());
+                //appWindow.TitleBar().ButtonBackgroundColor(Colors::Black());
+                appWindow.TitleBar().ButtonBackgroundColor(
+                    Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 appWindow.TitleBar().ButtonForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
@@ -277,17 +314,20 @@ namespace winrt::Winnerino::implementation
                 appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
-            }
-            else //hide title bar
-            {
-                uint32_t index = 0;
-                if (contentGrid().Children().IndexOf(titleBarGrid(), index))
-                {
-                    contentGrid().Children().RemoveAt(index);
-                }
-                contentGrid().RowDefinitions().RemoveAt(0);
+
+                /*std::vector<RectInt32 const> dragRectangles{};
+                RectInt32 rect{};
+                rect.Height = 32;
+                rect.Width = 
+                dragRectangles.push_back()
+                appWindow.TitleBar().SetDragRectangles(dragRectangles);*/
             }
         }
+
+#ifdef _DEBUG
+        VersionTextBlock().Text(L"PREVIEW");
+#endif // 
+
     }
 
     void MainWindow::SaveWindowState()
@@ -328,53 +368,25 @@ namespace winrt::Winnerino::implementation
     bool MainWindow::LoadPage(hstring page)
     {
         bool recognized = false; // remove when application is built enough
-        if (page == L"Settings")
-        {
-            contentFrame().Navigate(xaml_typename<Winnerino::SettingsPage>());
-            recognized = true;
-        }
-        else if (page == L"Home")
-        {
-            contentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
-            recognized = true;
-        }
-        else if (page == L"Twitch")
-        {
-            contentFrame().Navigate(xaml_typename<Winnerino::TwitchPage2>());
-            recognized = true;
-        }
-        else if (page == L"Chat")
-        {
-            NotifyUser(L"Uh oh, this one is not done yet... Try again after an update !", InfoBarSeverity::Error);
-        }
-        else if (page == L"Widgets")
-        {
-            contentFrame().Navigate(xaml_typename<Winnerino::WidgetsPage>());
-            recognized = true;
-        }
-        else if (page == L"Power")
-        {
-            contentFrame().Navigate(xaml_typename<Winnerino::PowerModePage>());
-            recognized = true;
-        }
-        else if (page == L"Explorer")
+        if (page.empty() || page == L"Home")
         {
             contentFrame().Navigate(xaml_typename<Winnerino::ExplorerPage>());
             recognized = true;
         }
-        else if (page == L"Drives")
+        else if (page == L"Settings")
         {
-            contentFrame().Navigate(xaml_typename<Winnerino::DrivesPage>());
+            contentFrame().Navigate(xaml_typename<Winnerino::SettingsPage>());
+            recognized = true;
+        }
+        else if (page == L"NewContent")
+        {
+            contentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
             recognized = true;
         }
 
         if (recognized)
         {
             lastPage = page;
-            if (AppWindowTitleBar::IsCustomizationSupported())
-            {
-                loadedPageText().Text(page);
-            }
             Title(page);
         }
         return recognized;

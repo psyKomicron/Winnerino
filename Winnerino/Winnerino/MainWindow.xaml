@@ -13,8 +13,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="titleBarGrid" Grid.Row="0">
+        <Grid x:Name="titleBarGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="34"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -27,11 +28,19 @@
                 Grid.Column="0"/>
             <TextBlock
                 x:Name="loadedPageText"
+                Text="Winnerino"
                 Style="{StaticResource CaptionTextBlockStyle}"
                 VerticalAlignment="Center"
                 Grid.Column="1"/>
+            <TextBlock 
+                x:Name="VersionTextBlock" 
+                Style="{StaticResource CaptionTextBlockStyle}" 
+                Margin="7,0"
+                VerticalAlignment="Center"
+                Opacity="0.6"
+                Grid.Column="2"/>
         </Grid>
-        
+
         <Grid Background="{ThemeResource PageBackgroundBrush}" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -46,9 +55,8 @@
             </Grid.Transitions>
 
             <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
-
             <NavigationView
-                x:Name="navigationView"
+                x:Name="PageNavigationView"
                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
                 IsPaneOpen="False"
                 PaneDisplayMode="LeftCompact"
@@ -56,62 +64,52 @@
                 Loaded="navigationView_Loaded"
                 ItemInvoked="navigationView_ItemInvoked">
                 <NavigationView.MenuItems>
-                    <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
-
-                    <NavigationViewItem Tag="Widgets" Content="Widgets">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE74C;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <NavigationViewItem Tag="Power" Content="Power modes">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE7E8;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <!--#region Twitch -->
-                    <NavigationViewItemHeader Content="Twitch"/>
-                    <NavigationViewItem Tag="Twitch" Content="Twitch">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE8AA;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <NavigationViewItem Tag="Chat" Content="Chat">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE8F2;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <!--#endregion-->
-
-                    <NavigationViewItemHeader Content="Explorer"/>
-                    <NavigationViewItem Tag="Explorer" Content="Explorer Page">
+                    <NavigationViewItem Tag="Home" Content="Home">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xEC50;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem Tag="Drives" Content="Drives explorer">
+
+                    <NavigationViewItemHeader Content="Explorer"/>
+                    <NavigationViewItem Tag="Drives" Content="Drive explorer">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xeda2;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
 
+                    <NavigationViewItemHeader Content="Libraries"/>
+                    <NavigationViewItem Tag="Documents" Content="Documents">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xe8a5;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Tag="Music" Content="Music">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xec4f;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Tag="Pictures" Content="Pictures">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xe8b9;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Tag="Videos" Content="Videos">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xe714;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
                 </NavigationView.MenuItems>
 
                 <Frame x:Name="contentFrame"></Frame>
+
+                <NavigationView.FooterMenuItems>
+                    <NavigationViewItem Tag="NewContent" Content="What's new">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xe789;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </NavigationView.FooterMenuItems>
             </NavigationView>
         </Grid>
-
-        <TextBlock
-            Text="Developper build" 
-            Opacity="0.2" 
-            FontStretch="Expanded" 
-            FontWeight="Light" 
-            FontSize="12" 
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Margin="0,0,5,5"
-            Grid.Row="1"/>
     </Grid>
 </Window>
