@@ -5,48 +5,160 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="UserControl_Loaded">
 
-    <Grid VerticalAlignment="Stretch" RowSpacing="10" ColumnSpacing="5">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="50"/>
-        </Grid.ColumnDefinitions>
+    <Grid VerticalAlignment="Stretch" RowSpacing="5" ColumnSpacing="5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <AppBarButton Icon="Back" Width="50" Height="50" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Click="backAppBarButton_Click"/>
-        <AppBarButton Icon="Forward" Width="50" Height="50" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Click="forwardAppBarButton_Click"/>
+        <Grid Margin="5,0" VerticalAlignment="Stretch" Grid.ColumnSpan="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <AutoSuggestBox 
-            x:Name="pathInputBox"
-            PlaceholderText="Path"
-            MinHeight="35"
-            MaxHeight="35"
-            UpdateTextOnSelect="False"
-            VerticalAlignment="Center"
-            MaxSuggestionListHeight="200"
-            Grid.Row="0"
-            Grid.Column="2"
-            SuggestionChosen="pathInputBox_SuggestionChosen"
-            GotFocus="pathInputBox_GotFocus"
-            TextChanged="pathInputBox_TextChanged"
-            QuerySubmitted="pathInputBox_QuerySubmitted"/>
+            <Grid Grid.Column="0" Margin="0,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-        <AppBarButton Icon="Sync" Width="50" Height="50" VerticalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="3" Grid.Row="0"/>
+                <Button 
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Grid.Column="0"
+                    Style="{StaticResource AlternateCloseButtonStyle}" 
+                    Click="BackAppBarButton_Click">
+                    <Button.Content>
+                        <FontIcon Glyph="&#xe72b;" FontSize="14"/>
+                    </Button.Content>
+                </Button>
+
+                <Button
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Style="{StaticResource AlternateCloseButtonStyle}" 
+                    Grid.Column="1" 
+                    Click="ForwardAppBarButton_Click">
+                    <Button.Content>
+                        <FontIcon Glyph="&#xe72a;" FontSize="14"/>
+                    </Button.Content>
+                </Button>
+
+                <AutoSuggestBox 
+                    x:Name="PathInputBox"
+                    PlaceholderText="Path"
+                    MinHeight="35"
+                    MaxHeight="35"
+                    UpdateTextOnSelect="False"
+                    VerticalAlignment="Center"
+                    MaxSuggestionListHeight="200"
+                    Grid.Column="2"
+                    SuggestionChosen="PathInputBox_SuggestionChosen"
+                    GotFocus="PathInputBox_GotFocus"
+                    TextChanged="PathInputBox_TextChanged"
+                    QuerySubmitted="PathInputBox_QuerySubmitted"/>
+            </Grid>
+
+            <ToggleSplitButton
+                x:Name="InputModeButton"
+                ToolTipService.ToolTip="Switch between path input and search input" 
+                ToolTipService.Placement="Bottom"
+                VerticalAlignment="Stretch"
+                MaxHeight="35" 
+                Grid.Column="1"
+                Click="InputModeButton_Click">
+                <ToggleSplitButton.Content>
+                    <FontIcon Glyph="&#xe71e;" FontSize="13"/>
+                </ToggleSplitButton.Content>
+
+                <ToggleSplitButton.Flyout>
+                    <MenuFlyout>
+                        <ToggleMenuFlyoutItem 
+                            x:Name="UseRegexButton"
+                            Text="Re" 
+                            FontFamily="Cascadia Code" 
+                            FontSize="14" 
+                            ToolTipService.ToolTip="Use regular expression to search for files" 
+                            ToolTipService.Placement="Bottom"/>
+                    </MenuFlyout>
+                </ToggleSplitButton.Flyout>
+            </ToggleSplitButton>
+
+            <CommandBar x:Name="FileCommandBar" HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Column="2">
+                <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                    <DropDownButton Height="37" Width="60" Background="Transparent" BorderThickness="0">
+                        <DropDownButton.Content>
+                            <FontIcon Glyph="&#xE710;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                        </DropDownButton.Content>
+
+                        <DropDownButton.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedLeft">
+
+                                <MenuFlyoutItem Text="File">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE8A5;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+
+                                <MenuFlyoutItem Text="Folder">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Symbol="NewFolder"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </AppBarElementContainer>
+
+                <AppBarSeparator/>
+                <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                    <DropDownButton Background="Transparent" BorderThickness="0" Height="37" IsEnabled="True">
+                        <DropDownButton.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                                <FontIcon Glyph="&#xE8CB;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                                <TextBlock Text="Sort" FontSize="14"/>
+                            </StackPanel>
+                        </DropDownButton.Content>
+
+                        <DropDownButton.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem x:Name="AlphabeticalSortButton" Text="Alphabetical" IsEnabled="False" Click="AlphabeticalSortButton_Click"/>
+                                <MenuFlyoutItem Text="Size ascending" IsEnabled="False"/>
+                                <MenuFlyoutItem x:Name="SizeDescSortButton" Text="Size descending" Click="SizeDescSortButton_Click"/>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </AppBarElementContainer>
+
+                <CommandBar.SecondaryCommands>
+                    <AppBarButton x:Name="FavoriteButton" Label="Add to favorites" Icon="Favorite"  Click="FavoriteButton_Click"/>
+                    <AppBarButton x:Name="ClearFavoritesButton" Label="Clear favorites"  Click="ClearFavoritesButton_Click"/>
+                    <AppBarButton x:Name="RefreshButton" Label="Refresh" Icon="Refresh" Click="RefreshButton_Click"/>
+                    <AppBarSeparator/>
+                    <AppBarButton Label="Options" Icon="Setting"/>
+                </CommandBar.SecondaryCommands>
+            </CommandBar>
+        </Grid>
 
         <ListView 
-            x:Name="listView" 
+            x:Name="FileListView" 
             CornerRadius="5,0,0,0" 
             IsItemClickEnabled="True" 
             IsDoubleTapEnabled="True"
             SelectionMode="Extended"
-            DoubleTapped="listView_DoubleTapped"
-            Grid.Row="1" 
+            DoubleTapped="ListView_DoubleTapped"
+            SelectionChanged="FileListView_SelectionChanged"
+            Grid.Row="1"
             Grid.ColumnSpan="4">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
@@ -57,8 +169,9 @@
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
         </ListView>
+        
         <ProgressRing
-            x:Name="progressRing" 
+            x:Name="ProgressRing" 
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Height="50"
@@ -68,5 +181,73 @@
             IsHitTestVisible="False"
             Grid.Row="1"
             Grid.ColumnSpan="4"/>
+
+        <Grid
+            VerticalAlignment="Bottom"
+            Padding="10,3" 
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:DefaultBindMode="OneWay"
+            ColumnSpacing="20"
+            Grid.Row="2">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="FontWeight" Value="SemiLight"/>
+                    <Setter Property="FontStretch" Value="Expanded"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid ColumnSpacing="20" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <!--number of items-->
+                    <ColumnDefinition Width="Auto"/>
+                    <!--number of selected items-->
+                    <ColumnDefinition Width="Auto"/>
+                    <!--size-->
+                    <ColumnDefinition Width="56"/>
+                    <!--open with-->
+                    <ColumnDefinition Width="Auto"/>
+                    <!--file perceived type-->
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{x:Bind ItemCount}" VerticalAlignment="Center" Grid.Column="0"/>
+                    <TextBlock Text="items" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{x:Bind SelectedItemsCount}" VerticalAlignment="Center"  Grid.Column="0"/>
+                    <TextBlock Text="selected" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+                </Grid>
+
+                <TextBlock x:Name="FileSizeTextBlock" ToolTipService.ToolTip="Selected item(s) size" HorizontalAlignment="Center" Grid.Column="2"/>
+                <TextBlock x:Name="FileOpenAppTextBlock" ToolTipService.ToolTip="Opens with" Grid.Column="3"/>
+                <TextBlock x:Name="FilePerceivedTypeTextBlock" ToolTipService.ToolTip="File perceived type" Grid.Column="4"/>
+            </Grid>
+
+            <Grid ColumnSpacing="10" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <!--is dangerous-->
+                    <ColumnDefinition Width="22"/>
+                    <!--last write-->
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <FontIcon x:Name="FileDangerousFontIcon" FontSize="12" Glyph="&#xe7ba;" Visibility="Collapsed" ToolTipService.ToolTip="File considered dangerous" Grid.Column="0"/>
+                <TextBlock x:Name="FileLastWriteTextBlock" ToolTipService.ToolTip="Last write" Grid.Column="1"/>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

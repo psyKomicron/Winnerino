@@ -3,8 +3,6 @@
 #if __has_include("ExplorerPage.g.cpp")
 #include "ExplorerPage.g.cpp"
 #endif
-#include "DriveSearchModel.h"
-#include "FileTabView.xaml.h"
 
 using namespace winrt;
 using namespace std;
@@ -47,25 +45,6 @@ namespace winrt::Winnerino::implementation
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
         {
-            IReference<bool> regexChecked = settings.Values().TryLookup(L"UseSearchRegex").try_as<IReference<bool>>();
-            useRegexButton().IsChecked(regexChecked ? regexChecked : false);
-
-            ApplicationDataContainer recents = settings.Containers().TryLookup(L"ExplorerRecents");
-            if (recents)
-            {
-                auto containers = recents.Values();
-                for (auto const& c : containers)
-                {
-                    hstring recent = unbox_value_or<hstring>(c.Value(), L"");
-                    if (recent != L"")
-                    {
-                        MenuFlyoutItem item{};
-                        item.Text(recent);
-                        recentsMenuFlyout().Items().Append(item);
-                    }
-                }
-            }
-
             ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
             if (tabs)
             {
@@ -82,7 +61,7 @@ namespace winrt::Winnerino::implementation
                         header.Text(tabName);
                         tabViewItem.Header(header);
                         tabViewItem.Content(Winnerino::FileTabView{ path });
-                        tabView().TabItems().Append(tabViewItem);
+                        FilesTabView().TabItems().Append(tabViewItem);
                     }
                 }
             }
@@ -93,111 +72,14 @@ namespace winrt::Winnerino::implementation
         {
             ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);   
         }
-
-        // list available drives
-        WCHAR drives[512]{};
-        WCHAR* pointer = drives;
-        GetLogicalDriveStrings(512, drives);
-        while (1)
-        {
-            if (*pointer == NULL)
-            {
-                break;
-            }
-            driveListView().Items().Append(Winnerino::DriveSearchModel{ hstring{ pointer } });
-            while (*pointer++);
-        }
     }
 
-    void ExplorerPage::Page_Unloaded(IInspectable const& sender, RoutedEventArgs const& e)
+    void ExplorerPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
     {
-        savePage();
+        SavePage();
     }
 
-    void ExplorerPage::recentsButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
-    {
-        TabViewItem selectedTab = tabView().SelectedItem().try_as<TabViewItem>();
-        if (selectedTab)
-        {
-            UserControl test = selectedTab.Content().try_as<UserControl>();
-            AutoSuggestBox box = test.FindName(L"pathInputBox").try_as<AutoSuggestBox>();
-            if (box)
-            {
-                hstring currentPath = box.Text();
-
-                if (currentPath == L"")
-                {
-                    return;
-                }
-                auto items = recentsMenuFlyout().Items();
-                for (auto const& item : items)
-                {
-                    MenuFlyoutItem flyout = item.try_as<MenuFlyoutItem>();
-                    if (flyout && flyout.Text() == currentPath)
-                    {
-                        return;
-                    }
-                }
-
-                // save recent
-                ApplicationDataContainer container = ApplicationData::Current().LocalSettings();
-                ApplicationDataContainer recents = container.Values().TryLookup(L"ExplorerRecents").try_as<ApplicationDataContainer>();
-
-                IBuffer buffer = CryptographicBuffer::ConvertStringToBinary(currentPath, BinaryStringEncoding::Utf8);
-                HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
-                hstring key = CryptographicBuffer::EncodeToHexString(provider.HashData(buffer));
-
-                if (!recents)
-                {
-                    recents = container.CreateContainer(L"ExplorerRecents", ApplicationDataCreateDisposition::Always);
-                }
-                recents.Values().Insert(key, box_value(currentPath));
-
-                // add to view
-                MenuFlyoutItem item{};
-                item.Text(currentPath);
-                recentsMenuFlyout().Items().Append(item);
-            }
-        }
-    }
-
-    void ExplorerPage::cutAppBarButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
-    {
-        MainWindow::Current().NotifyUser(L"Cutting files to clipboard is not supported yet.", InfoBarSeverity::Error);
-    }
-
-    void ExplorerPage::copyAppBarButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
-    {
-        DataPackage dataPackage{};
-        IVector<IStorageItem> items{};
-
-        dataPackage.SetStorageItems(items);
-        dataPackage.RequestedOperation(DataPackageOperation::Copy);
-        Clipboard::SetContent(dataPackage);
-        MainWindow::Current().NotifyUser(L"File(s) copied to clipboard.", InfoBarSeverity::Success);
-    }
-
-    void ExplorerPage::renameAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        throw winrt::hresult_not_implemented();
-    }
-
-    void ExplorerPage::deleteAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        throw winrt::hresult_not_implemented();
-    }
-
-    void ExplorerPage::openFileTabButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        TabViewItem tab{};
-        TextBox header{};
-        header.Text(L"Empty");
-        tab.Header(header);
-        tab.Content(Winnerino::FileTabView{});
-        tabView().TabItems().Append(tab);
-    }
-
-    void ExplorerPage::tabView_TabCloseRequested(TabView const& sender, TabViewTabCloseRequestedEventArgs const& args)
+    void ExplorerPage::TabView_TabCloseRequested(TabView const& sender, TabViewTabCloseRequestedEventArgs const& args)
     {
         uint32_t indexOf;
         if (sender.TabItems().IndexOf(args.Item(), indexOf))
@@ -206,53 +88,34 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void ExplorerPage::searchBox_GotFocus(IInspectable const&, RoutedEventArgs const&)
+    void ExplorerPage::TabView_AddTabButtonClick(TabView const&, IInspectable const&)
     {
-        // use animation when done
-        searchBox().HorizontalAlignment(HorizontalAlignment::Stretch);
-        searchBox().Width(NAN);
+        TabViewItem tab{};
+        TextBox header{};
+
+        header.Text(L"Empty");
+        MenuFlyout flyout{};
+        MenuFlyoutItem flyoutItem{};
+        flyoutItem.Text(L"Rename");
+        flyout.Items().Append(flyoutItem);
+
+        tab.Header(header);
+
+        header.ContextFlyout(flyout);
+        tab.Content(FileTabView{});
+        tab.Margin(Thickness{});
+
+        FilesTabView().TabItems().Append(tab);
     }
 
-    void ExplorerPage::searchBox_LostFocus(IInspectable const&, RoutedEventArgs const&)
-    {
-        searchBox().HorizontalAlignment(HorizontalAlignment::Right);
-        searchBox().Width(80);
-    }
-
-    IVector<FileEntryView> ExplorerPage::getSelectedItems()
-    {
-        IVector<FileEntryView> vect{ single_threaded_vector<FileEntryView>() };
-        TabViewItem selectedTab = tabView().SelectedItem().try_as<TabViewItem>();
-        if (selectedTab)
-        {
-            ListView listView = selectedTab.FindName(L"testListView").try_as<ListView>();
-            if (listView)
-            {
-                auto const& selectedItems = listView.SelectedItems();
-                for (IInspectable const& selectedItem : selectedItems)
-                {
-                    FileEntryView file = selectedItem.try_as<FileEntryView>();
-                    if (file)
-                    {
-                        vect.Append(file);
-                    }
-                }
-            }
-        }
-        
-        return vect;
-    }
-
-    void ExplorerPage::savePage()
+    void ExplorerPage::SavePage()
     {
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-
-        settings.Values().Insert(L"UseSearchRegex", useRegexButton().IsChecked());
 
         HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
         ApplicationDataContainer tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);
 
-        IVector<IInspectable> tabItems = tabView().TabItems();
+        IVector<IInspectable> tabItems = FilesTabView().TabItems();
         for (IInspectable const& item : tabItems)
         {
             TabViewItem tab = item.try_as<TabViewItem>();
@@ -262,7 +125,7 @@ namespace winrt::Winnerino::implementation
                 if (control)
                 {
                     hstring tabName = tab.Header().as<TextBox>().Text();
-                    hstring path = control.FindName(L"pathInputBox").as<AutoSuggestBox>().Text();
+                    hstring path = control.FindName(L"PathInputBox").as<AutoSuggestBox>().Text();
 
                     ApplicationDataCompositeValue composite{};
                     composite.Insert(L"TabName", box_value(tabName));
@@ -277,8 +140,8 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const& args)
+    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
     {
-        savePage();
+        SavePage();
     }
 }

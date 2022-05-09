@@ -28,48 +28,6 @@ namespace winrt::Winnerino::implementation
 
     void FilePropertiesWindow::InitWindow()
     {
-#pragma region settings
-#if FALSE
-        int width = 800;
-        int height = 600;
-        int y = 50;
-        int x = 50;
-
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
-        IInspectable windowSize = settings.Values().TryLookup(L"WindowSize");
-        if (windowSize != nullptr)
-        {
-            ApplicationDataCompositeValue composite = windowSize.as<ApplicationDataCompositeValue>();
-            IInspectable widthBoxed = composite.Lookup(L"Width");
-            IInspectable heightBoxed = composite.Lookup(L"Height");
-            if (widthBoxed)
-            {
-                width = unbox_value<int>(widthBoxed);
-            }
-            if (heightBoxed)
-            {
-                height = unbox_value<int>(heightBoxed);
-            }
-        }
-        IInspectable windowPosition = settings.Values().TryLookup(L"WindowPosition");
-        if (windowSize != nullptr)
-        {
-            ApplicationDataCompositeValue composite = windowPosition.as<ApplicationDataCompositeValue>();
-            IInspectable posX = composite.TryLookup(L"PositionX");
-            IInspectable posY = composite.Lookup(L"PositionY");
-            if (posX)
-            {
-                x = unbox_value<int>(posX);
-            }
-            if (posY)
-            {
-                y = unbox_value<int>(posY);
-            }
-        }
-#endif // FALSE
-
-#pragma endregion
-
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         winrt::check_bool(nativeWindow);
         HWND handle{ nullptr };

@@ -11,30 +11,10 @@ namespace winrt::Winnerino::implementation
 {
     struct FileEntryView : FileEntryViewT<FileEntryView>
     {
-    private:
-        double displayFileSize = 0;
-        hstring fileSizeExtension;
-        hstring fileName;
-        hstring filePath;
-        uint64_t fileSize = 0;
-        hstring icon;
-        bool isDirectory = false;
-        bool isSystem = false;
-        event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
-
     public:
-        /// <summary>
-        /// Default constructor
-        /// </summary>
         FileEntryView();
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="cFileName">Name</param>
-        /// <param name="path">Path</param>
-        /// <param name="fileSize">Size in bytes</param>
-        /// <param name="attributes">Attributes (enumeration)</param>
         FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes);
+        ~FileEntryView();
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
@@ -45,41 +25,56 @@ namespace winrt::Winnerino::implementation
             m_propertyChanged.remove(token);
         };
 
-        /// <summary>
-        /// Name.
-        /// </summary>
-        /// <returns>Name of this file</returns>
-        hstring FileName() { return fileName; };
-        /// <summary>
-        /// Path.
-        /// </summary>
-        /// <returns>Path of this file</returns>
-        hstring FilePath() { return filePath; };
-        /// <summary>
-        /// Unicode icon (Segoe Fluent Icons) for the file.
-        /// </summary>
-        /// <returns>Unicode icon</returns>
-        hstring FileIcon() { return icon; };
-        /// <summary>
-        /// Tells if this file is a directory.
-        /// </summary>
-        /// <returns>True if is directory, false otherwise</returns>
-        bool IsDirectory() { return isDirectory; };
-        /// <summary>
-        /// Tells if this file is managed by the system.
-        /// </summary>
-        /// <returns>True if the file is managed by the system</returns>
-        bool IsSystem() { return isSystem; };
+        uint64_t FileBytes() { return fileSize; };
+        hstring FileName() { return _fileName; };
+        hstring FilePath() { return _filePath; };
+        hstring FileIcon() { return _icon; };
+        hstring FileSize() { return to_hstring(_displayFileSize) + _fileSizeExtension; };
+        bool IsDirectory() { return _isDirectory; };
+        bool IsSystem() { return _isSystem; };
+        hstring OpensWith() { return _opensWith; };
+        hstring PerceivedType() { return _perceivedType; };
+        Windows::Foundation::DateTime LastWrite() { return _lastWrite; };
+        void LastWrite(Windows::Foundation::DateTime const& lastWrite) { _lastWrite = lastWrite; };
+        bool IsFileDangerous() { return _isDangerous; };
+ 
+        int64_t Compare(Winnerino::FileEntryView const& other);
 
-        void MenuFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void FileSizeFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void MenuFlyoutItem_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        Windows::Foundation::IAsyncAction ToolTip_Opened(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
+        bool loaded = true;
+        event_token loadedEventToken;
+        event_token unloadedEventToken;
+        Concurrency::task<void> calculateSizeTask;
+        Concurrency::cancellation_token_source cancellationToken{};
+        //PERCEIVED perceivedFileType;
+        double _displayFileSize = 0;
+        hstring _fileSizeExtension;
+        hstring _fileName;
+        hstring _filePath;
+        uint64_t fileSize = 0;
+        hstring _icon;
+        bool _isDirectory = false;
+        bool _isSystem = false;
+        Windows::Foundation::DateTime _lastWrite;
+        hstring _opensWith;
+        hstring _perceivedType;
+        bool _isDangerous = false;
+
+        event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+
         void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
-        void getAttributes(int64_t attributes);
-        void getIcon(PCWSTR const& ext);
-        inline hstring formatSize(double* size);
-        inline void updateSize(uint_fast64_t const& size);
+        void GetAttributes(int64_t attributes);
+        void GetIcon(PCWSTR const& ext);
+        void InitFile(PCWSTR ext);
+        inline hstring FormatSize(double* size);
+        inline void UpdateSize(uint_fast64_t const& size);
     };
 }
 

@@ -7,16 +7,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" FontWeight="SemiLight" x:DefaultBindMode="OneWay">
 
-    <Grid ColumnSpacing="10" Padding="3,0" Background="{x:Bind Background}">
+    <Grid ColumnSpacing="10" Padding="0,0,15,0" Background="{x:Bind Background}">
         <Grid.ColumnDefinitions>
             <!-- icon -->
             <ColumnDefinition Width="22"/>
             <!-- filename -->
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="3*" MaxWidth="500"/>
             <!-- file type -->
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
             <!-- attributes -->
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition MaxWidth="100"/>
             <!-- size? -->
             <ColumnDefinition MinWidth="20" MaxWidth="66"/>
         </Grid.ColumnDefinitions>
@@ -24,12 +24,17 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <FontIcon Grid.Row="0" Glyph="{x:Bind FileIcon}" HorizontalAlignment="Center" Style="{StaticResource FileAttributeFontIconStyle}" Foreground="{ThemeResource SystemAccentColor}"/>
+        <FontIcon 
+            Grid.Row="0" 
+            Glyph="{x:Bind FileIcon}" 
+            HorizontalAlignment="Center" 
+            Style="{StaticResource FileAttributeFontIconStyle}" 
+            Foreground="{ThemeResource SystemAccentColor}"/>
         <ProgressRing x:Name="FileSizeProgressRing" Grid.Row="0" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
 
-        <TextBlock Text="{x:Bind FileName}" VerticalAlignment="Center" Grid.Column="1"/>
+        <TextBlock Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
 
-        <TextBlock x:Name="FileTypeName" Text="File type" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2"/>
+        <TextBlock x:Name="FileTypeName" Text="File type" VerticalAlignment="Center" Grid.Column="2"/>
 
         <StackPanel
             x:Name="attributesStackPanel" 
@@ -49,49 +54,62 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock x:Name="FileSizeTextBlock" HorizontalAlignment="Right" Grid.Column="0"/>
             <TextBlock x:Name="FileSizeExtensionTextBlock" HorizontalAlignment="Left" Grid.Column="1"/>
         </Grid>
-
-        <Grid.ContextFlyout>
-            <MenuFlyout>
-                <MenuFlyoutSubItem Text="File">
-                    <MenuFlyoutItem x:Name="openWithFlyoutItem" Text="Open">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="OpenWith"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutSeparator/>
-                    <MenuFlyoutItem Text="Delete">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Delete"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutItem Text="Rename">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Rename"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutItem Text="Copy">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Copy"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutItem Text="Cut">
-                        <MenuFlyoutItem.Icon>
-                            <SymbolIcon Symbol="Cut"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                </MenuFlyoutSubItem>
-
-                <MenuFlyoutItem Text="Copy as path" Click="MenuFlyoutItem_Click">
+    </Grid>
+    <UserControl.ContextFlyout>
+        <MenuFlyout>
+            <MenuFlyoutSubItem Text="File">
+                <MenuFlyoutItem x:Name="openWithFlyoutItem" Text="Open">
                     <MenuFlyoutItem.Icon>
-                        <FontIcon Glyph="&#xE816;"/>
+                        <SymbolIcon Symbol="OpenWith"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="FileSizeFlyoutItem" Text="Properties" Click="FileSizeFlyoutItem_Click"/>
-            </MenuFlyout>
-        </Grid.ContextFlyout>
-    </Grid>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="Delete">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Delete"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Rename">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Rename"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Copy">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Copy"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Cut">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Cut"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuFlyoutSubItem>
+
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Copy as path" Click="MenuFlyoutItem_Click">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xe71b;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem x:Name="OpenInExplorerFlyoutItem" Text="Open containing folder" Click="OpenInExplorerFlyoutItem_Click">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xec50;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem x:Name="FileSizeFlyoutItem" Text="Properties" Click="FileSizeFlyoutItem_Click">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xea40;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+        </MenuFlyout>
+    </UserControl.ContextFlyout>
+
+    <ToolTipService.ToolTip>
+        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind Width, Mode=OneWay}" Opened="ToolTip_Opened"/>
+    </ToolTipService.ToolTip>
 </UserControl>

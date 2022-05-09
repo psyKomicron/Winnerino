@@ -14,191 +14,20 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Column="0" Grid.Row="0" Margin="5,0" ColumnSpacing="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition MaxWidth="200"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <CommandBar HorizontalAlignment="Left" Grid.Column="0">
-                
-                <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
-                    <DropDownButton Height="37" Margin="0,0,0,15" Background="Transparent" BorderThickness="0" Click="recentsButton_Click">
-                        <DropDownButton.Content>
-                            <FontIcon Glyph="&#xE823;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
-                        </DropDownButton.Content>
-                        
-                        <DropDownButton.Flyout>
-                            <MenuFlyout x:Name="recentsMenuFlyout" Placement="BottomEdgeAlignedLeft"/>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
-                
-                <AppBarButton Icon="Favorite" Label="Save to recents" Width="50" Click="recentsButton_Click"/>
-                
-                <AppBarSeparator/>
-
-                <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
-                    <DropDownButton Height="37" Width="60" Margin="0,0,0,15" Background="Transparent" BorderThickness="0">
-                        <DropDownButton.Content>
-                            <FontIcon Glyph="&#xE710;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
-                        </DropDownButton.Content>
-
-                        <DropDownButton.Flyout>
-                            <MenuFlyout Placement="BottomEdgeAlignedLeft">
-
-                                <MenuFlyoutItem Text="File">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xE8A5;"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-
-                                <MenuFlyoutItem Text="Folder">
-                                    <MenuFlyoutItem.Icon>
-                                        <SymbolIcon Symbol="NewFolder"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-
-                                <MenuFlyoutSeparator/>
-
-                                <MenuFlyoutItem Text="File tab" Click="openFileTabButton_Click">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xE78B;"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-
-                                <MenuFlyoutSubItem Text="Library tab">
-                                    <MenuFlyoutSubItem.Icon>
-                                        <FontIcon Glyph="&#xE8F1;"/>
-                                    </MenuFlyoutSubItem.Icon>
-
-                                    <MenuFlyoutItem Text="Applications">
-                                        <MenuFlyoutItem.Icon>
-                                            <SymbolIcon Symbol="AllApps"/>
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Documents">
-                                        <MenuFlyoutItem.Icon>
-                                            <SymbolIcon Symbol="Document"/>
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Music">
-                                        <MenuFlyoutItem.Icon>
-                                            <SymbolIcon Symbol="MusicInfo"/>
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Pictures">
-                                        <MenuFlyoutItem.Icon>
-                                            <SymbolIcon Symbol="Pictures"/>
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Videos">
-                                        <MenuFlyoutItem.Icon>
-                                            <SymbolIcon Symbol="Video"/>
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                </MenuFlyoutSubItem>
-                                
-                            </MenuFlyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
-
-                <AppBarSeparator/>
-                
-                <AppBarButton x:Name="cutAppBarButton" Icon="Cut" Label="Cut" Width="50" Click="cutAppBarButton_Click"/>
-                <AppBarButton x:Name="copyAppBarButton" Icon="Copy" Label="Copy" Width="50" Click="copyAppBarButton_Click"/>
-                <AppBarButton x:Name="renameAppBarButton" Icon="Rename" Label="Rename" Width="50" Click="renameAppBarButton_Click"/>
-                <AppBarButton x:Name="deleteAppBarButton" Icon="Delete" Label="Delete" Width="50" Click="deleteAppBarButton_Click"/>
-
-                <AppBarSeparator/>
-
-                <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
-                    <DropDownButton Margin="0,0,0,15" Background="Transparent" BorderThickness="0" Height="37" IsEnabled="False">
-                        <DropDownButton.Content>
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                                <FontIcon Glyph="&#xE8CB;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
-                                <TextBlock Text="Sort" FontSize="14"/>
-                            </StackPanel>
-                        </DropDownButton.Content>
-
-                        <DropDownButton.Flyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Text="Alphabetical"/>
-                                <MenuFlyoutItem Text="Size ascending"/>
-                                <MenuFlyoutItem Text="Size descending"/>
-                            </MenuFlyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
-
-                <CommandBar.SecondaryCommands>
-                    <AppBarButton Label="Options" Icon="Setting"/>
-                </CommandBar.SecondaryCommands>
-                
-            </CommandBar>
-
-            <AutoSuggestBox
-                x:Name="searchBox" 
-                PlaceholderText="Search"
-                Width="80" 
-                MaxHeight="35" 
-                QueryIcon="Zoom"
-                HorizontalAlignment="Right"
-                Grid.Column="1"
-                GotFocus="searchBox_GotFocus"
-                LostFocus="searchBox_LostFocus"/>
-
-            <ToggleButton 
-                x:Name="useRegexButton" 
-                ToolTipService.ToolTip="Use regular expression to search for files." 
-                ToolTipService.Placement="Bottom" 
-                VerticalAlignment="Stretch" 
-                MaxHeight="35" 
-                Grid.Column="2">
-                <ToggleButton.Content>
-                    <TextBlock Text="Re" FontFamily="Cascadia Code" FontSize="14"/>
-                </ToggleButton.Content>
-            </ToggleButton>
-
-            <Button VerticalAlignment="Stretch" MaxHeight="35" Grid.Column="3">
-                <Button.Content>
-                    <FontIcon Glyph="&#xE70D;"/>
-                </Button.Content>
-                <Button.Flyout>
-                    <Flyout>   
-                        <ListView x:Name="driveListView" Padding="0" SelectionMode="None">
-                            <ListView.Resources>
-                                <Style TargetType="ListViewItem" BasedOn="{StaticResource DriveListViewItemStyle}"/>
-                            </ListView.Resources>
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="local:DriveSearchModel">
-                                    <CheckBox Content="{x:Bind DriveName}" IsChecked="{x:Bind IsSelected}"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-        </Grid>
-
         <TabView
-            x:Name="tabView" 
+            x:Name="FilesTabView" 
             VerticalAlignment="Stretch"
             CornerRadius="5"
-            IsAddTabButtonVisible="False"
             CanReorderTabs="True"
             TabWidthMode="Equal"
             Grid.Column="0"
-            Grid.Row="1"
+            Grid.Row="0"
             Background="{StaticResource PageBackgroundBrush}"
-            TabCloseRequested="tabView_TabCloseRequested">
+            AddTabButtonClick="TabView_AddTabButtonClick"
+            TabCloseRequested="TabView_TabCloseRequested">
         </TabView>
     </Grid>
 </Page>
