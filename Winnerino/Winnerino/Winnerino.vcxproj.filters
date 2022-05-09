@@ -5,29 +5,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml" />
-    <Page Include="TwitchPage2.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerControllerView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
-    <Page Include="WidgetsPage.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="LuminosityControllerView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
     <Page Include="SettingsPage.xaml">
       <Filter>Pages</Filter>
     </Page>
     <Page Include="MainPage.xaml">
       <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerModePage.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerPlanViewModel2.xaml">
-      <Filter>Controls</Filter>
     </Page>
     <Page Include="ExplorerPage.xaml">
       <Filter>Pages</Filter>
@@ -39,18 +21,6 @@
       <Filter>Controls</Filter>
     </Page>
     <Page Include="LibraryTabView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
-    <Page Include="DrivesPage.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="DriveView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
-    <Page Include="WebTab.xaml">
-      <Filter>Controls</Filter>
-    </Page>
-    <Page Include="ChatView.xaml">
       <Filter>Controls</Filter>
     </Page>
     <Page Include="FilePropertiesWindow.xaml" />
@@ -65,12 +35,6 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="LuminosityController.cpp">
-      <Filter>Common\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="PowerController.cpp">
-      <Filter>Common\Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="MessageData.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -80,16 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="LuminosityController.h">
-      <Filter>Common\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="PowerController.h">
-      <Filter>Common\Controllers</Filter>
-    </ClInclude>
     <ClInclude Include="MessageData.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="DirectorySizeCalculator.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="QuickSort.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -105,9 +66,6 @@
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{9dea2b9b-e44c-44d0-908b-3bcbcca314c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Controllers">
-      <UniqueIdentifier>{5913282b-63a2-4812-b8cf-aaa562a06d50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

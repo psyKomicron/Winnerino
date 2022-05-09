@@ -122,21 +122,9 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChatView.xaml.h">
-      <DependentUpon>ChatView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="DirectorySizeCalculator.h" />
     <ClInclude Include="DriveSearchModel.h">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="DrivesPage.xaml.h">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="DriveView.xaml.h">
-      <DependentUpon>DriveView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ExplorerPage.xaml.h">
@@ -159,11 +147,6 @@
       <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="LuminosityController.h" />
-    <ClInclude Include="LuminosityControllerView.xaml.h">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="MainPage.xaml.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -176,47 +159,14 @@
     <ClInclude Include="MainWindow.xaml.h">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="PowerController.h" />
-    <ClInclude Include="PowerControllerView.xaml.h">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="PowerModePage.xaml.h">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="PowerPlanViewModel2.xaml.h">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
+    <ClInclude Include="QuickSort.h" />
     <ClInclude Include="SettingsPage.xaml.h">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="TwitchPage2.xaml.h">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="WebTab.xaml.h">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="WidgetsPage.xaml.h">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
-    <Page Include="ChatView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="DrivesPage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="DriveView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="ExplorerPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -232,51 +182,18 @@
     <Page Include="LibraryTabView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="LuminosityControllerView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml" />
-    <Page Include="PowerControllerView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PowerModePage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PowerPlanViewModel2.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="SettingsPage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="TwitchPage2.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WebTab.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WidgetsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatView.xaml.cpp">
-      <DependentUpon>ChatView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="DirectorySizeCalculator.cpp" />
     <ClCompile Include="DriveSearchModel.cpp">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="DrivesPage.xaml.cpp">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="DriveView.xaml.cpp">
-      <DependentUpon>DriveView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ExplorerPage.xaml.cpp">
@@ -299,11 +216,6 @@
       <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="LuminosityController.cpp" />
-    <ClCompile Include="LuminosityControllerView.xaml.cpp">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="MainPage.xaml.cpp">
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -319,33 +231,8 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="PowerController.cpp" />
-    <ClCompile Include="PowerControllerView.xaml.cpp">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="PowerModePage.xaml.cpp">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="PowerPlanViewModel2.xaml.cpp">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="SettingsPage.xaml.cpp">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="TwitchPage2.xaml.cpp">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="WebTab.xaml.cpp">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="WidgetsPage.xaml.cpp">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
   </ItemGroup>
@@ -354,20 +241,8 @@
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
-    <Midl Include="ChatView.idl">
-      <DependentUpon>ChatView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
     <Midl Include="DriveSearchModel.idl">
       <SubType>Designer</SubType>
-    </Midl>
-    <Midl Include="DrivesPage.idl">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="DriveView.idl">
-      <DependentUpon>DriveView.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Midl>
     <Midl Include="ExplorerPage.idl">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
@@ -389,10 +264,6 @@
       <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="LuminosityControllerView.idl">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
     <Midl Include="MainPage.idl">
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -401,32 +272,8 @@
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Midl>
-    <Midl Include="PowerControllerView.idl">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="PowerModePage.idl">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="PowerPlanViewModel2.idl">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="TwitchPage2.idl">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="WebTab.idl">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="WidgetsPage.idl">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>

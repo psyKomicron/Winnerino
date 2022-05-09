@@ -1,9 +1,0 @@
-namespace Winnerino
-{
-    [default_interface]
-    runtimeclass PowerModePage : Microsoft.UI.Xaml.Controls.Page, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
-    {
-        PowerModePage();
-    Boolean EditPowerPlansButtonEnabled{ get; };
-    }
-}
