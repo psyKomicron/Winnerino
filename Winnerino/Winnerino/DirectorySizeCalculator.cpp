@@ -12,7 +12,7 @@ using namespace std;
 using namespace concurrency;
 using namespace winrt::Windows::Foundation;
 
-namespace winrt::Winnerino
+namespace winrt::Winnerino::Storage
 {
     uint_fast64_t DirectorySizeCalculator::getSize(hstring const& path, bool parallelize)
     {
