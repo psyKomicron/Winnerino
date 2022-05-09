@@ -1,11 +1,12 @@
 ﻿#pragma once
-#include <windows.h>
-#include <unknwn.h>
-#include <restrictederrorinfo.h>
-#include <system_error>
 #include <hstring.h>
 #include <memory>
 #include <ppltasks.h>
+#include <restrictederrorinfo.h>
+#include <string>
+#include <system_error>
+#include <unknwn.h>
+#include <windows.h>
 
 // Undefine GetCurrentTime macro to prevent
 // conflict with Storyboard::GetCurrentTime
@@ -36,6 +37,7 @@
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include "winrt/Windows.Security.Cryptography.h"
@@ -50,3 +52,5 @@
 #pragma comment(lib, "Dxva2.lib")
 #pragma comment(lib, "Kernel32.lib")
 #pragma comment(lib, "Shlwapi.lib")
+
+constexpr int16_t ALTERNATE_MAX_PATH = 1024;
