@@ -71,26 +71,6 @@
             </ListViewItem>
             <!--#endregion-->
 
-            <ListViewHeaderItem x:Name="TwitchHeader">
-                <TextBlock Text="Twitch" FontSize="{StaticResource SettingTitleFontSize}" FontWeight="{StaticResource SettingTitleFontWeight}"/>
-            </ListViewHeaderItem>
-            <ListViewItem Margin="0,0,0,30">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
-                    <ToggleSwitch x:Name="UseSpecificLayoutToggleSwitch" Header="Use special layout" Toggled="UseSpecificLayoutToggleSwitch_Toggled"/>
-                    <ToggleSwitch x:Name="UseAnimatedEmotesToggleSwitch" Header="Use animated emotes" Toggled="UseAnimatedEmotesToggleSwitch_Toggled"/>
-
-                    <PasswordBox Header="Twitch 2OAuth" HorizontalAlignment="Left" MinWidth="250" MaxWidth="400"/>
-
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                        <TextBox x:Name="ChatMentionTextBlock" PlaceholderText="Chat mentions" VerticalAlignment="Center" MinWidth="250" MaxWidth="400"/>
-                        <ToggleButton Content="Use regex" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <Slider x:Name="EmoteSizeSlider" Header="Emote size (pixels)" HorizontalAlignment="Left" MinWidth="250" Width="300" MaxWidth="500"/>
-                    <Slider x:Name="ChatLengthSlider" Header="Chat length (messages)" HorizontalAlignment="Left" MinWidth="250" Width="300" MaxWidth="500" Maximum="5000"/>
-                </StackPanel>
-            </ListViewItem>
-
             <ListViewHeaderItem x:Name="ExplorerHeader">
                 <TextBlock Text="Explorer" FontSize="{StaticResource SettingTitleFontSize}" FontWeight="{StaticResource SettingTitleFontWeight}"/>
             </ListViewHeaderItem>
@@ -98,6 +78,7 @@
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
                     <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
                     <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                    <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
                 </StackPanel>
             </ListViewItem>
 

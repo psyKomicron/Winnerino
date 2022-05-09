@@ -60,6 +60,7 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction SettingsPage::openSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
     {
+#if FALSE
         auto result = co_await contentDialog().ShowAsync();
         if (result == ContentDialogResult::Primary)
         {
@@ -104,6 +105,8 @@ namespace winrt::Winnerino::implementation
                 }
             }
         }
+#endif // FALSE
+        co_return;
     }
 
     void SettingsPage::darkThemeButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -127,7 +130,7 @@ namespace winrt::Winnerino::implementation
         {
             co_await Launcher::LaunchFolderAsync(ApplicationData::Current().LocalFolder());
         }
-        catch (hresult_error const& ex)
+        catch (hresult_error const&)
         {
             MainWindow::Current().NotifyUser(L"Failed to open appdata folder.", InfoBarSeverity::Warning);
         }
@@ -145,7 +148,7 @@ namespace winrt::Winnerino::implementation
         {
             co_await Launcher::LaunchFolderAsync(ApplicationData::Current().TemporaryFolder());
         }
-        catch (hresult_error const& ex)
+        catch (hresult_error const&)
         {
             MainWindow::Current().NotifyUser(L"Failed to open app temp folder.", InfoBarSeverity::Warning);
         }
@@ -161,7 +164,7 @@ namespace winrt::Winnerino::implementation
 
     }
 
-    void SettingsPage::resetSettingsFile_Click(IInspectable const& sender, RoutedEventArgs const&)
+    void SettingsPage::resetSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationData::Current().LocalSettings().Values().Clear();
     }
@@ -170,26 +173,6 @@ namespace winrt::Winnerino::implementation
     {
         Winnerino::MainWindow window = Winnerino::MainWindow::Current();
         window.NotifyUser(L"Compact mode switched on", InfoBarSeverity::Informational);
-    }
-
-    void SettingsPage::UseSpecificLayoutToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"TwitchSettings", ApplicationDataCreateDisposition::Always);
-        }
-        container.Values().Insert(L"UseSpecificLayout", box_value(UseSpecificLayoutToggleSwitch().IsOn()));
-    }
-
-    void SettingsPage::UseAnimatedEmotesToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"TwitchSettings", ApplicationDataCreateDisposition::Always);
-        }
-        container.Values().Insert(L"UseAnimatedEmotes", box_value(UseAnimatedEmotesToggleSwitch().IsOn()));
     }
 
     void SettingsPage::ShowSpecialsFolderToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
@@ -237,32 +220,8 @@ namespace winrt::Winnerino::implementation
         inspectable = settings.Values().TryLookup(L"AppTheme");
         SwitchTheme(unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default));
 
-        // Twitch
-        ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"TwitchSettings");
-        if (specificSettings)
-        {
-            inspectable = specificSettings.Values().TryLookup(L"UseSpecificLayout");
-            UseSpecificLayoutToggleSwitch().IsOn(unbox_value_or(inspectable, false));
-            inspectable = specificSettings.Values().TryLookup(L"UseAnimatedEmotes");
-            UseAnimatedEmotesToggleSwitch().IsOn(unbox_value_or(inspectable, true));
-            inspectable = specificSettings.Values().TryLookup(L"ChatMention");
-            ChatMentionTextBlock().Text(unbox_value_or<hstring>(inspectable, L""));
-            inspectable = specificSettings.Values().TryLookup(L"EmoteSize");
-            EmoteSizeSlider().Value(unbox_value_or<uint8_t>(inspectable, 0));
-            inspectable = specificSettings.Values().TryLookup(L"ChatLength");
-            ChatLengthSlider().Value(unbox_value_or<uint16_t>(inspectable, 500));
-        }
-        else
-        {
-            UseSpecificLayoutToggleSwitch().IsOn(false);
-            UseAnimatedEmotesToggleSwitch().IsOn(true);
-            ChatMentionTextBlock().Text(L"");
-            EmoteSizeSlider().Value(0);
-            ChatLengthSlider().Value(500);
-        }
-
         // Explorer
-        specificSettings = settings.Containers().TryLookup(L"Explorer");
+        ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
         if (specificSettings)
         {
             inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
@@ -276,4 +235,10 @@ namespace winrt::Winnerino::implementation
             CalculateDirectorySizeToggleSwitch().IsOn(true);
         }
     }
+}
+
+
+void winrt::Winnerino::implementation::SettingsPage::UseThumbnailsToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+{
+
 }
