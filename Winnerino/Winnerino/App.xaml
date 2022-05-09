@@ -21,13 +21,13 @@
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
 
             <!--#region Font icons -->
-            <x:String x:Key="DirectoryFontIconGlyph">&#xE8B7;</x:String>
+            <x:String x:Key="DirectoryFontIconGlyph">&#xe8d5;</x:String>
             <x:String x:Key="FileFontIconGlyph">&#xE8A5;</x:String>
             
             <x:String x:Key="FILE_ATTRIBUTE_ARCHIVE_IconGlyph">&#xF12B;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_COMPRESSED_IconGlyph">&#xE82D;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_DEVICE_IconGlyph">&#xE772;</x:String>
-            <x:String x:Key="FILE_ATTRIBUTE_ENCRYPTED_IconGlyph">&#xF0FB;</x:String>
+            <x:String x:Key="FILE_ATTRIBUTE_ENCRYPTED_IconGlyph">&#xec19;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_HIDDEN_IconGlyph">&#xE890;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_OFFLINE_IconGlyph">&#xE709;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_READONLY_IconGlyph">&#xE894;</x:String>
@@ -46,6 +46,7 @@
                 <Setter Property="VerticalAlignment" Value="Stretch"/>
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="MaxHeight" Value="200"/>
             </Style>
 
             <Style x:Key="HomeTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextBlockStyle}">
