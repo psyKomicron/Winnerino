@@ -17,6 +17,6 @@ namespace Winnerino
         Windows.Foundation.DateTime LastWrite{ get; set; };
         Boolean IsFileDangerous{ get; };
 
-        Int64 Compare(FileEntryView other);
+        Int16 Compare(FileEntryView other);
     }
 }

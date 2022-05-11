@@ -138,7 +138,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview2" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

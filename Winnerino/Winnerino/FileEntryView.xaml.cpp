@@ -7,6 +7,8 @@
 #include <math.h>
 #include "DirectorySizeCalculator.h"
 #include "FilePropertiesWindow.xaml.h"
+using namespace winrt::Windows::Data::Xml::Dom;
+using namespace winrt::Windows::UI::Notifications;
 
 using namespace std;
 using namespace winrt;
@@ -123,7 +125,7 @@ namespace winrt::Winnerino::implementation
         Unloaded(unloadedEventToken);
     }
 
-    int64_t FileEntryView::Compare(Winnerino::FileEntryView const& other)
+    int16_t FileEntryView::Compare(Winnerino::FileEntryView const& other)
     {
         if (IsDirectory() && !other.IsDirectory())
         {
@@ -180,119 +182,250 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileEntryView::OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&)
+    void FileEntryView::OnLoaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded = true;
     }
 
-    void FileEntryView::OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&)
+    void FileEntryView::OnUnloaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded = false;
     }
 
     IAsyncAction FileEntryView::ToolTip_Opened(IInspectable const&, RoutedEventArgs const&)
     {
-        if (!_isDirectory)
+        if (PathFileExists(_filePath.c_str()))
         {
-            Image image{};
-            image.Height(100);
-            image.Stretch(Stretch::Fill);
-            BitmapImage bitmapImage{};
-            image.Source(bitmapImage);
-            UserControlToolTip().Content(image);
-
-            StorageFile file = co_await StorageFile::GetFileFromPathAsync(_filePath);
-            ThumbnailMode thumbnailMode = ThumbnailMode::ListView;
-            /*switch (perceivedFileType)
+            if (!_isDirectory)
             {
-                case PERCEIVED_TYPE_IMAGE:
-                    thumbnailMode = ThumbnailMode::PicturesView;
-                    break;
-                case PERCEIVED_TYPE_AUDIO:
-                    thumbnailMode = ThumbnailMode::MusicView;
-                    break;
-                case PERCEIVED_TYPE_VIDEO:
-                    thumbnailMode = ThumbnailMode::VideosView;
-                    break;
-                case PERCEIVED_TYPE_TEXT:
-                case PERCEIVED_TYPE_COMPRESSED:
-                case PERCEIVED_TYPE_DOCUMENT:
-                    thumbnailMode = ThumbnailMode::SingleItem;
-                    break;
-                case PERCEIVED_TYPE_FIRST:
-                case PERCEIVED_TYPE_UNSPECIFIED:
-                case PERCEIVED_TYPE_FOLDER:
-                case PERCEIVED_TYPE_UNKNOWN:
-                case PERCEIVED_TYPE_SYSTEM:
-                case PERCEIVED_TYPE_APPLICATION:
-                case PERCEIVED_TYPE_GAMEMEDIA:
-                case PERCEIVED_TYPE_CONTACTS:
-                default:
-                    break;
-            }*/
-            StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 100, ThumbnailOptions::UseCurrentScale);
-            co_await bitmapImage.SetSourceAsync(thumbnail);
-        }
-        else
-        {
-            TextBlock textBlock{};
-            textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
-            UserControlToolTip().Content(textBlock);
+                Image image{};
+                image.Height(100);
+                image.Stretch(Stretch::Fill);
+                BitmapImage bitmapImage{};
+                image.Source(bitmapImage);
+                UserControlToolTip().Content(image);
 
-            StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
-            IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
-            wostringstream builder{};
-            if (children.Size() > 1)
-            {
-                for (auto&& storageItem : children)
+                StorageFile file = co_await StorageFile::GetFileFromPathAsync(_filePath);
+                ThumbnailMode thumbnailMode = ThumbnailMode::ListView;
+                /*switch (perceivedFileType)
                 {
-                    builder << storageItem.Name().c_str() << L", ";
-                }
-                wstring text = builder.str();
-
-                DispatcherQueue().TryEnqueue([this, _text = text, textBlock]()
-                {
-                    textBlock.Text(_text);
-                });
+                    case PERCEIVED_TYPE_IMAGE:
+                        thumbnailMode = ThumbnailMode::PicturesView;
+                        break;
+                    case PERCEIVED_TYPE_AUDIO:
+                        thumbnailMode = ThumbnailMode::MusicView;
+                        break;
+                    case PERCEIVED_TYPE_VIDEO:
+                        thumbnailMode = ThumbnailMode::VideosView;
+                        break;
+                    case PERCEIVED_TYPE_TEXT:
+                    case PERCEIVED_TYPE_COMPRESSED:
+                    case PERCEIVED_TYPE_DOCUMENT:
+                        thumbnailMode = ThumbnailMode::SingleItem;
+                        break;
+                    case PERCEIVED_TYPE_FIRST:
+                    case PERCEIVED_TYPE_UNSPECIFIED:
+                    case PERCEIVED_TYPE_FOLDER:
+                    case PERCEIVED_TYPE_UNKNOWN:
+                    case PERCEIVED_TYPE_SYSTEM:
+                    case PERCEIVED_TYPE_APPLICATION:
+                    case PERCEIVED_TYPE_GAMEMEDIA:
+                    case PERCEIVED_TYPE_CONTACTS:
+                    default:
+                        break;
+                }*/
+                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 100, ThumbnailOptions::UseCurrentScale);
+                co_await bitmapImage.SetSourceAsync(thumbnail);
             }
-            else 
+            else
             {
-                DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name(), textBlock]()
+                TextBlock textBlock{};
+                textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                UserControlToolTip().Content(textBlock);
+
+                StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
+                IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
+                wostringstream builder{};
+                if (children.Size() > 1)
                 {
-                    textBlock.Text(_text);
-                });
+                    for (auto&& storageItem : children)
+                    {
+                        builder << storageItem.Name().c_str() << L", ";
+                    }
+                    wstring text = builder.str();
+
+                    DispatcherQueue().TryEnqueue([this, _text = text, textBlock]()
+                    {
+                        textBlock.Text(_text);
+                    });
+                }
+                else
+                {
+                    DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name(), textBlock]()
+                    {
+                        textBlock.Text(_text);
+                    });
+                }
             }
         }
     }
 
-    void FileEntryView::ProgressHandler(Windows::Foundation::IInspectable const&, IReference<uint_fast64_t> const& args)
+    void FileEntryView::OpenWithFlyoutItem_Click(IInspectable const& , RoutedEventArgs const&)
     {
-        uint_fast64_t newSize = args.as<uint_fast64_t>();
-        fileSize += newSize;
-        double displayFileSize = static_cast<double>(fileSize);
-        hstring c_ext = FormatSize(&displayFileSize);
 
-        if (loaded && displayFileSize != _displayFileSize)
+    }
+
+    void FileEntryView::DeleteFlyoutItem_Click(IInspectable const& , RoutedEventArgs const&)
+    {
+        if (!DeleteFile(_filePath.c_str()))
         {
-            DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
-            {
-#if !_DEBUG
-                if (FileSizeExtensionTextBlock() && FileSizeTextBlock())
-                {
-                    FileSizeExtensionTextBlock().Text(c_ext);
-                    FileSizeTextBlock().Text(to_hstring(c_newSize));
-                }
-#else
-                try
-                {
-                    FileSizeExtensionTextBlock().Text(c_ext);
-                    FileSizeTextBlock().Text(to_hstring(c_newSize));
-                }
-                catch (const hresult_error&) {}
-                catch (const std::exception&) {}
-#endif
-            });
+            MainWindow::Current().NotifyError(GetLastError(), L"Could not delete " + _fileName);
         }
+        else
+        {
+            FileNameTextBlock().Opacity(0.5);
+            // raise deleted event or make the FileTabView handle directory changes ?
+        }
+    }
+
+    IAsyncAction FileEntryView::RenameFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        RenameContentDialog().Title(box_value(L"Rename " + _fileName));
+        RenameTextBox().Text(_fileName);
+
+        if (!_isDirectory)
+        {
+            PWSTR ext = PathFindExtension(_filePath.c_str());
+            size_t extLength = wcslen(ext);
+            size_t filePathLength = _fileName.size();
+            int32_t selectionLength = static_cast<int32_t>(filePathLength) - static_cast<int32_t>(extLength);
+
+            RenameTextBox().Select(0, selectionLength);
+        }
+
+        ContentDialogResult result = co_await RenameContentDialog().ShowAsync();
+        if (result == ContentDialogResult::Primary)
+        {
+            if (!RenameTextBox().Text().empty())
+            {
+                RenameFile(RenameTextBox().Text(), GenerateUniqueNameCheckBox().IsChecked().GetBoolean());
+            }
+            else
+            {
+                MainWindow::Current().NotifyUser(L"Cannot rename file", InfoBarSeverity::Error);
+            }
+        }
+    }
+
+    IAsyncAction FileEntryView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        DataPackage data{};
+        data.RequestedOperation(DataPackageOperation::Copy);
+        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
+        if (_isDirectory)
+        {
+            items.Append(co_await StorageFolder::GetFolderFromPathAsync(_filePath));
+        }
+        else
+        {
+            items.Append(co_await StorageFile::GetFileFromPathAsync(_filePath));
+        }
+        data.SetStorageItems(items);
+
+        Clipboard::SetContent(data);
+
+#ifdef _DEBUG
+        XmlDocument toastContent{};
+        XmlElement root = toastContent.CreateElement(L"toast");
+        toastContent.AppendChild(root);
+
+        XmlElement visual = toastContent.CreateElement(L"visual");
+        root.AppendChild(visual);
+
+        XmlElement binding = toastContent.CreateElement(L"binding");
+        binding.SetAttribute(L"template", L"ToastText01");
+        visual.AppendChild(binding);
+
+        XmlElement text = toastContent.CreateElement(L"text");
+        text.SetAttribute(L"id", L"1");
+        text.InnerText(L"Copied " + _fileName + L" to clipboard");
+        binding.AppendChild(text);
+
+        ToastNotification toastNotif{ toastContent };
+        ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+#endif
+    }
+
+    IAsyncAction FileEntryView::CutFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        DataPackage data{};
+        data.RequestedOperation(DataPackageOperation::Move);
+        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
+        if (_isDirectory)
+        {
+            items.Append(co_await StorageFolder::GetFolderFromPathAsync(_filePath));
+        }
+        else
+        {
+            items.Append(co_await StorageFile::GetFileFromPathAsync(_filePath));
+        }
+        data.SetStorageItems(items);
+
+        Clipboard::SetContent(data);
+
+#ifdef _DEBUG
+        XmlDocument toastContent{};
+        XmlElement root = toastContent.CreateElement(L"toast");
+        toastContent.AppendChild(root);
+        XmlElement visual = toastContent.CreateElement(L"visual");
+
+        root.AppendChild(visual);
+
+        XmlElement binding = toastContent.CreateElement(L"binding");
+        binding.SetAttribute(L"template", L"ToastGeneric");
+        visual.AppendChild(binding);
+
+        XmlElement text = toastContent.CreateElement(L"text");
+        text.InnerText(L"Moved " + _fileName + L" to clipboard");
+        binding.AppendChild(text);
+
+        ToastNotification toastNotif{ toastContent };
+        ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+#endif
+    }
+
+
+    inline hstring FileEntryView::FormatSize(double* size)
+    {
+        if (*size >= 0x10000000000)
+        {
+            *size *= (double)100;
+            *size = round(*size / 0x10000000000);
+            *size /= (double)100;
+            return L" Tb";
+        }
+        if (*size >= 0x40000000)
+        {
+            *size *= (double)100;
+            *size = round(*size / 0x40000000);
+            *size /= (double)100;
+            return L" Gb";
+        }
+        if (*size >= 0x100000)
+        {
+            *size *= (double)100;
+            *size = round(*size / 0x100000);
+            *size /= (double)100;
+            return L" Mb";
+        }
+        if (*size >= 0x400)
+        {
+            *size *= (double)100;
+            *size = round(*size / 0x400);
+            *size /= (double)100;
+            return L" Kb";
+        }
+        return L" b";
     }
 
     void FileEntryView::GetAttributes(int64_t attributes)
@@ -406,46 +539,6 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    inline hstring FileEntryView::FormatSize(double* size)
-    {
-        if (*size >= 0x10000000000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x10000000000);
-            *size /= (double)100;
-            return L" Tb";
-        }
-        if (*size >= 0x40000000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x40000000);
-            *size /= (double)100;
-            return L" Gb";
-        }
-        if (*size >= 0x100000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x100000);
-            *size /= (double)100;
-            return L" Mb";
-        }
-        if (*size >= 0x400)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x400);
-            *size /= (double)100;
-            return L" Kb";
-        }
-        return L" b";
-    }
-
-    inline void FileEntryView::UpdateSize(uint_fast64_t const& size)
-    {
-        this->fileSize = size;
-        _displayFileSize = static_cast<double>(size);
-        _fileSizeExtension = FormatSize(&_displayFileSize);
-    }
-
     void FileEntryView::GetIcon(PCWSTR const& ext)
     {
         hstring extension = to_hstring(ext);
@@ -528,7 +621,7 @@ namespace winrt::Winnerino::implementation
             if (result == S_OK)
             {
                 _opensWith = to_hstring(str);
-                openWithFlyoutItem().Text(openWithFlyoutItem().Text() + L" with " + _opensWith);
+                OpenWithFlyoutItem().Text(OpenWithFlyoutItem().Text() + L" with " + _opensWith);
             }
             delete[] str;
         }
@@ -591,5 +684,77 @@ namespace winrt::Winnerino::implementation
                     break;
             }*/
         }
+    }
+
+    void FileEntryView::ProgressHandler(IInspectable const&, IReference<uint_fast64_t> const& args)
+    {
+        uint_fast64_t newSize = args.as<uint_fast64_t>();
+        fileSize += newSize;
+        double displayFileSize = static_cast<double>(fileSize);
+        hstring c_ext = FormatSize(&displayFileSize);
+
+        if (loaded && displayFileSize != _displayFileSize)
+        {
+            DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
+            {
+#if !_DEBUG
+                if (FileSizeExtensionTextBlock() && FileSizeTextBlock())
+                {
+                    FileSizeExtensionTextBlock().Text(c_ext);
+                    FileSizeTextBlock().Text(to_hstring(c_newSize));
+                }
+#else
+                try
+                {
+                    FileSizeExtensionTextBlock().Text(c_ext);
+                    FileSizeTextBlock().Text(to_hstring(c_newSize));
+                }
+                catch (const hresult_error&) {}
+                catch (const std::exception&) {}
+#endif
+            });
+        }
+    }
+
+    IAsyncAction FileEntryView::RenameFile(hstring newName, const bool& generateUnique)
+    {
+#ifdef _DEBUG
+        if (generateUnique && PathFileExists(newName.c_str()))
+        {
+            const hstring& str = newName;
+            newName = str + L"(1)";
+            uint16_t iterator = 2;
+            while (PathFileExists(newName.c_str()))
+            {
+                newName = str + to_hstring(iterator);
+                iterator++;
+            }
+        }
+        
+        StorageFile thisStorageItem = co_await StorageFile::GetFileFromPathAsync(_filePath);
+        StorageFolder parentFolder = co_await thisStorageItem.GetParentAsync();
+
+        hstring newFilePath = parentFolder.Path() + L"\\" + newName;
+
+        if (!MoveFile(_filePath.c_str(), newFilePath.c_str()))
+        {
+            MainWindow::Current().NotifyError(GetLastError(), L"Could not rename " + _fileName);
+        }
+        else
+        {
+            _fileName = newName;
+            _filePath = newFilePath;
+            m_propertyChanged(*this, PropertyChangedEventArgs{ L"FileName" });
+        }
+#else
+        co_return;
+#endif // _DEBUG
+    }
+
+    inline void FileEntryView::UpdateSize(uint_fast64_t const& size)
+    {
+        this->fileSize = size;
+        _displayFileSize = static_cast<double>(size);
+        _fileSizeExtension = FormatSize(&_displayFileSize);
     }
 }

@@ -5,6 +5,7 @@
 #include "winrt/Microsoft.UI.Xaml.Controls.Primitives.h"
 #include "FileEntryView.g.h"
 
+using namespace std;
 using namespace winrt;
 
 namespace winrt::Winnerino::implementation
@@ -38,14 +39,19 @@ namespace winrt::Winnerino::implementation
         void LastWrite(Windows::Foundation::DateTime const& lastWrite) { _lastWrite = lastWrite; };
         bool IsFileDangerous() { return _isDangerous; };
  
-        int64_t Compare(Winnerino::FileEntryView const& other);
+        int16_t Compare(Winnerino::FileEntryView const& other);
 
-        void MenuFlyoutItem_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void MenuFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction ToolTip_Opened(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction ToolTip_Opened(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void OpenWithFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void DeleteFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction RenameFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction CopyFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        Windows::Foundation::IAsyncAction CutFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
         bool loaded = true;
@@ -69,11 +75,12 @@ namespace winrt::Winnerino::implementation
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
 
-        void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
+        inline hstring FormatSize(double* size);
         void GetAttributes(int64_t attributes);
         void GetIcon(PCWSTR const& ext);
         void InitFile(PCWSTR ext);
-        inline hstring FormatSize(double* size);
+        void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
+        Windows::Foundation::IAsyncAction RenameFile(hstring newName, const bool& generateUnique = false);
         inline void UpdateSize(uint_fast64_t const& size);
     };
 }

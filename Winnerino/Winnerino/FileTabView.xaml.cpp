@@ -86,7 +86,7 @@ namespace winrt::Winnerino::implementation
         }
         else
         {
-            for (int16_t i = s.size() - 1; i > 0; i--)
+            for (size_t i = s.size() - 1; i > 0; i--)
             {
                 if (s[i] == '\\')
                 {
@@ -628,6 +628,11 @@ namespace winrt::Winnerino::implementation
                 } while (FindNextFile(handle, &data));
                 FindClose(handle);
                 previousPath = hstring{ path };
+
+                if (FileListView().Items().Size() > 5000)
+                {
+                    MainWindow::Current().NotifyUser(L"Sorting operations may fail because of the large number of files loaded", InfoBarSeverity::Warning);
+                }
             }
             else
             {

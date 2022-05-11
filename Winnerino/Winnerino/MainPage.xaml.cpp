@@ -24,6 +24,4 @@ namespace winrt::Winnerino::implementation
         buildTypeTextBlock().Text(L"Release");
 #endif
     }
-
-    
 }

@@ -5,14 +5,14 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" FontWeight="SemiLight" x:DefaultBindMode="OneWay">
+    mc:Ignorable="d" x:DefaultBindMode="OneWay">
 
     <Grid ColumnSpacing="10" Padding="0,0,15,0" Background="{x:Bind Background}">
         <Grid.ColumnDefinitions>
             <!-- icon -->
             <ColumnDefinition Width="22"/>
             <!-- filename -->
-            <ColumnDefinition Width="3*" MaxWidth="500"/>
+            <ColumnDefinition Width="3*" MaxWidth="900"/>
             <!-- file type -->
             <ColumnDefinition Width="1*"/>
             <!-- attributes -->
@@ -32,7 +32,7 @@
             Foreground="{ThemeResource SystemAccentColor}"/>
         <ProgressRing x:Name="FileSizeProgressRing" Grid.Row="0" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
 
-        <TextBlock Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
+        <TextBlock x:Name="FileNameTextBlock" Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
 
         <TextBlock x:Name="FileTypeName" Text="File type" VerticalAlignment="Center" Grid.Column="2"/>
 
@@ -58,32 +58,50 @@
             <TextBlock x:Name="FileSizeTextBlock" HorizontalAlignment="Right" Grid.Column="0"/>
             <TextBlock x:Name="FileSizeExtensionTextBlock" HorizontalAlignment="Left" Grid.Column="1"/>
         </Grid>
+
+        <ContentDialog 
+            x:Name="RenameContentDialog"
+            DefaultButton="Primary" 
+            PrimaryButtonText="Rename" 
+            SecondaryButtonText="Cancel">
+            <Grid RowSpacing="20" Padding="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="RenameTextBox" PlaceholderText="New name" Grid.Row="0"/>
+
+                <CheckBox x:Name="GenerateUniqueNameCheckBox" Content="Generate unique name" Grid.Row="1"/>
+            </Grid>
+        </ContentDialog>
     </Grid>
+    
     <UserControl.ContextFlyout>
         <MenuFlyout>
             <MenuFlyoutSubItem Text="File">
-                <MenuFlyoutItem x:Name="openWithFlyoutItem" Text="Open">
+                <MenuFlyoutItem x:Name="OpenWithFlyoutItem" Text="Open" Click="OpenWithFlyoutItem_Click">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="OpenWith"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
                 <MenuFlyoutSeparator/>
-                <MenuFlyoutItem Text="Delete">
+                <MenuFlyoutItem x:Name="DeleteFlyoutItem" Text="Delete" Click="DeleteFlyoutItem_Click">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Delete"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Rename">
+                <MenuFlyoutItem x:Name="RenameFlyoutItem" Text="Rename" Click="RenameFlyoutItem_Click">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Rename"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Copy">
+                <MenuFlyoutItem x:Name="CopyFlyoutItem" Text="Copy" Click="CopyFlyoutItem_Click">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Copy"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Cut">
+                <MenuFlyoutItem x:Name="CutFlyoutItem" Text="Cut" Click="CutFlyoutItem_Click">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Cut"/>
                     </MenuFlyoutItem.Icon>
@@ -110,6 +128,6 @@
     </UserControl.ContextFlyout>
 
     <ToolTipService.ToolTip>
-        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind Width, Mode=OneWay}" Opened="ToolTip_Opened"/>
+        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind Width}" Opened="ToolTip_Opened"/>
     </ToolTipService.ToolTip>
 </UserControl>
