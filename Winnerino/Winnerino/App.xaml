@@ -20,6 +20,8 @@
 
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
 
+            <Thickness x:Key="StackPanelSettingMargin">30,0,0,0</Thickness>
+            
             <!--#region Font icons -->
             <x:String x:Key="DirectoryFontIconGlyph">&#xe8d5;</x:String>
             <x:String x:Key="FileFontIconGlyph">&#xE8A5;</x:String>
@@ -39,7 +41,7 @@
             <!--#endregion-->
 
             <!--#region Styles -->
-            <Style x:Key="HomeButtonStyle" TargetType="Button" BasedOn="{ThemeResource DefaultButtonStyle}">
+            <Style x:Key="HomeButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
                 <Setter Property="Padding" Value="10"/>
                 <Setter Property="Margin" Value="10"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -49,7 +51,7 @@
                 <Setter Property="MaxHeight" Value="200"/>
             </Style>
 
-            <Style x:Key="HomeTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{ThemeResource HeaderTextBlockStyle}">
+            <Style x:Key="HomeTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextBlockStyle}">
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
@@ -60,14 +62,32 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
 
-            <Style x:Key="DriveListViewItemStyle" TargetType="ListViewItem" BasedOn="{ThemeResource DefaultListViewItemStyle}">
+            <Style x:Key="DriveListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
                 <Setter Property="Padding" Value="0,0,0,0"/>
                 <Setter Property="Margin" Value="0"/>
                 <Setter Property="Width" Value="90"/>
             </Style>
-            <Style x:Key="FileListViewItemStyle" TargetType="ListViewItem" BasedOn="{ThemeResource DefaultListViewItemStyle}">
+            
+            <Style x:Key="FileListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
                 <Setter Property="Padding" Value="10,0,5,0"/>
                 <Setter Property="Margin" Value="0"/>
+            </Style>
+
+            <Style x:Key="ExpanderSettingStyle" TargetType="Expander">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            </Style>
+
+            <Style x:Key="PathNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Height" Value="35"/>
             </Style>
             <!--#endregion-->
         </ResourceDictionary>

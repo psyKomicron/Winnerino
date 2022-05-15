@@ -3,6 +3,7 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 #include "DirectorySizeCalculator.h"
+#include "FilePropertiesWindow.xaml.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -45,6 +46,15 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
+#if _DEBUG
     window = make<MainWindow>();
     window.Activate();
+#endif // !_DEBUG
+
+
+#if _DEBUG && FALSE
+    Window testWindow = make<FilePropertiesWindow>();
+    testWindow.Activate();
+#endif // _DEBUG
+
 }
