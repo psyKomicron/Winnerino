@@ -24,6 +24,9 @@
       <Filter>Controls</Filter>
     </Page>
     <Page Include="FilePropertiesWindow.xaml" />
+    <Page Include="TabViewItemHeader.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />

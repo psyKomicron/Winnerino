@@ -164,6 +164,10 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="TabViewItemHeader.xaml.h">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -187,6 +191,9 @@
     </Page>
     <Page Include="MainWindow.xaml" />
     <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TabViewItemHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
@@ -235,6 +242,10 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="TabViewItemHeader.xaml.cpp">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl">
@@ -274,6 +285,10 @@
     </Midl>
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="TabViewItemHeader.idl">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>
