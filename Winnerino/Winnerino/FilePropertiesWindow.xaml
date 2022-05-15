@@ -7,7 +7,119 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="RootGrid" Background="{StaticResource PageBackgroundBrush}">
-        <TextBlock Text="Test window" Style="{StaticResource HeaderTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid x:Name="TitleBarGrid" Background="{ThemeResource PageBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="ContentColumn" Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TabView 
+            x:Name="LocalTabView"
+            VerticalAlignment="Stretch"
+            CornerRadius="5"
+            CanReorderTabs="True"
+            TabWidthMode="Equal"
+            Grid.Column="1"
+            Grid.RowSpan="2"
+            TabCloseRequested="LocalTabView_TabCloseRequested"
+            AddTabButtonClick="LocalTabView_AddTabButtonClick"
+            Loaded="TitleBarGrid_Loaded">
+            <TabView.TabStripHeader>
+                <Grid x:Name="TabStripHeader" HorizontalAlignment="Stretch" Background="DarkSlateBlue">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                        <ColumnDefinition x:Name="LeftDragColumn" Width="*" MaxWidth="20"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </TabView.TabStripHeader>
+            <TabView.TabStripFooter>
+                <Grid x:Name="TabStripFooter" HorizontalAlignment="Stretch" Background="DarkSlateBlue" SizeChanged="TabStripFooter_SizeChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
+                        <ColumnDefinition x:Name="RightPaddingColumn" Width="138"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </TabView.TabStripFooter>
+
+            <TabViewItem Header="Display" Height="40">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Window width:"/>
+                        <TextBlock x:Name="WindowWidthTextBlock"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Drag rectangle X:"/>
+                        <TextBlock x:Name="FooterX"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Drag rectangle width:"/>
+                        <TextBlock x:Name="FooterWidth"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Tab strip footer width:"/>
+                        <TextBlock x:Name="RightPaddingTextBlock"/>
+                    </StackPanel>
+                </StackPanel>
+            </TabViewItem>
+        </TabView>
+
+        <!--<Grid SizeChanged="TabStripFooter_SizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition x:Name="LeftDragColumn" Width="*" MaxWidth="20"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="138"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="2" Content="Button 1"/>
+            <Button Grid.Column="3" Content="Button 2"/>
+            <Button Grid.Column="4" Content="Button 3"/>
+            <Button Grid.Column="5" Content="Button 4"/>
+            <Button Grid.Column="6" Content="Button 5"/>
+            <Button Grid.Column="7" Content="Button 6"/>
+            <Button Grid.Column="8" Content="Button 7"/>
+            <Button Grid.Column="9" Content="Button 8"/>
+            <Button Grid.Column="10" Content="Button 9"/>
+
+            <Border Grid.Column="11" Background="DarkSlateGray"/>
+            <Border Grid.Column="1" Background="DarkSlateGray"/>
+        </Grid>
+
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="20" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Window width:"/>
+                <TextBlock x:Name="WindowWidthTextBlock"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Drag rectangle X:"/>
+                <TextBlock x:Name="FooterX"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Drag rectangle width:"/>
+                <TextBlock x:Name="FooterWidth"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Tab strip footer width:"/>
+                <TextBlock x:Name="RightPaddingTextBlock"/>
+            </StackPanel>
+        </StackPanel>-->
     </Grid>
 </Window>

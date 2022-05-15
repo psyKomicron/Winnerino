@@ -4,11 +4,15 @@
 #include "FilePropertiesWindow.g.cpp"
 #endif
 
+#define INVALIDATE_VIEW 0
+#define RESET_TITLE_BAR 0
+
 using namespace winrt;
-using namespace winrt::Windows::Graphics;
 using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI;
-using namespace Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Windows::Graphics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,7 +27,47 @@ namespace winrt::Winnerino::implementation
 
     FilePropertiesWindow::~FilePropertiesWindow()
     {
+        appWindow.Changed(appWindowChangedEventToken);
         appWindow.Destroy();
+    }
+
+    void FilePropertiesWindow::TitleBarGrid_Loaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        if (AppWindowTitleBar::IsCustomizationSupported() && appWindow.TitleBar().ExtendsContentIntoTitleBar())
+        {
+            //SetDragRectangles();
+        }
+    }
+
+    void FilePropertiesWindow::LocalTabView_TabCloseRequested(TabView const& sender, TabViewTabCloseRequestedEventArgs const& args)
+    {
+        uint32_t indexOf;
+        if (sender.TabItems().IndexOf(args.Item(), indexOf))
+        {
+            sender.TabItems().RemoveAt(indexOf); // why do we need to do this ? Can't the TabView do that itself ?
+        }
+    }
+
+    void FilePropertiesWindow::LocalTabView_AddTabButtonClick(TabView const& sender, IInspectable const&)
+    {
+        TabViewItem item{};
+        item.Header(box_value(L"New tab"));
+        sender.TabItems().Append(item);
+    }
+
+    void FilePropertiesWindow::TabStripFooter_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
+    {
+        OutputDebugString(L"Size changed\n");
+        SetDragRectangles();
+    }
+
+
+    void FilePropertiesWindow::OnWindowChanged(winrt::Microsoft::UI::Windowing::AppWindow const&, winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args)
+    {
+        /*if (args.DidSizeChange())
+        {
+            SetDragRectangles();
+        }*/
     }
 
     void FilePropertiesWindow::InitWindow()
@@ -40,22 +84,23 @@ namespace winrt::Winnerino::implementation
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
+        appWindowChangedEventToken = appWindow.Changed({ this, &FilePropertiesWindow::OnWindowChanged });
         appWindow.Title(L"Properties");
         if (appWindow != nullptr)
         {
             RectInt32 rect{};
-            rect.Height = 500;
-            rect.Width = 200;
+            rect.Height = 400;
+            rect.Width = 1200;
             rect.X = 100;
             rect.Y = 100;
             appWindow.MoveAndResize(rect);
 
             if (AppWindowTitleBar::IsCustomizationSupported())
             {
-                appWindow.TitleBar().ExtendsContentIntoTitleBar(false);
+                appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
 
-                //appWindow.TitleBar().ButtonBackgroundColor = Tool.GetAppRessource<Color>("DarkBlack");
-                appWindow.TitleBar().ButtonBackgroundColor(Colors::Black());
+                appWindow.TitleBar().ButtonBackgroundColor(
+                    Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 appWindow.TitleBar().ButtonForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
@@ -66,6 +111,8 @@ namespace winrt::Winnerino::implementation
                 appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
+
+                appWindow.TitleBar().PreferredHeightOption(TitleBarHeightOption::Tall);
             }
             else // hide title bar
             {
@@ -77,5 +124,67 @@ namespace winrt::Winnerino::implementation
                 contentGrid().RowDefinitions().RemoveAt(0);*/
             }
         }
+    }
+
+    void FilePropertiesWindow::SetDragRectangles()
+    {
+#if RESET_TITLE_BAR
+        appWindow.TitleBar().ResetToDefault();
+        appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
+#endif // DEBUG
+
+        HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
+        uint8_t leftAdditionalPadding = 0;
+        UINT windowDpi = GetDpiForWindow(windowHandle);
+
+        uint16_t dpi = (windowDpi * static_cast<double>(100) + (static_cast<double>(96) / 2)) / 96;
+        double scale = dpi / static_cast<double>(100);
+
+        uint8_t appTitleBarHeight = 48 * scale;
+
+        double leftPadding = appWindow.TitleBar().LeftInset() / scale;
+        double rightPadding = appWindow.TitleBar().RightInset() / scale;
+
+        RightPaddingColumn().Width(GridLength{ rightPadding });
+        LeftPaddingColumn().Width(GridLength{ leftPadding });
+
+        RectInt32 dragRectangleRight{};
+        dragRectangleRight.X = (appWindow.ClientSize().Width - RightDragColumn().ActualWidth() - RightPaddingColumn().ActualWidth()) * scale;
+        dragRectangleRight.Y = 0;
+        dragRectangleRight.Height = appTitleBarHeight;
+        dragRectangleRight.Width = RightDragColumn().ActualWidth() * scale;
+
+        RectInt32 dragRectangleLeft{};
+        dragRectangleLeft.X = LeftPaddingColumn().ActualWidth() * scale;
+        dragRectangleLeft.Y = 0;
+        dragRectangleLeft.Height = appTitleBarHeight;
+        dragRectangleLeft.Width = LeftDragColumn().ActualWidth() * scale;
+
+        if (dragRectangleLeft.Width < 0)
+        {
+            dragRectangleLeft.Width = 0;
+        }
+        if (dragRectangleRight.Width < 0)
+        {
+            dragRectangleRight.Width = 0;
+        }
+
+        RectInt32 dragRectangles[2]{ dragRectangleRight, dragRectangleLeft };
+        appWindow.TitleBar().SetDragRectangles(dragRectangles);
+
+#if INVALIDATE_VIEW
+        TitleBarGrid().InvalidateMeasure();
+        TitleBarGrid().InvalidateArrange();
+        LocalTabView().IsHitTestVisible(true);
+        //LocalTabView().InvalidateViewport();  
+#endif // INVALIDATE_VIEW
+
+        OutputDebugString((L"X = " + to_hstring(dragRectangleRight.X) + L", Y = " + to_hstring(dragRectangleRight.Y) + L" | "
+                          + L"Width = " + to_hstring(dragRectangleRight.Width) + L", Height = " + to_hstring(dragRectangleRight.Height) + L"\n").c_str());
+
+        FooterWidth().Text(to_hstring(dragRectangleRight.Width));
+        FooterX().Text(to_hstring(dragRectangleRight.X));
+        WindowWidthTextBlock().Text(to_hstring(appWindow.ClientSize().Width));
+        RightPaddingTextBlock().Text(to_hstring(RightPaddingColumn().ActualWidth()));
     }
 }
