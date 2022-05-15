@@ -6,248 +6,339 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Loaded="UserControl_Loaded">
+    <!--<VisualStateManager.VisualStateGroups>
+        <VisualStateGroup x:Name="LayoutVisualStates">
+            <VisualState x:Name="NormalLayout">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="730"/>
+                </VisualState.StateTriggers>
 
-    <Grid VerticalAlignment="Stretch" RowSpacing="5" ColumnSpacing="5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+                <VisualState.Setters>
+                    <Setter Target="ContentNavigationView." Value="*"/>
+                </VisualState.Setters>
+            </VisualState>
 
-        <Grid Margin="5,0" VerticalAlignment="Stretch" Grid.ColumnSpan="5">
+            <VisualState x:Name="NarrowLayout">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="0"/>
+                </VisualState.StateTriggers>
+
+                <VisualState.Setters>
+                    <Setter Target="LeftColumn.Width" Value="0"/>
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>-->
+
+    <NavigationView 
+        x:Name="ContentNavigationView"
+        Grid.RowSpan="2" 
+        Grid.Column="0" 
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+        CornerRadius="0,5,0,0"
+        OpenPaneLength="230"
+        SelectionFollowsFocus="Disabled"
+        IsSettingsVisible="False"
+        IsBackButtonVisible="Collapsed">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Documents">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe8a5;"/>
+                </NavigationViewItem.Icon>
+
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+
+            <NavigationViewItem Content="Downloads">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe896;"/>
+                </NavigationViewItem.Icon>
+
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+
+            <NavigationViewItem Content="Music">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xec4f;"/>
+                </NavigationViewItem.Icon>
+
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+
+            <NavigationViewItem Content="Pictures">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe8b9;"/>
+                </NavigationViewItem.Icon>
+
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+
+            <NavigationViewItem Content="Videos">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe714;"/>
+                </NavigationViewItem.Icon>
+
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Background="{ThemeResource TabViewSelectedItemBorderBrush}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0" Margin="0,0,10,0">
+            <Grid Margin="5,0" VerticalAlignment="Stretch" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="40"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button 
+                <Grid Grid.Column="0" Margin="0,0,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        Style="{StaticResource PathNavigationButtonStyle}" 
+                        Grid.Column="0"
+                        Click="BackButton_Click">
+                        <Button.Content>
+                            <FontIcon Glyph="&#xe72b;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        Style="{StaticResource PathNavigationButtonStyle}" 
+                        Grid.Column="1" 
+                        Click="ForwardButton_Click">
+                        <Button.Content>
+                            <FontIcon Glyph="&#xe72a;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        x:Name="UpButton"
+                        Style="{StaticResource PathNavigationButtonStyle}"
+                        Grid.Column="2"
+                        Click="UpButton_Click">
+                        <Button.Content>
+                            <FontIcon Glyph="&#xe74a;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+
+                    <AutoSuggestBox 
+                        x:Name="PathInputBox"
+                        PlaceholderText="Path"
+                        MinHeight="35"
+                        MaxHeight="35"
+                        UpdateTextOnSelect="False"
+                        VerticalAlignment="Center"
+                        MaxSuggestionListHeight="200"
+                        Grid.Column="3"
+                        SuggestionChosen="PathInputBox_SuggestionChosen"
+                        GotFocus="PathInputBox_GotFocus"
+                        TextChanged="PathInputBox_TextChanged"
+                        QuerySubmitted="PathInputBox_QuerySubmitted"/>
+                </Grid>
+
+                <ToggleSplitButton
+                    x:Name="InputModeButton"
+                    ToolTipService.ToolTip="Switch between path input and search input" 
+                    ToolTipService.Placement="Bottom"
                     VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    VerticalContentAlignment="Center"
-                    HorizontalContentAlignment="Center"
-                    Grid.Column="0"
-                    Style="{StaticResource AlternateCloseButtonStyle}" 
-                    Click="BackAppBarButton_Click">
-                    <Button.Content>
-                        <FontIcon Glyph="&#xe72b;" FontSize="14"/>
-                    </Button.Content>
-                </Button>
+                    MaxHeight="35" 
+                    Grid.Column="1"
+                    Click="InputModeButton_Click">
+                    <ToggleSplitButton.Content>
+                        <FontIcon Glyph="&#xe71e;" FontSize="13"/>
+                    </ToggleSplitButton.Content>
 
-                <Button
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    VerticalContentAlignment="Center"
-                    HorizontalContentAlignment="Center"
-                    Style="{StaticResource AlternateCloseButtonStyle}" 
-                    Grid.Column="1" 
-                    Click="ForwardAppBarButton_Click">
-                    <Button.Content>
-                        <FontIcon Glyph="&#xe72a;" FontSize="14"/>
-                    </Button.Content>
-                </Button>
+                    <ToggleSplitButton.Flyout>
+                        <MenuFlyout>
+                            <ToggleMenuFlyoutItem 
+                                x:Name="UseRegexButton"
+                                Text="Re" 
+                                FontFamily="Cascadia Code" 
+                                FontSize="14" 
+                                ToolTipService.ToolTip="Use regular expression to search for files" 
+                                ToolTipService.Placement="Bottom"/>
+                        </MenuFlyout>
+                    </ToggleSplitButton.Flyout>
+                </ToggleSplitButton>
 
-                <AutoSuggestBox 
-                    x:Name="PathInputBox"
-                    PlaceholderText="Path"
-                    MinHeight="35"
-                    MaxHeight="35"
-                    UpdateTextOnSelect="False"
-                    VerticalAlignment="Center"
-                    MaxSuggestionListHeight="200"
-                    Grid.Column="2"
-                    SuggestionChosen="PathInputBox_SuggestionChosen"
-                    GotFocus="PathInputBox_GotFocus"
-                    TextChanged="PathInputBox_TextChanged"
-                    QuerySubmitted="PathInputBox_QuerySubmitted"/>
-            </Grid>
+                <CommandBar x:Name="FileCommandBar" HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Column="2">
+                    <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                        <DropDownButton Height="37" Width="60" Background="Transparent" BorderThickness="0">
+                            <DropDownButton.Content>
+                                <FontIcon Glyph="&#xE710;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                            </DropDownButton.Content>
 
-            <ToggleSplitButton
-                x:Name="InputModeButton"
-                ToolTipService.ToolTip="Switch between path input and search input" 
-                ToolTipService.Placement="Bottom"
-                VerticalAlignment="Stretch"
-                MaxHeight="35" 
-                Grid.Column="1"
-                Click="InputModeButton_Click">
-                <ToggleSplitButton.Content>
-                    <FontIcon Glyph="&#xe71e;" FontSize="13"/>
-                </ToggleSplitButton.Content>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
 
-                <ToggleSplitButton.Flyout>
-                    <MenuFlyout>
-                        <ToggleMenuFlyoutItem 
-                            x:Name="UseRegexButton"
-                            Text="Re" 
-                            FontFamily="Cascadia Code" 
-                            FontSize="14" 
-                            ToolTipService.ToolTip="Use regular expression to search for files" 
-                            ToolTipService.Placement="Bottom"/>
-                    </MenuFlyout>
-                </ToggleSplitButton.Flyout>
-            </ToggleSplitButton>
+                                    <MenuFlyoutItem Text="File">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE8A5;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
 
-            <CommandBar x:Name="FileCommandBar" HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Column="2">
-                <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
-                    <DropDownButton Height="37" Width="60" Background="Transparent" BorderThickness="0">
-                        <DropDownButton.Content>
-                            <FontIcon Glyph="&#xE710;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
-                        </DropDownButton.Content>
+                                    <MenuFlyoutItem Text="Folder">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="NewFolder"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                    </AppBarElementContainer>
 
-                        <DropDownButton.Flyout>
-                            <MenuFlyout Placement="BottomEdgeAlignedLeft">
-
-                                <MenuFlyoutItem Text="File">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xE8A5;"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-
-                                <MenuFlyoutItem Text="Folder">
-                                    <MenuFlyoutItem.Icon>
-                                        <SymbolIcon Symbol="NewFolder"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                            </MenuFlyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
-
-                <AppBarSeparator/>
-                <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
-                    <DropDownButton Background="Transparent" BorderThickness="0" Height="37" IsEnabled="True">
-                        <DropDownButton.Content>
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                                <FontIcon Glyph="&#xE8CB;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
-                                <TextBlock Text="Sort" FontSize="14"/>
-                            </StackPanel>
-                        </DropDownButton.Content>
-
-                        <DropDownButton.Flyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem x:Name="AlphabeticalSortButton" Text="Alphabetical" IsEnabled="False" Click="AlphabeticalSortButton_Click"/>
-                                <MenuFlyoutItem Text="Size ascending" IsEnabled="False"/>
-                                <MenuFlyoutItem x:Name="SizeDescSortButton" Text="Size descending" Click="SizeDescSortButton_Click"/>
-                            </MenuFlyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
-
-                <CommandBar.SecondaryCommands>
-                    <AppBarButton x:Name="FavoriteButton" Label="Add to favorites" Icon="Favorite"  Click="FavoriteButton_Click"/>
-                    <AppBarButton x:Name="ClearFavoritesButton" Label="Clear favorites"  Click="ClearFavoritesButton_Click"/>
-                    <AppBarButton x:Name="RefreshButton" Label="Refresh" Icon="Refresh" Click="RefreshButton_Click"/>
                     <AppBarSeparator/>
-                    <AppBarButton Label="Options" Icon="Setting"/>
-                </CommandBar.SecondaryCommands>
-            </CommandBar>
-        </Grid>
+                    <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                        <DropDownButton Background="Transparent" BorderThickness="0" Height="37" IsEnabled="True">
+                            <DropDownButton.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                                    <FontIcon Glyph="&#xE8CB;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                                    <TextBlock Text="Sort" FontSize="14"/>
+                                </StackPanel>
+                            </DropDownButton.Content>
 
-        <ListView 
-            x:Name="FileListView" 
-            CornerRadius="5,0,0,0" 
-            IsItemClickEnabled="True" 
-            IsDoubleTapEnabled="True"
-            SelectionMode="Extended"
-            DoubleTapped="ListView_DoubleTapped"
-            SelectionChanged="FileListView_SelectionChanged"
-            Grid.Row="1"
-            Grid.ColumnSpan="4">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsStackPanel GroupPadding="0"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-        </ListView>
-        
-        <ProgressRing
-            x:Name="ProgressRing" 
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Height="50"
-            Width="50"
-            Visibility="Collapsed"
-            IsIndeterminate="True"
-            IsHitTestVisible="False"
-            Grid.Row="1"
-            Grid.ColumnSpan="4"/>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem x:Name="AlphabeticalSortButton" Text="Alphabetical" IsEnabled="False" Click="AlphabeticalSortButton_Click"/>
+                                    <MenuFlyoutItem Text="Size ascending" IsEnabled="False"/>
+                                    <MenuFlyoutItem x:Name="SizeDescSortButton" Text="Size descending" Click="SizeDescSortButton_Click"/>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                    </AppBarElementContainer>
 
-        <Grid
-            VerticalAlignment="Bottom"
-            Padding="10,3" 
-            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:DefaultBindMode="OneWay"
-            ColumnSpacing="20"
-            Grid.Row="2">
-            <Grid.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="FontSize" Value="12"/>
-                    <Setter Property="FontWeight" Value="SemiLight"/>
-                    <Setter Property="FontStretch" Value="Expanded"/>
-                </Style>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+                    <CommandBar.SecondaryCommands>
+                        <AppBarButton x:Name="FavoriteButton" Label="Add to favorites" Icon="Favorite"  Click="FavoriteButton_Click"/>
+                        <AppBarButton x:Name="ClearFavoritesButton" Label="Clear favorites"  Click="ClearFavoritesButton_Click"/>
+                        <AppBarButton x:Name="RefreshButton" Label="Refresh" Icon="Refresh" Click="RefreshButton_Click"/>
+                        <AppBarSeparator/>
+                        <AppBarButton x:Name="SettingsButton" Label="Settings" Icon="Setting" Click="SettingsButton_Click"/>
+                    </CommandBar.SecondaryCommands>
+                </CommandBar>
+            </Grid>
 
-            <Grid ColumnSpacing="20" Grid.Column="0">
+            <ListView 
+                x:Name="FileListView" 
+                CornerRadius="5,0,0,0" 
+                IsItemClickEnabled="True" 
+                IsDoubleTapEnabled="True"
+                SelectionMode="Extended"
+                DoubleTapped="ListView_DoubleTapped"
+                SelectionChanged="FileListView_SelectionChanged"
+                Grid.Row="1"
+                    Grid.Column="1">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel GroupPadding="0"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+            <ProgressRing
+                x:Name="ProgressRing" 
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Height="50"
+                Width="50"
+                Visibility="Collapsed"
+                IsIndeterminate="True"
+                IsHitTestVisible="False"
+                Grid.Row="1"
+                Grid.ColumnSpan="4"/>
+
+            <Grid
+                x:DefaultBindMode="OneWay"
+                VerticalAlignment="Bottom"
+                Padding="10,3" 
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+                ColumnSpacing="20"
+                Grid.Row="2"
+                Grid.ColumnSpan="2">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="FontWeight" Value="SemiLight"/>
+                        <Setter Property="FontStretch" Value="Expanded"/>
+                    </Style>
+                </Grid.Resources>
                 <Grid.ColumnDefinitions>
-                    <!--number of items-->
-                    <ColumnDefinition Width="Auto"/>
-                    <!--number of selected items-->
-                    <ColumnDefinition Width="Auto"/>
-                    <!--size-->
-                    <ColumnDefinition Width="56"/>
-                    <!--open with-->
-                    <ColumnDefinition Width="Auto"/>
-                    <!--file perceived type-->
+                    <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0">
+                <Grid ColumnSpacing="20" Grid.Column="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <!--number of items-->
+                        <ColumnDefinition Width="Auto"/>
+                        <!--number of selected items-->
+                        <ColumnDefinition Width="Auto"/>
+                        <!--size-->
+                        <ColumnDefinition Width="56"/>
+                        <!--open with-->
+                        <ColumnDefinition Width="Auto"/>
+                        <!--file perceived type-->
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{x:Bind ItemCount}" VerticalAlignment="Center" Grid.Column="0"/>
-                    <TextBlock Text="items" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind ItemCount}" VerticalAlignment="Center" Grid.Column="0"/>
+                        <TextBlock Text="items" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind SelectedItemsCount}" VerticalAlignment="Center"  Grid.Column="0"/>
+                        <TextBlock Text="selected" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+                    </Grid>
+
+                    <TextBlock x:Name="FileSizeTextBlock" ToolTipService.ToolTip="Selected item(s) size" HorizontalAlignment="Center" Grid.Column="2"/>
+                    <TextBlock x:Name="FileOpenAppTextBlock" ToolTipService.ToolTip="Opens with" Grid.Column="3"/>
+                    <TextBlock x:Name="FilePerceivedTypeTextBlock" ToolTipService.ToolTip="File perceived type" Grid.Column="4"/>
                 </Grid>
 
-                <Grid Grid.Column="1">
+                <Grid ColumnSpacing="10" Grid.Column="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <!--is dangerous-->
+                        <ColumnDefinition Width="22"/>
+                        <!--last write-->
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{x:Bind SelectedItemsCount}" VerticalAlignment="Center"  Grid.Column="0"/>
-                    <TextBlock Text="selected" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+
+                    <FontIcon x:Name="FileDangerousFontIcon" FontSize="12" Glyph="&#xe7ba;" Visibility="Collapsed" ToolTipService.ToolTip="File considered dangerous" Grid.Column="0"/>
+                    <TextBlock x:Name="FileLastWriteTextBlock" ToolTipService.ToolTip="Last write" Grid.Column="1"/>
                 </Grid>
-
-                <TextBlock x:Name="FileSizeTextBlock" ToolTipService.ToolTip="Selected item(s) size" HorizontalAlignment="Center" Grid.Column="2"/>
-                <TextBlock x:Name="FileOpenAppTextBlock" ToolTipService.ToolTip="Opens with" Grid.Column="3"/>
-                <TextBlock x:Name="FilePerceivedTypeTextBlock" ToolTipService.ToolTip="File perceived type" Grid.Column="4"/>
-            </Grid>
-
-            <Grid ColumnSpacing="10" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <!--is dangerous-->
-                    <ColumnDefinition Width="22"/>
-                    <!--last write-->
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <FontIcon x:Name="FileDangerousFontIcon" FontSize="12" Glyph="&#xe7ba;" Visibility="Collapsed" ToolTipService.ToolTip="File considered dangerous" Grid.Column="0"/>
-                <TextBlock x:Name="FileLastWriteTextBlock" ToolTipService.ToolTip="Last write" Grid.Column="1"/>
             </Grid>
         </Grid>
-    </Grid>
+    </NavigationView>
 </UserControl>

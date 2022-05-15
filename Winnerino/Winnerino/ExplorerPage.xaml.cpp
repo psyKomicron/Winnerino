@@ -91,21 +91,13 @@ namespace winrt::Winnerino::implementation
     void ExplorerPage::TabView_AddTabButtonClick(TabView const&, IInspectable const&)
     {
         TabViewItem tab{};
-        TextBox header{};
-
-        header.Text(L"Empty");
-        MenuFlyout flyout{};
-        MenuFlyoutItem flyoutItem{};
-        flyoutItem.Text(L"Rename");
-        flyout.Items().Append(flyoutItem);
-
+        TabViewItemHeader header{ L"Empty" };
         tab.Header(header);
-
-        header.ContextFlyout(flyout);
         tab.Content(FileTabView{});
-        tab.Margin(Thickness{});
 
+        uint32_t tabIndex = FilesTabView().TabItems().Size();
         FilesTabView().TabItems().Append(tab);
+        FilesTabView().SelectedIndex(tabIndex);
     }
 
     void ExplorerPage::SavePage()
@@ -124,7 +116,7 @@ namespace winrt::Winnerino::implementation
                 UserControl control = tab.Content().try_as<Winnerino::FileTabView>();
                 if (control)
                 {
-                    hstring tabName = tab.Header().as<TextBox>().Text();
+                    hstring tabName = tab.Header().as<TabViewItemHeader>().Text();
                     hstring path = control.FindName(L"PathInputBox").as<AutoSuggestBox>().Text();
 
                     ApplicationDataCompositeValue composite{};

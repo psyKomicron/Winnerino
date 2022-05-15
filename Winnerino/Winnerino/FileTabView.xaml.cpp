@@ -39,7 +39,7 @@ namespace winrt::Winnerino::implementation
     FileTabView::FileTabView()
     {
         InitializeComponent();
-        mainWindowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
+        //mainWindowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
     }
 
     FileTabView::FileTabView(hstring path)
@@ -180,7 +180,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::FileListView_SelectionChanged(IInspectable const&, SelectionChangedEventArgs const& e)
+    void FileTabView::FileListView_SelectionChanged(IInspectable const&, SelectionChangedEventArgs const&)
     {
         m_propertyChanged(*this, PropertyChangedEventArgs{ L"SelectedItemsCount" });
 
@@ -213,7 +213,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::BackAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void FileTabView::BackButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         if (!backStack.empty())
         {
@@ -224,7 +224,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::ForwardAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void FileTabView::ForwardButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         if (!forwardStack.empty())
         {
@@ -410,6 +410,11 @@ namespace winrt::Winnerino::implementation
     {
         ApplicationDataContainer explorerSettings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         explorerSettings.DeleteContainer(L"Favorites");
+    }
+
+    void FileTabView::SettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        MainWindow::Current().NavigateTo(xaml_typename<SettingsPage>());
     }
 
 
@@ -604,44 +609,56 @@ namespace winrt::Winnerino::implementation
             FileListView().Items().Clear();
             ProgressRing().Visibility(Visibility::Visible);
 
-            WIN32_FIND_DATA data{};
-            HANDLE handle = FindFirstFile((path + L"*").c_str(), &data);
-            if (handle != INVALID_HANDLE_VALUE)
+            concurrency::create_task([this, _path = path]()
             {
-                bool showSpecialFolders = ShowSpecialFolders();
-                do
+                WIN32_FIND_DATA data{};
+                HANDLE handle = FindFirstFile((_path + L"*").c_str(), &data);
+                if (handle != INVALID_HANDLE_VALUE)
                 {
-                    hstring fileName = to_hstring(data.cFileName);
-                    if (showSpecialFolders || (fileName != L".." && fileName != L"."))
+                    bool showSpecialFolders = ShowSpecialFolders();
+                    uint32_t loadedFiles = 0;
+                    do
                     {
-                        WCHAR combinedPath[ALTERNATE_MAX_PATH]{ 0 };
-                        PathCombine(combinedPath, path.c_str(), fileName.c_str());
-                        hstring filePath = to_hstring(combinedPath);
+                        hstring fileName = to_hstring(data.cFileName);
+                        if (showSpecialFolders || (fileName != L".." && fileName != L"."))
+                        {
+                            WCHAR combinedPath[ALTERNATE_MAX_PATH]{ 0 };
+                            PathCombine(combinedPath, _path.c_str(), fileName.c_str());
+                            hstring filePath = to_hstring(combinedPath);
 
-                        int64_t size = (static_cast<int64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
-                        DateTime modifiedDate = clock::from_FILETIME(data.ftLastWriteTime);
-                        FileEntryView view = FileEntryView(fileName, filePath, size, data.dwFileAttributes);
-                        view.LastWrite(modifiedDate);
-                        view.Background(FileListView().Background());
-                        FileListView().Items().Append(view);
+                            int64_t size = (static_cast<int64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
+                            DateTime modifiedDate = clock::from_FILETIME(data.ftLastWriteTime);
+
+                            DispatcherQueue().TryEnqueue([this, fileName, filePath, size, attributes = data.dwFileAttributes, modifiedDate]()
+                            {
+                                FileEntryView view = FileEntryView(fileName, filePath, size, attributes);
+                                view.LastWrite(modifiedDate);
+                                view.Background(FileListView().Background());
+                                FileListView().Items().Append(view);
+                            });
+                            loadedFiles++;
+                        }
+                    } while (FindNextFile(handle, &data));
+                    FindClose(handle);
+                    previousPath = hstring{ _path };
+                    
+                    if (loadedFiles > 5000)
+                    {
+                        MainWindow::Current().NotifyUser(L"Sorting operations may fail because of the large number of files loaded", InfoBarSeverity::Warning);
                     }
-                } while (FindNextFile(handle, &data));
-                FindClose(handle);
-                previousPath = hstring{ path };
-
-                if (FileListView().Items().Size() > 5000)
-                {
-                    MainWindow::Current().NotifyUser(L"Sorting operations may fail because of the large number of files loaded", InfoBarSeverity::Warning);
                 }
-            }
-            else
-            {
-                MainWindow::Current().NotifyError(GetLastError());
-            }
+                else
+                {
+                    MainWindow::Current().NotifyError(GetLastError());
+                }
 
-            m_propertyChanged(*this, PropertyChangedEventArgs{ L"ItemCount" });
-            PathInputBox().Text(path);
-            ProgressRing().Visibility(Visibility::Collapsed);
+                DispatcherQueue().TryEnqueue([this, _path]()
+                {
+                    PathInputBox().Text(_path);
+                    m_propertyChanged(*this, PropertyChangedEventArgs{ L"ItemCount" });
+                    ProgressRing().Visibility(Visibility::Collapsed);
+                });
+            });
         }
         else
         {
@@ -760,4 +777,9 @@ namespace winrt::Winnerino::implementation
     {
         SavePage();
     }
+}
+
+void winrt::Winnerino::implementation::FileTabView::UpButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+{
+
 }

@@ -54,62 +54,9 @@
                 </TransitionCollection>
             </Grid.Transitions>
 
-            <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
-            <NavigationView
-                x:Name="PageNavigationView"
-                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-                IsPaneOpen="False"
-                PaneDisplayMode="LeftCompact"
-                Grid.Row="1"
-                Loaded="navigationView_Loaded"
-                ItemInvoked="navigationView_ItemInvoked">
-                <NavigationView.MenuItems>
-                    <NavigationViewItem Tag="Home" Content="Home">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xEC50;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
+            <InfoBar x:Name="NotifInfoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="InfoBar_Closed"/>
 
-                    <NavigationViewItemHeader Content="Explorer"/>
-                    <NavigationViewItem Tag="Drives" Content="Drive explorer">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xeda2;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <NavigationViewItemHeader Content="Libraries"/>
-                    <NavigationViewItem Tag="Documents" Content="Documents">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xe8a5;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Tag="Music" Content="Music">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xec4f;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Tag="Pictures" Content="Pictures">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xe8b9;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Tag="Videos" Content="Videos">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xe714;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                </NavigationView.MenuItems>
-
-                <Frame x:Name="contentFrame"></Frame>
-
-                <NavigationView.FooterMenuItems>
-                    <NavigationViewItem Tag="NewContent" Content="What's new">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xe789;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                </NavigationView.FooterMenuItems>
-            </NavigationView>
+            <Frame x:Name="ContentFrame" Grid.Row="1" Loaded="View_Loaded"></Frame>
         </Grid>
     </Grid>
 </Window>

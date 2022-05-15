@@ -11,5 +11,7 @@ namespace Winnerino
         void NotifyError(Int32 code);
         void NotifyError(Int32 code, String additionalMessage);
         void ChangeTheme(Microsoft.UI.Xaml.ElementTheme theme);
+        Boolean NavigateTo(Windows.UI.Xaml.Interop.TypeName typeName);
+        void GoBack();
     }
 }

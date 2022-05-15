@@ -5,6 +5,7 @@
 #if __has_include("SettingsPage.g.cpp")
 #include "SettingsPage.g.cpp"
 #endif
+using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::Data::Xml::Dom;
 
 using namespace winrt;
@@ -24,12 +25,13 @@ namespace winrt::Winnerino::implementation
     SettingsPage::SettingsPage()
     {
         InitializeComponent();
-        InitSettings();
-    }
+        PackageVersion version = Package::Current().Id().Version();
+        AppVersionTextBlock().Text(L"Version " + to_hstring(version.Major) + L"." + to_hstring(version.Minor) + L"." + to_hstring(version.Build));
+        hstring github = L"https://github.com/psykomicron/Winnerino";
+        GithubHyperlinkButton().NavigateUri(Windows::Foundation::Uri{ github });
+        //ToolTipService::SetToolTip(GithubHyperlinkButton(), box_value(github));
 
-    Uri SettingsPage::GithubUri()
-    {
-        return Windows::Foundation::Uri{ L"https://github.com/psykomicron/" };
+        InitSettings();
     }
 
     hstring SettingsPage::getCompactModeTooltip()
@@ -200,7 +202,18 @@ namespace winrt::Winnerino::implementation
         auto values = ApplicationData::Current().LocalSettings().Values();
         values.Insert(L"LoadLastPage", box_value(LoadLastPageToggleSwitch().IsOn()));
     }
+
+    void SettingsPage::UseThumbnailsToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+
+    }
+
+    void winrt::Winnerino::implementation::SettingsPage::GoBackButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    {
+        MainWindow::Current().GoBack();
+    }
 #pragma endregion
+
 
     void SettingsPage::SwitchTheme(winrt::Microsoft::UI::Xaml::ElementTheme const& requestedTheme)
     {
@@ -218,7 +231,10 @@ namespace winrt::Winnerino::implementation
         IInspectable inspectable = settings.Values().TryLookup(L"LoadLastPage");
         LoadLastPageToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, true));
         inspectable = settings.Values().TryLookup(L"AppTheme");
-        SwitchTheme(unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default));
+        ElementTheme requestedTheme = unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default);
+        darkThemeButton().IsChecked(requestedTheme == ElementTheme::Dark);
+        lightThemeButton().IsChecked(requestedTheme == ElementTheme::Light);
+        defaultThemeButton().IsChecked(requestedTheme == ElementTheme::Default);
 
         // Explorer
         ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
@@ -235,10 +251,4 @@ namespace winrt::Winnerino::implementation
             CalculateDirectorySizeToggleSwitch().IsOn(true);
         }
     }
-}
-
-
-void winrt::Winnerino::implementation::SettingsPage::UseThumbnailsToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-
 }

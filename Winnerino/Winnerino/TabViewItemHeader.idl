@@ -1,0 +1,10 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass TabViewItemHeader : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TabViewItemHeader();
+        TabViewItemHeader(String text);
+        String Text;
+    }
+}

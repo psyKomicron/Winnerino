@@ -4,7 +4,6 @@ namespace Winnerino
     runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page
     {
         SettingsPage();
-        Windows.Foundation.Uri GithubUri{ get; };
 
         String getCompactModeTooltip();
     }

@@ -7,8 +7,6 @@
 #include <math.h>
 #include "DirectorySizeCalculator.h"
 #include "FilePropertiesWindow.xaml.h"
-using namespace winrt::Windows::Data::Xml::Dom;
-using namespace winrt::Windows::UI::Notifications;
 
 using namespace std;
 using namespace winrt;
@@ -20,8 +18,10 @@ using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
+using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::FileProperties;

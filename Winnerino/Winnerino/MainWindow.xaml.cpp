@@ -43,12 +43,24 @@ namespace winrt::Winnerino::implementation
     {
         if (!busy)
         {
-            UpdateInforBar(message, severity);
+            if (DispatcherQueue().HasThreadAccess())
+            {
+                UpdateInforBar(message, severity);
+            }
+            else
+            {
+                MessageData* messageData = new MessageData{ message, severity };
+                DispatcherQueue().TryEnqueue([this, messageData]()
+                {
+                    UpdateInforBar(messageData->GetDataMessage(), messageData->GetSeverity());
+                    delete messageData;
+                });
+            }
             busy = true;
         }
         else
         {
-            messagesStack.push(MessageData(message, severity));
+            messagesStack.push(MessageData{ message, severity });
 #if USING_TIMER
             if (!dispatcherQueueTimer.IsRunning())
             {
@@ -84,8 +96,21 @@ namespace winrt::Winnerino::implementation
         contentGrid().RequestedTheme(theme);
     }
 
-#pragma region handlers
-    void MainWindow::navigationView_Loaded(IInspectable const&, RoutedEventArgs const&)
+    bool MainWindow::NavigateTo(winrt::Windows::UI::Xaml::Interop::TypeName const& typeName)
+    {
+        return ContentFrame().IsLoaded() && ContentFrame().Navigate(typeName);
+    }
+
+    void MainWindow::GoBack()
+    {
+        if (ContentFrame().IsLoaded() && ContentFrame().CanGoBack())
+        {
+            ContentFrame().GoBack();
+        }
+    }
+
+
+    void MainWindow::View_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
 
@@ -94,46 +119,14 @@ namespace winrt::Winnerino::implementation
         {
             //ApplicationDataContainer pageContainer = .try_as<ApplicationDataContainer>();
             hstring savedTag = unbox_value_or<hstring>(settings.TryLookup(L"LastPage"), L"Home");
-            if (LoadPage(savedTag))
-            {
-                auto&& items = PageNavigationView().MenuItems();
-                for (auto&& item : items)
-                {
-                    NavigationViewItem navViewItem = item.try_as<NavigationViewItem>();
-                    if (navViewItem)
-                    {
-                        hstring tag = navViewItem.Tag().as<hstring>();
-                        if (tag == savedTag)
-                        {
-                            PageNavigationView().SelectedItem(item);
-                            break;
-                        }
-                    }
-                }
-
-                items = PageNavigationView().FooterMenuItems();
-                for (auto&& item : items)
-                {
-                    NavigationViewItem navViewItem = item.try_as<NavigationViewItem>();
-                    if (navViewItem)
-                    {
-                        hstring tag = navViewItem.Tag().as<hstring>();
-                        if (tag == savedTag)
-                        {
-                            PageNavigationView().SelectedItem(item);
-                            break;
-                        }
-                    }
-                }
-            }
-            else
+            if (!LoadPage(savedTag))
             {
                 NotifyUser(L"Failed to load previous session last page.", InfoBarSeverity::Warning);
             }
         }
         else
         {
-            contentFrame().Navigate(winrt::xaml_typename<Winnerino::MainPage>());
+            ContentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
         }
     }
 
@@ -160,12 +153,12 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void MainWindow::infoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
+    void MainWindow::InfoBar_Closed(InfoBar const&, InfoBarClosedEventArgs const&)
     {
 #if USING_TIMER
-        infoBar().Severity(InfoBarSeverity::Informational);
-        infoBar().Message(L"");
-        infoBar().Title(L"");
+        NotifInfoBar().Severity(InfoBarSeverity::Informational);
+        NotifInfoBar().Message(L"");
+        NotifInfoBar().Title(L"");
 #else
         if (!messagesStack.empty())
         {
@@ -177,14 +170,12 @@ namespace winrt::Winnerino::implementation
         else
         {
             busy = false;
-            infoBar().Severity(InfoBarSeverity::Informational);
-            infoBar().Message(L"");
-            infoBar().Title(L"");
+            NotifInfoBar().Severity(InfoBarSeverity::Informational);
+            NotifInfoBar().Message(L"");
+            NotifInfoBar().Title(L"");
     }
 #endif // USING_TIMER
     }
-#pragma endregion
-
 
 #if USING_TIMER
     void MainWindow::dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const&, Windows::Foundation::IInspectable const&)
@@ -204,28 +195,27 @@ namespace winrt::Winnerino::implementation
     }
 #endif // USING_TIMER
 
-
     void MainWindow::UpdateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
-        infoBar().Severity(severity);
-        infoBar().Message(message);
+        NotifInfoBar().Severity(severity);
+        NotifInfoBar().Message(message);
 
         switch (severity)
         {
             case InfoBarSeverity::Error:
-                infoBar().Title(L"Error:");
+                NotifInfoBar().Title(L"Error:");
                 break;
             case InfoBarSeverity::Warning:
-                infoBar().Title(L"Warning:");
+                NotifInfoBar().Title(L"Warning:");
                 break;
             case InfoBarSeverity::Success:
-                infoBar().Title(L"Success:");
+                NotifInfoBar().Title(L"Success:");
                 break;
             case InfoBarSeverity::Informational:
-                infoBar().Title(L"Information:");
+                NotifInfoBar().Title(L"Information:");
                 break;
         }
-        infoBar().IsOpen(true);
+        NotifInfoBar().IsOpen(true);
     }
 
     void MainWindow::InitWindow()
@@ -370,17 +360,17 @@ namespace winrt::Winnerino::implementation
         bool recognized = false; // remove when application is built enough
         if (page.empty() || page == L"Home")
         {
-            contentFrame().Navigate(xaml_typename<Winnerino::ExplorerPage>());
+            ContentFrame().Navigate(xaml_typename<Winnerino::ExplorerPage>());
             recognized = true;
         }
         else if (page == L"Settings")
         {
-            contentFrame().Navigate(xaml_typename<Winnerino::SettingsPage>());
+            ContentFrame().Navigate(xaml_typename<Winnerino::SettingsPage>());
             recognized = true;
         }
         else if (page == L"NewContent")
         {
-            contentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
+            ContentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
             recognized = true;
         }
 
@@ -390,5 +380,40 @@ namespace winrt::Winnerino::implementation
             Title(page);
         }
         return recognized;
+    }
+
+    void MainWindow::SetDragRectangles()
+    {
+        /*HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
+        if (windowHandle != INVALID_HANDLE_VALUE)
+        {
+            uint8_t appTitleBar = 32;
+            uint8_t leftAdditionalPadding = 0;
+            UINT windowDpi = GetDpiForWindow(windowHandle);
+
+            double scale = (windowDpi * static_cast<double>(100) + (static_cast<double>(96) / 2)) / 96;
+            scale /= static_cast<double>(100);
+
+            double leftPadding = appWindow.TitleBar().LeftInset() / scale;
+            double rightPadding = appWindow.TitleBar().RightInset() / scale;
+
+            std::vector<RectInt32> rectVector{};
+
+            RectInt32 dragRectangleLeft{};
+            dragRectangleLeft.X = leftPadding;
+            dragRectangleLeft.Y = 0;
+            dragRectangleLeft.Height = appTitleBar * scale;
+            dragRectangleLeft.Width = (leftAdditionalPadding + leftPadding) * scale;
+            rectVector.push_back(dragRectangleLeft);
+
+            RectInt32 dragRectangle{};
+            dragRectangleLeft.X = (rightPadding + ) + scale;
+            dragRectangleLeft.Y = 0;
+            dragRectangleLeft.Height = appTitleBar * scale;
+            dragRectangleLeft.Width = (leftAdditionalPadding + leftPadding) * scale;
+            rectVector.push_back(dragRectangleLeft);
+
+            appWindow.TitleBar().SetDragRectangles(vect);
+        }*/
     }
 }

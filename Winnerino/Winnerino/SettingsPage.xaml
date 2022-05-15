@@ -7,14 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:text="using:Windows.UI.Text"
     mc:Ignorable="d">
-    <Page.Resources>
-        <x:Double x:Key="SettingTitleFontSize">25</x:Double>
-        <text:FontWeight x:Key="SettingTitleFontWeight">SemiBold</text:FontWeight>
-    </Page.Resources>
 
-    <Grid ColumnSpacing="5" RowSpacing="10" Margin="10,10,10,0">
+    <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
+            <ColumnDefinition Width="*" MaxWidth="300"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,28 +22,25 @@
             x:Name="settingsListView"
             IsItemClickEnabled="False"
             SelectionMode="None"
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="2">
+            Margin="20,0"
+            Grid.Column="0"
+            Grid.Row="1"
+            Grid.RowSpan="2">
+            <ListView.Header>
+                <TextBlock Text="Settings" Style="{ThemeResource TitleTextBlockStyle}" Margin="20,0,0,20"/>
+            </ListView.Header>
 
-            <!--#region General settings -->
-            <ListViewHeaderItem x:Name="GeneralHeader">
-                <TextBlock 
-                    Text="General" 
-                    FontSize="{StaticResource SettingTitleFontSize}"
-                    FontWeight="{StaticResource SettingTitleFontWeight}"/>
-            </ListViewHeaderItem>
-            <ListViewItem Margin="0,0,0,30">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+            <Expander Header="General settings" Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
                     <ToggleSwitch
-                        Header="Auto-load setting page"
-                        IsOn="False"
-                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
+                            Header="Auto-load setting page"
+                            IsOn="False"
+                            ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
                     <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
                     <ToggleSwitch Header="Compact mode" ToolTipService.ToolTip="{x:Bind getCompactModeTooltip()}" Toggled="compactOverlayToggleSwitch_Toggled"/>
 
                     <Button
-                        Click="openSettingsFile_Click">
+                            Click="openSettingsFile_Click">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xE8A7;"/>
                             <TextBlock Text="Export settings"/>
@@ -68,40 +62,26 @@
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
-            </ListViewItem>
-            <!--#endregion-->
+            </Expander>
 
-            <ListViewHeaderItem x:Name="ExplorerHeader">
-                <TextBlock Text="Explorer" FontSize="{StaticResource SettingTitleFontSize}" FontWeight="{StaticResource SettingTitleFontWeight}"/>
-            </ListViewHeaderItem>
-            <ListViewItem Margin="0,0,0,30">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}">
+            <Expander Header="Explorer settings" Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
                     <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
                     <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
                     <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
                 </StackPanel>
-            </ListViewItem>
+            </Expander>
 
-            <!--#region Miscallenous -->
-            <ListViewHeaderItem x:Name="miscellaneousHeader">
-                <TextBlock
-                    Text="Miscellaneous" 
-                    FontSize="{StaticResource SettingTitleFontSize}" 
-                    FontWeight="{StaticResource SettingTitleFontWeight}"/>
-            </ListViewHeaderItem>
-            <ListViewItem Margin="0,0,0,0">
-                <StackPanel Orientation="Vertical" Spacing="{StaticResource StackPanelButtonSpacing}">
-                    <HyperlinkButton Content="Go to project repository (GitHub)" NavigateUri="{x:Bind GithubUri}"/>
+            <Expander Header="Security &amp; files"  Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <Button Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
+                    <Button Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
+
                     <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
                     <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
                     <HyperlinkButton Content="Open temporary folder (File explorer)" Click="tempDataFolderHyperlink_Click"/>
-
-                    <Button Margin="0,15,0,0" Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
-
-                    <Button Margin="0,0,0,15" Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
                 </StackPanel>
-            </ListViewItem>
-            <!--#endregion-->
+            </Expander>
         </ListView>
         
         <AutoSuggestBox
@@ -110,14 +90,44 @@
             QueryIcon="Zoom"
             VerticalAlignment="Center"
             MaxWidth="400"
+            MinHeight="35"
             Grid.Row="0"
             Grid.ColumnSpan="2"
             QuerySubmitted="settingSearch_QuerySubmitted"
             SuggestionChosen="settingSearch_SuggestionChosen"
             TextChanged="settingSearch_TextChanged"
             GotFocus="settingSearch_GotFocus"/>
+        <Button 
+            x:Name="GoBackButton" 
+            Background="Transparent"
+            BorderBrush="Transparent"
+            Padding="12,10"
+            Margin="10"
+            Click="GoBackButton_Click"
+            Grid.Row="0" 
+            Grid.Column="0">
+            <FontIcon Glyph="&#xe72b;" FontSize="14"/>
+        </Button>
 
-        <!--#region ContentDialogue -->
+        <Grid RowSpacing="10" Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="About this app" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Row="0"/>
+            <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
+            <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
+            <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)" Grid.Row="3"/>
+            <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk" Grid.Row="4"/>
+            <HyperlinkButton Content="Help" IsEnabled="False" Grid.Row="5"/>
+        </Grid>
+
+        <!--#region ContentDialog -->
         <ContentDialog x:Name="contentDialog" Title="Export settings" PrimaryButtonText="Export" SecondaryButtonText="Cancel" DefaultButton="Primary">
             <Grid RowSpacing="20">
                 <Grid.RowDefinitions>
