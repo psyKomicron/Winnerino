@@ -9,3 +9,4 @@
 #define FILE_ATTRIBUTE_DIRECTORY
 #define S_FALSE ((HRESULT)1L)
 #define DeleteFileTransacted
+#define PathCombine
