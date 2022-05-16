@@ -241,14 +241,17 @@
 
             <ListView 
                 x:Name="FileListView" 
-                CornerRadius="5,0,0,0" 
+                ItemsSource="{x:Bind Files}"
+                CornerRadius="{ThemeResource ControlCornerRadius}" 
                 IsItemClickEnabled="True" 
                 IsDoubleTapEnabled="True"
                 SelectionMode="Extended"
+                Padding="0,0,0,25"
                 DoubleTapped="ListView_DoubleTapped"
                 SelectionChanged="FileListView_SelectionChanged"
                 Grid.Row="1"
-                    Grid.Column="1">
+                Grid.RowSpan="2"
+                Grid.Column="1">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
                 </ListView.ItemContainerStyle>
@@ -272,12 +275,14 @@
 
             <Grid
                 x:DefaultBindMode="OneWay"
+                ColumnSpacing="20"
                 VerticalAlignment="Bottom"
                 Padding="10,3" 
-                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-                ColumnSpacing="20"
                 Grid.Row="2"
                 Grid.ColumnSpan="2">
+                <Grid.Background>
+                    <AcrylicBrush TintColor="{ThemeResource SmokeFillColorDefault}" TintOpacity="0.5" TintLuminosityOpacity="0.1"/>
+                </Grid.Background>
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="FontSize" Value="12"/>

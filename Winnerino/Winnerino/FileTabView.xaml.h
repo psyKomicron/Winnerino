@@ -15,8 +15,9 @@ namespace winrt::Winnerino::implementation
         FileTabView(hstring path);
         ~FileTabView();
 
-        hstring ItemCount();
-        hstring SelectedItemsCount();
+        inline hstring ItemCount(){ return to_hstring(FileListView().Items().Size()); };
+        inline hstring SelectedItemsCount(){ return to_hstring(FileListView().SelectedItems().Size()); };
+        inline Windows::Foundation::Collections::IObservableVector<Microsoft::UI::Xaml::Controls::UserControl> Files() { return _files; };
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
@@ -58,16 +59,16 @@ namespace winrt::Winnerino::implementation
         hstring previousInput;
         Windows::Globalization::DateTimeFormatting::DateTimeFormatter formatter{ L"{hour.integer}:{minute.integer(2)} {month.integer(2)}/{day.integer(2)}/{year.abbreviated}" };
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+        Windows::Foundation::Collections::IObservableVector<Microsoft::UI::Xaml::Controls::UserControl> _files{ single_threaded_observable_vector<Microsoft::UI::Xaml::Controls::UserControl>() };
 
         void CompletePath(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
-        //int8_t Compare(FileEntryView const& that, FileEntryView const& other);
-        inline hstring FormatFileSize(double* toFormat);
+        inline hstring FormatFileSize(double* toFormat) const;
         hstring GetRealPath(hstring const& dirtyPath);
         void LoadPath(hstring path);
         void SavePage();
         void Search(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
         inline bool ShowSpecialFolders();
-        void SortFiles();
+        void SortFiles(const std::function<uint8_t(const FileEntryView&, const FileEntryView&)>& comparer);
 
         void MainWindow_Closed(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&);
     };
