@@ -7,13 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid ColumnSpacing="10">
+    <Grid ColumnSpacing="10" Margin="10,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock x:Name="ControlTextBlock" Text="{x:Bind Text, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="0"/>
+        <TextBlock x:Name="ControlTextBlock" Text="{x:Bind Text, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="0"/>
         <TextBox x:Name="ControlTextBox" Text="{x:Bind Text, Mode=TwoWay}" VerticalAlignment="Center" Visibility="Collapsed" Grid.Column="0"/>
 
         <Button BorderThickness="0" Background="Transparent" Grid.Column="1" Click="Button_Click">

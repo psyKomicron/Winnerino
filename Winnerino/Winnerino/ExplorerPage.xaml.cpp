@@ -54,15 +54,8 @@ namespace winrt::Winnerino::implementation
                     ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
                     hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
                     hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
-                    if (path != L"")
-                    {
-                        TabViewItem tabViewItem{};
-                        TextBox header{};
-                        header.Text(tabName);
-                        tabViewItem.Header(header);
-                        tabViewItem.Content(Winnerino::FileTabView{ path });
-                        FilesTabView().TabItems().Append(tabViewItem);
-                    }
+                    
+                    AddTab(tabName, path);
                 }
             }
             // remove the container
@@ -71,6 +64,11 @@ namespace winrt::Winnerino::implementation
         else
         {
             ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);   
+        }
+
+        if (FilesTabView().TabItems().Size() == 0)
+        {
+            AddTab(L"Empty", L"");
         }
     }
 
@@ -90,14 +88,32 @@ namespace winrt::Winnerino::implementation
 
     void ExplorerPage::TabView_AddTabButtonClick(TabView const&, IInspectable const&)
     {
+        AddTab(L"Empty", L"");
+    }
+
+    void ExplorerPage::AddTab(hstring const& header, hstring const& path)
+    {
         TabViewItem tab{};
-        TabViewItemHeader header{ L"Empty" };
-        tab.Header(header);
-        tab.Content(FileTabView{});
+        TabViewItemHeader tabViewHeader{ header };
+        tab.Header(tabViewHeader);
+
+        if (path.empty())
+        {
+            tab.Content(FileTabView{});
+        }
+        else
+        {
+            tab.Content(FileTabView{ path });
+        }
 
         uint32_t tabIndex = FilesTabView().TabItems().Size();
         FilesTabView().TabItems().Append(tab);
         FilesTabView().SelectedIndex(tabIndex);
+    }
+
+    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
+    {
+        SavePage();
     }
 
     void ExplorerPage::SavePage()
@@ -130,10 +146,5 @@ namespace winrt::Winnerino::implementation
                 }
             }
         }
-    }
-
-    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
-    {
-        SavePage();
     }
 }

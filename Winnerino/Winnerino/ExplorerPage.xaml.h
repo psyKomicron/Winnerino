@@ -19,6 +19,7 @@ namespace winrt::Winnerino::implementation
         void TabView_AddTabButtonClick(winrt::Microsoft::UI::Xaml::Controls::TabView const& sender, winrt::Windows::Foundation::IInspectable const& args);
 
     private:
+        void AddTab(hstring const& header, hstring const& path);
         void mainWindow_Closed(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&);
         void SavePage();
     };
