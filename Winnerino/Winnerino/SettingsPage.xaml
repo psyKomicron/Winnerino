@@ -33,14 +33,44 @@
             <Expander Header="General settings" Style="{StaticResource ExpanderSettingStyle}">
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
                     <ToggleSwitch
-                            Header="Auto-load setting page"
-                            IsOn="False"
-                            ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
+                        Header="Auto-load setting page"
+                        IsOn="False"
+                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
                     <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
-                    <ToggleSwitch Header="Compact mode" ToolTipService.ToolTip="{x:Bind getCompactModeTooltip()}" Toggled="compactOverlayToggleSwitch_Toggled"/>
 
-                    <Button
-                            Click="openSettingsFile_Click">
+                    
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Compact mode" Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <ToggleSwitch Header="Compact mode" Toggled="compactOverlayToggleSwitch_Toggled"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
+                </Expander.Header>
+                
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="darkThemeButton_Click"/>
+                    <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="lightThemeButton_Click"/>
+                    <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="defaultThemeButton_Click"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Files" Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
+                    <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                    <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Security &amp; app data"  Style="{StaticResource ExpanderSettingStyle}">
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <Button Click="openSettingsFile_Click">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xE8A7;"/>
                             <TextBlock Text="Export settings"/>
@@ -52,28 +82,7 @@
                             <TextBlock Text="Reset settings"/>
                         </StackPanel>
                     </Button>
-
-                    <StackPanel Spacing="15">
-                        <TextBlock Text="Select application theme"/>
-                        <StackPanel Orientation="Horizontal">
-                            <ToggleButton x:Name="darkThemeButton" Click="darkThemeButton_Click" Content="Dark" CornerRadius="5,0,0,5" />
-                            <ToggleButton x:Name="lightThemeButton" Click="lightThemeButton_Click" Content="Light" CornerRadius="0" />
-                            <ToggleButton x:Name="defaultThemeButton" Click="defaultThemeButton_Click" Content="Default" CornerRadius="0,5,5,0" />
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Explorer settings" Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
-                    <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
-                    <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Security &amp; files"  Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    
                     <Button Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
                     <Button Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
 

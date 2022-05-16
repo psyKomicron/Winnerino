@@ -217,10 +217,6 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::SwitchTheme(winrt::Microsoft::UI::Xaml::ElementTheme const& requestedTheme)
     {
-        darkThemeButton().IsChecked(requestedTheme == ElementTheme::Dark);
-        lightThemeButton().IsChecked(requestedTheme == ElementTheme::Light);
-        defaultThemeButton().IsChecked(requestedTheme == ElementTheme::Default);
-
         MainWindow::Current().ChangeTheme(requestedTheme);
     }
 
@@ -232,9 +228,9 @@ namespace winrt::Winnerino::implementation
         LoadLastPageToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, true));
         inspectable = settings.Values().TryLookup(L"AppTheme");
         ElementTheme requestedTheme = unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default);
-        darkThemeButton().IsChecked(requestedTheme == ElementTheme::Dark);
-        lightThemeButton().IsChecked(requestedTheme == ElementTheme::Light);
-        defaultThemeButton().IsChecked(requestedTheme == ElementTheme::Default);
+        DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
+        LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
+        DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
 
         // Explorer
         ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
