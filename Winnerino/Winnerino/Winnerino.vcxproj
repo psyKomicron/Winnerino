@@ -122,6 +122,10 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppExpanderHeader.xaml.h">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="DirectorySizeCalculator.h" />
     <ClInclude Include="DriveSearchModel.h">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
@@ -171,6 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="AppExpanderHeader.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ExplorerPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -198,6 +205,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AppExpanderHeader.xaml.cpp">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="DirectorySizeCalculator.cpp" />
     <ClCompile Include="DriveSearchModel.cpp">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
@@ -251,6 +262,10 @@
     <Midl Include="App.idl">
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
+    </Midl>
+    <Midl Include="AppExpanderHeader.idl">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Midl>
     <Midl Include="DriveSearchModel.idl">
       <SubType>Designer</SubType>
