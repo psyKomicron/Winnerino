@@ -7,7 +7,46 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <CommandBar Grid.Row="0" HorizontalAlignment="Right">
+            <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
+                <DropDownButton Background="Transparent" BorderThickness="0">
+                    <DropDownButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE710;" FontSize="{StaticResource AppBarButtonContentHeight}"/>
+                            <TextBlock Text="New"/>
+                        </StackPanel>
+                    </DropDownButton.Content>
+
+                    <DropDownButton.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                            <MenuFlyoutItem Text="File">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8A5;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutItem Text="Folder">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="NewFolder"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+            </AppBarElementContainer>
+        </CommandBar>
+
+        <ScrollViewer Grid.Row="1">
+            <VariableSizedWrapGrid
+                x:Name="FilesList"
+                ItemHeight="200"
+                Orientation="Horizontal"/>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
