@@ -3,6 +3,7 @@
 #if __has_include("ExplorerPage.g.cpp")
 #include "ExplorerPage.g.cpp"
 #endif
+using namespace winrt::Microsoft::UI::Xaml::Navigation;
 
 using namespace winrt;
 using namespace std;
@@ -28,19 +29,7 @@ namespace winrt::Winnerino::implementation
         // subscribing to the closed event because Page_Unloaded doesn't get called when the window is closed
         windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::mainWindow_Closed });
         InitializeComponent();
-    }
 
-    ExplorerPage::~ExplorerPage()
-    {
-        if (windowClosedToken)
-        {
-            // might fail if the window has completly been destroyed before an instance of this object
-            MainWindow::Current().Closed(windowClosedToken);
-        }
-    }
-
-    void ExplorerPage::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
-    {
         // get last path
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
@@ -54,7 +43,7 @@ namespace winrt::Winnerino::implementation
                     ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
                     hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
                     hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
-                    
+
                     AddTab(tabName, path);
                 }
             }
@@ -63,13 +52,45 @@ namespace winrt::Winnerino::implementation
         }
         else
         {
-            ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);   
+            ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
 
-        if (FilesTabView().TabItems().Size() == 0)
+        if (Pages().TabItems().Size() == 0)
         {
             AddTab(L"Empty", L"");
         }
+    }
+
+    ExplorerPage::~ExplorerPage()
+    {
+        if (windowClosedToken)
+        {
+            // might fail if the window has completly been destroyed before an instance of this object
+            MainWindow::Current().Closed(windowClosedToken);
+        }
+    }
+
+    void ExplorerPage::OnNavigatedTo(NavigationEventArgs const& args)
+    {
+        auto&& tag = args.Parameter().try_as<hstring>();
+        if (tag)
+        {
+            OutputDebugString(tag.value().c_str());
+
+            TabViewItem tab{};
+            TabViewItemHeader tabViewHeader{ tag.value() };
+            tab.Header(tabViewHeader);
+
+            tab.Content(LibraryTabView{ tag.value() });
+
+            uint32_t tabIndex = Pages().TabItems().Size();
+            Pages().TabItems().Append(tab);
+            Pages().SelectedIndex(tabIndex);
+        }
+    }
+
+    void ExplorerPage::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
+    {
     }
 
     void ExplorerPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
@@ -91,6 +112,12 @@ namespace winrt::Winnerino::implementation
         AddTab(L"Empty", L"");
     }
 
+
+    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
+    {
+        SavePage();
+    }
+
     void ExplorerPage::AddTab(hstring const& header, hstring const& path)
     {
         TabViewItem tab{};
@@ -106,14 +133,9 @@ namespace winrt::Winnerino::implementation
             tab.Content(FileTabView{ path });
         }
 
-        uint32_t tabIndex = FilesTabView().TabItems().Size();
-        FilesTabView().TabItems().Append(tab);
-        FilesTabView().SelectedIndex(tabIndex);
-    }
-
-    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
-    {
-        SavePage();
+        uint32_t tabIndex = Pages().TabItems().Size();
+        Pages().TabItems().Append(tab);
+        Pages().SelectedIndex(tabIndex);
     }
 
     void ExplorerPage::SavePage()
@@ -123,7 +145,7 @@ namespace winrt::Winnerino::implementation
         HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
         ApplicationDataContainer tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);
 
-        IVector<IInspectable> tabItems = FilesTabView().TabItems();
+        IVector<IInspectable> tabItems = Pages().TabItems();
         for (IInspectable const& item : tabItems)
         {
             TabViewItem tab = item.try_as<TabViewItem>();
