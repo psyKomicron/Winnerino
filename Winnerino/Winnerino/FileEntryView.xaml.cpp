@@ -243,28 +243,35 @@ namespace winrt::Winnerino::implementation
                 textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
                 UserControlToolTip().Content(textBlock);
 
-                StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
-                IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
-                wostringstream builder{};
-                if (children.Size() > 1)
+                try
                 {
-                    for (auto&& storageItem : children)
+                    StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
+                    IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
+                    wostringstream builder{};
+                    if (children.Size() > 1)
                     {
-                        builder << storageItem.Name().c_str() << L", ";
-                    }
-                    wstring text = builder.str();
+                        for (auto&& storageItem : children)
+                        {
+                            builder << storageItem.Name().c_str() << L", ";
+                        }
+                        wstring text = builder.str();
 
-                    DispatcherQueue().TryEnqueue([this, _text = text, textBlock]()
+                        DispatcherQueue().TryEnqueue([this, _text = text, textBlock]()
+                        {
+                            textBlock.Text(_text);
+                        });
+                    }
+                    else
                     {
-                        textBlock.Text(_text);
-                    });
+                        DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name(), textBlock]()
+                        {
+                            textBlock.Text(_text);
+                        });
+                    }
                 }
-                else
+                catch (const hresult_error& ex)
                 {
-                    DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name(), textBlock]()
-                    {
-                        textBlock.Text(_text);
-                    });
+                    OutputDebugString(ex.message().c_str());
                 }
             }
         }
