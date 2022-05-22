@@ -6,12 +6,14 @@ namespace Winnerino
         MainWindow();
 
         static Winnerino.MainWindow Current{ get; };
+        Windows.Foundation.Size Size{ get; };
 
         void NotifyUser(String message, Microsoft.UI.Xaml.Controls.InfoBarSeverity severity);
         void NotifyError(Int32 code);
         void NotifyError(Int32 code, String additionalMessage);
         void ChangeTheme(Microsoft.UI.Xaml.ElementTheme theme);
         Boolean NavigateTo(Windows.UI.Xaml.Interop.TypeName typeName);
+        Boolean NavigateTo(Windows.UI.Xaml.Interop.TypeName typeName, IInspectable parameter);
         void GoBack();
     }
 }

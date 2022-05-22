@@ -5,12 +5,11 @@
 #endif
 
 using namespace winrt;
-
 using namespace Microsoft::UI;
 using namespace Microsoft::UI::Windowing;
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
-
+using namespace winrt::Windows::UI::Xaml::Interop;
 using namespace Windows::Graphics;
 using namespace Windows::Storage;
 using namespace Windows::System;
@@ -37,6 +36,14 @@ namespace winrt::Winnerino::implementation
 
         singleton = *this;
         InitWindow();
+    }
+
+    Windows::Foundation::Size MainWindow::Size() const
+    {
+        Windows::Foundation::Size size{};
+        size.Width = static_cast<float>(appWindow.Size().Width);
+        size.Height = static_cast<float>(appWindow.Size().Height);
+        return size;
     }
 
     void MainWindow::NotifyUser(hstring const& message, InfoBarSeverity const& severity)
@@ -91,14 +98,19 @@ namespace winrt::Winnerino::implementation
         NotifyUser(message, InfoBarSeverity::Error);
     }
 
-    void MainWindow::ChangeTheme(Microsoft::UI::Xaml::ElementTheme const& theme)
+    void MainWindow::ChangeTheme(ElementTheme const& theme)
     {
         contentGrid().RequestedTheme(theme);
     }
 
-    bool MainWindow::NavigateTo(winrt::Windows::UI::Xaml::Interop::TypeName const& typeName)
+    bool MainWindow::NavigateTo(TypeName const& typeName)
     {
         return ContentFrame().IsLoaded() && ContentFrame().Navigate(typeName);
+    }
+
+    bool MainWindow::NavigateTo(TypeName const& typeName, IInspectable const& parameter)
+    {
+        return ContentFrame().IsLoaded() && ContentFrame().Navigate(typeName, parameter);
     }
 
     void MainWindow::GoBack()

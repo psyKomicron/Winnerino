@@ -11,21 +11,23 @@
 
 #define USING_TIMER 0
 
-
 namespace winrt::Winnerino::implementation
 {
     struct MainWindow : MainWindowT<MainWindow>
     {
         // static methods
     public:
-        static Winnerino::MainWindow Current() { return singleton; }
-
         MainWindow();
+
+        static Winnerino::MainWindow Current() { return singleton; }
+        Windows::Foundation::Size Size() const;
+
         void NotifyUser(hstring const& message, Microsoft::UI::Xaml::Controls::InfoBarSeverity const& severity);
         void NotifyError(DWORD const& code);
         void NotifyError(DWORD const& code, winrt::hstring const& additionalMessage);
         void ChangeTheme(Microsoft::UI::Xaml::ElementTheme const& theme);
         bool NavigateTo(winrt::Windows::UI::Xaml::Interop::TypeName const& typeName);
+        bool NavigateTo(winrt::Windows::UI::Xaml::Interop::TypeName const& typeName, Windows::Foundation::IInspectable const& parameter);
         void GoBack();
 
         void View_Loaded(Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
