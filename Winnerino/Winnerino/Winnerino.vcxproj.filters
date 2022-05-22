@@ -30,6 +30,9 @@
     <Page Include="AppExpanderHeader.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FileLargeView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
