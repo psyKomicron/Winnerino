@@ -1,0 +1,9 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass FileLargeView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        FileLargeView();
+        FileLargeView(String path);
+    }
+}
