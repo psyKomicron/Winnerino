@@ -12,7 +12,7 @@ namespace winrt::Winnerino::implementation
     {
     public:
         FileTabView();
-        FileTabView(hstring path);
+        FileTabView(const hstring& path);
         ~FileTabView();
 
         inline hstring ItemCount(){ return to_hstring(FileListView().Items().Size()); };
@@ -55,11 +55,18 @@ namespace winrt::Winnerino::implementation
         hstring previousPath;
         std::stack<hstring> backStack = std::stack<hstring>();
         std::stack<hstring> forwardStack = std::stack<hstring>();
-        event_token mainWindowClosedToken;
+        event_token windowClosedToken;
+        event_token windowSizeChangedToken;
         hstring previousInput;
-        Windows::Globalization::DateTimeFormatting::DateTimeFormatter formatter{ L"{hour.integer}:{minute.integer(2)} {month.integer(2)}/{day.integer(2)}/{year.abbreviated}" };
+        Windows::Globalization::DateTimeFormatting::DateTimeFormatter formatter
+        {
+            L"{hour.integer}:{minute.integer(2)} {month.integer(2)}/{day.integer(2)}/{year.abbreviated}"
+        };
+        Windows::Foundation::Collections::IObservableVector<Microsoft::UI::Xaml::Controls::UserControl> _files
+        { 
+            single_threaded_observable_vector<Microsoft::UI::Xaml::Controls::UserControl>()
+        };
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
-        Windows::Foundation::Collections::IObservableVector<Microsoft::UI::Xaml::Controls::UserControl> _files{ single_threaded_observable_vector<Microsoft::UI::Xaml::Controls::UserControl>() };
 
         void CompletePath(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
         inline hstring FormatFileSize(double* toFormat) const;
@@ -69,8 +76,12 @@ namespace winrt::Winnerino::implementation
         void Search(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
         inline bool ShowSpecialFolders();
         void SortFiles(const std::function<uint8_t(const FileEntryView&, const FileEntryView&)>& comparer);
+        void SetLayout(float const& width);
 
+        void Window_SizeChanged(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowSizeChangedEventArgs const& args);
         void MainWindow_Closed(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&);
+    public:
+        void ContentNavigationView_ItemInvoked(winrt::Microsoft::UI::Xaml::Controls::NavigationView const& sender, winrt::Microsoft::UI::Xaml::Controls::NavigationViewItemInvokedEventArgs const& args);
     };
 }
 

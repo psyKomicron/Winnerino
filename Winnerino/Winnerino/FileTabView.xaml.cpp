@@ -3,6 +3,7 @@
 #if __has_include("FileTabView.g.cpp")
 #include "FileTabView.g.cpp"
 #endif
+
 #include <chrono>
 #include <wchar.h>
 #include <regex>
@@ -39,19 +40,21 @@ namespace winrt::Winnerino::implementation
     FileTabView::FileTabView()
     {
         InitializeComponent();
-        //mainWindowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
+        
+        windowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
+        windowSizeChangedToken = MainWindow::Current().SizeChanged({ this, &FileTabView::Window_SizeChanged });
     }
 
-    FileTabView::FileTabView(hstring path)
+    FileTabView::FileTabView(const hstring& path) : FileTabView()
     {
         InitializeComponent();
-        mainWindowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
         LoadPath(path);
     }
 
     FileTabView::~FileTabView()
     {
-        MainWindow::Current().Closed(mainWindowClosedToken);
+        MainWindow::Current().Closed(windowClosedToken);
+        MainWindow::Current().SizeChanged(windowSizeChangedToken);
     }
 
 
@@ -78,22 +81,7 @@ namespace winrt::Winnerino::implementation
             }
         }
 
-        // list available drives
-#if FALSE
-        WCHAR drives[512]{};
-        WCHAR* pointer = drives;
-        GetLogicalDriveStrings(512, drives);
-        while (1)
-        {
-            if (*pointer == NULL)
-            {
-                break;
-            }
-            DriveListView().Items().Append(Winnerino::DriveSearchModel{ hstring{ pointer } });
-            while (*pointer++);
-        }
-#endif // FALSE
-
+        SetLayout(MainWindow::Current().Size().Width);
     }
 
     void FileTabView::PathInputBox_SuggestionChosen(AutoSuggestBox const& sender, AutoSuggestBoxSuggestionChosenEventArgs const& args)
@@ -437,6 +425,11 @@ namespace winrt::Winnerino::implementation
     {
     }
 
+    void FileTabView::ContentNavigationView_ItemInvoked(NavigationView const& sender, NavigationViewItemInvokedEventArgs const& args)
+    {
+        MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>(), args.InvokedItem());
+    }
+
 
     void FileTabView::CompletePath(hstring const& query, IVector<IInspectable> const& suggestions)
     {
@@ -766,6 +759,54 @@ namespace winrt::Winnerino::implementation
         {
             _files.Append(vect[i]);
         }
+    }
+
+    void FileTabView::SetLayout(float const& width)
+    {
+        if (width < 730)
+        {
+            if (CommandBarColumn().Width().GridUnitType != GridUnitType::Pixel)
+            {
+                GridLength gridLength{};
+                gridLength.Value = 0;
+                gridLength.GridUnitType = GridUnitType::Pixel;
+                CommandBarColumn().Width(gridLength);
+            }
+        }
+        else
+        {
+            if (CommandBarColumn().Width().GridUnitType != GridUnitType::Auto)
+            {
+                GridLength gridLength{};
+                gridLength.GridUnitType = GridUnitType::Auto;
+                CommandBarColumn().Width(gridLength);
+            }
+        }
+
+        if (width < 500)
+        {
+            if (InputModeButtonColumn().Width().GridUnitType != GridUnitType::Pixel)
+            {
+                GridLength gridLength{};
+                gridLength.Value = 0;
+                gridLength.GridUnitType = GridUnitType::Pixel;
+                InputModeButtonColumn().Width(gridLength);
+            }
+        }
+        else
+        {
+            if (InputModeButtonColumn().Width().GridUnitType != GridUnitType::Auto)
+            {
+                GridLength gridLength{};
+                gridLength.GridUnitType = GridUnitType::Auto;
+                InputModeButtonColumn().Width(gridLength);
+            }
+        }
+    }
+
+    void FileTabView::Window_SizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args)
+    {
+        SetLayout(args.Size().Width);
     }
 
     void FileTabView::MainWindow_Closed(IInspectable const&, WindowEventArgs const&)

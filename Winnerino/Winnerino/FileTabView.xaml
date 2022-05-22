@@ -6,29 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Loaded="UserControl_Loaded">
-    <!--<VisualStateManager.VisualStateGroups>
-        <VisualStateGroup x:Name="LayoutVisualStates">
-            <VisualState x:Name="NormalLayout">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="730"/>
-                </VisualState.StateTriggers>
-
-                <VisualState.Setters>
-                    <Setter Target="ContentNavigationView." Value="*"/>
-                </VisualState.Setters>
-            </VisualState>
-
-            <VisualState x:Name="NarrowLayout">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="0"/>
-                </VisualState.StateTriggers>
-
-                <VisualState.Setters>
-                    <Setter Target="LeftColumn.Width" Value="0"/>
-                </VisualState.Setters>
-            </VisualState>
-        </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>-->
 
     <NavigationView 
         x:Name="ContentNavigationView"
@@ -39,56 +16,37 @@
         OpenPaneLength="230"
         SelectionFollowsFocus="Disabled"
         IsSettingsVisible="False"
-        IsBackButtonVisible="Collapsed">
+        IsBackButtonVisible="Collapsed"
+        ItemInvoked="ContentNavigationView_ItemInvoked">
         <NavigationView.MenuItems>
-            <NavigationViewItem Content="Documents">
+            <NavigationViewItem x:Name="DocumentsNavigationItem" Content="Documents" Tag="Documents">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe8a5;"/>
                 </NavigationViewItem.Icon>
-
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
-                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
 
-            <NavigationViewItem Content="Downloads">
+            <NavigationViewItem x:Name="DownloadsNavigationItem" Content="Downloads" Tag="Downloads" >
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe896;"/>
                 </NavigationViewItem.Icon>
-
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
-                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
 
-            <NavigationViewItem Content="Music">
+            <NavigationViewItem x:Name="MusicNavigationItem" Content="Music" Tag="Music">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xec4f;"/>
                 </NavigationViewItem.Icon>
-
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
-                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
 
-            <NavigationViewItem Content="Pictures">
+            <NavigationViewItem x:Name="PicturesNavigationItem" Content="Pictures" Tag="Pictures">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe8b9;"/>
                 </NavigationViewItem.Icon>
-
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
-                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
 
-            <NavigationViewItem Content="Videos">
+            <NavigationViewItem x:Name="VideosNavigationItem" Content="Videos" Tag="Videos">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe714;"/>
                 </NavigationViewItem.Icon>
-
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="Veibae Gachi Muchi"/>
-                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
         </NavigationView.MenuItems>
 
@@ -105,8 +63,8 @@
             <Grid Margin="5,0" VerticalAlignment="Stretch" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition x:Name="InputModeButtonColumn" Width="Auto"/>
+                    <ColumnDefinition x:Name="CommandBarColumn" MinWidth="50" Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" Margin="0,0,10,0">
