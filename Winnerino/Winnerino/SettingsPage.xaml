@@ -4,153 +4,199 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:text="using:Windows.UI.Text"
-    mc:Ignorable="d">
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
 
-    <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="*" MaxWidth="300"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
-        <ListView
-            x:Name="settingsListView"
-            IsItemClickEnabled="False"
-            SelectionMode="None"
-            Margin="20,0"
-            Grid.Column="0"
-            Grid.Row="1"
-            Grid.RowSpan="2">
-            <ListView.Header>
-                <TextBlock Text="Settings" Style="{ThemeResource TitleTextBlockStyle}" Margin="20,0,0,20"/>
-            </ListView.Header>
-
-            <Expander Header="General settings" Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch
-                        Header="Auto-load setting page"
-                        IsOn="False"
-                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-                    <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
-
-                    
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Compact mode" Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch Header="Compact mode" Toggled="compactOverlayToggleSwitch_Toggled"/>
-                </StackPanel>
-            </Expander>
-
-            <Expander Style="{StaticResource ExpanderSettingStyle}">
-                <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
-                </Expander.Header>
-                
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="darkThemeButton_Click"/>
-                    <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="lightThemeButton_Click"/>
-                    <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="defaultThemeButton_Click"/>
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Files" Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
-                    <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
-                    <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Security &amp; app data"  Style="{StaticResource ExpanderSettingStyle}">
-                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <Button Click="openSettingsFile_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                            <FontIcon Glyph="&#xE8A7;"/>
-                            <TextBlock Text="Export settings"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Click="resetSettingsFile_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                            <FontIcon Glyph="&#xe845;"/>
-                            <TextBlock Text="Reset settings"/>
-                        </StackPanel>
-                    </Button>
-                    
-                    <Button Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
-                    <Button Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
-
-                    <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
-                    <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
-                    <HyperlinkButton Content="Open temporary folder (File explorer)" Click="tempDataFolderHyperlink_Click"/>
-                </StackPanel>
-            </Expander>
-        </ListView>
-        
-        <AutoSuggestBox
-            x:Name="settingSearch"
-            PlaceholderText="Search settings"
-            QueryIcon="Zoom"
-            VerticalAlignment="Center"
-            MaxWidth="400"
-            MinHeight="35"
-            Grid.Row="0"
-            Grid.ColumnSpan="2"
-            QuerySubmitted="settingSearch_QuerySubmitted"
-            SuggestionChosen="settingSearch_SuggestionChosen"
-            TextChanged="settingSearch_TextChanged"
-            GotFocus="settingSearch_GotFocus"/>
-        <Button 
-            x:Name="GoBackButton" 
-            Background="Transparent"
-            BorderBrush="Transparent"
-            Padding="12,10"
-            Margin="10"
-            Click="GoBackButton_Click"
-            Grid.Row="0" 
-            Grid.Column="0">
-            <FontIcon Glyph="&#xe72b;" FontSize="14"/>
-        </Button>
-
-        <Grid RowSpacing="10" Grid.Column="1" Grid.Row="1">
+    <ScrollViewer>
+        <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="*" MaxWidth="300"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="About this app" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Row="0"/>
-            <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
-            <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
-            <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)" Grid.Row="3"/>
-            <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk" Grid.Row="4"/>
-            <HyperlinkButton Content="Help" IsEnabled="False" Grid.Row="5"/>
-        </Grid>
-
-        <!--#region ContentDialog -->
-        <ContentDialog x:Name="contentDialog" Title="Export settings" PrimaryButtonText="Export" SecondaryButtonText="Cancel" DefaultButton="Primary">
-            <Grid RowSpacing="20">
+            <Grid x:Name="SettingsGrid" Grid.Column="0" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="20" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Choose file format for settings export:" Grid.Row="0"/>
-                <ComboBox HorizontalAlignment="Stretch" SelectedIndex="1" Grid.Row="1">
-                    <ComboBoxItem Content="JSON" Tag="json" IsEnabled="False"/>
-                    <ComboBoxItem Content="XML" Tag="xml"/>
-                </ComboBox>
+                <ListView
+                    x:Name="settingsListView"
+                    IsItemClickEnabled="False"
+                    SelectionMode="None"
+                    Margin="20,0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                    Grid.RowSpan="2">
+                    <ListView.Header>
+                        <TextBlock Text="Settings" Style="{ThemeResource SubheaderTextBlockStyle}" Margin="20,0,0,20"/>
+                    </ListView.Header>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <ToggleSwitch
+                            Header="Auto-load setting page"
+                            IsOn="False"
+                            ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
+                            <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="darkThemeButton_Click"/>
+                            <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="lightThemeButton_Click"/>
+                            <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="defaultThemeButton_Click"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <Button Click="openSettingsFile_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                                    <FontIcon Glyph="&#xE8A7;"/>
+                                    <TextBlock Text="Export settings"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Click="resetSettingsFile_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                                    <FontIcon Glyph="&#xe845;"/>
+                                    <TextBlock Text="Reset settings"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
+
+                            <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
+                            <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
+                            <HyperlinkButton Content="Open temporary folder (File explorer)" Click="tempDataFolderHyperlink_Click"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xec50;" Title="Files &amp; folders" Subtitle="File explorer options"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
+                            <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                            <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xe8f1;" Title="Libraries" Subtitle="Documents, downloads, music, pictures, videos"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xe799;" Title="View" Subtitle="Enable Picture-in-picture, title bar options"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <ToggleSwitch Header="Compact mode" Toggled="compactOverlayToggleSwitch_Toggled"/>
+                            <ToggleSwitch Header="Animated icon" Toggled="AnimatedIconToggleSwitch_Toggled"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xf0fb;" Title="Security" Subtitle="Passwords, permissions"/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                            <Button Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
+                        </StackPanel>
+                    </Expander>
+                </ListView>
+
+                <Button 
+                    x:Name="GoBackButton" 
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Padding="12,10"
+                    Margin="10"
+                    Grid.Column="0"
+                    Click="GoBackButton_Click">
+                    <FontIcon Glyph="&#xe72b;" FontSize="14"/>
+                </Button>
+
+                <AutoSuggestBox
+                    x:Name="SettingSearch"
+                    PlaceholderText="Search settings"
+                    QueryIcon="Zoom"
+                    VerticalAlignment="Center"
+                    MaxWidth="400"
+                    MinHeight="35"
+                    Margin="0,0,12,0"
+                    Grid.ColumnSpan="2"
+                    QuerySubmitted="settingSearch_QuerySubmitted"
+                    SuggestionChosen="settingSearch_SuggestionChosen"
+                    TextChanged="settingSearch_TextChanged"
+                    GotFocus="settingSearch_GotFocus"/>
             </Grid>
-        </ContentDialog>
-        <!--#endregion-->
-    </Grid>
+
+            <Grid x:Name="AboutGrid" RowSpacing="10" Margin="20,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="About this app" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Row="0"/>
+                <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
+                <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
+                <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)" Grid.Row="3"/>
+                <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk" Grid.Row="4"/>
+                <HyperlinkButton Content="Help" IsEnabled="False" Grid.Row="5"/>
+            </Grid>
+
+            <!--#region ContentDialog -->
+            <ContentDialog x:Name="contentDialog" Title="Export settings" PrimaryButtonText="Export" SecondaryButtonText="Cancel" DefaultButton="Primary">
+                <Grid RowSpacing="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Choose file format for settings export:" Grid.Row="0"/>
+                    <ComboBox HorizontalAlignment="Stretch" SelectedIndex="1" Grid.Row="1">
+                        <ComboBoxItem Content="JSON" Tag="json" IsEnabled="False"/>
+                        <ComboBoxItem Content="XML" Tag="xml"/>
+                    </ComboBox>
+                </Grid>
+            </ContentDialog>
+            <!--#endregion-->
+        </Grid>
+    </ScrollViewer>
 </Page>

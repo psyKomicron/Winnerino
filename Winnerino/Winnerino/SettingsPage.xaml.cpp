@@ -1,16 +1,17 @@
 ﻿#include "pch.h"
-#include "App.xaml.h"
 #include "SettingsPage.xaml.h"
-#include "MainWindow.xaml.h"
 #if __has_include("SettingsPage.g.cpp")
 #include "SettingsPage.g.cpp"
 #endif
-using namespace winrt::Windows::ApplicationModel;
-using namespace winrt::Windows::Data::Xml::Dom;
+
+#include "App.xaml.h"
+#include "MainWindow.xaml.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
@@ -28,8 +29,10 @@ namespace winrt::Winnerino::implementation
         PackageVersion version = Package::Current().Id().Version();
         AppVersionTextBlock().Text(L"Version " + to_hstring(version.Major) + L"." + to_hstring(version.Minor) + L"." + to_hstring(version.Build));
         hstring github = L"https://github.com/psykomicron/Winnerino";
-        GithubHyperlinkButton().NavigateUri(Windows::Foundation::Uri{ github });
-        //ToolTipService::SetToolTip(GithubHyperlinkButton(), box_value(github));
+        GithubHyperlinkButton().NavigateUri(Uri{ github });
+
+        SetLayout(MainWindow::Current().Size().Width);
+        mainWindowSizeChanged = MainWindow::Current().SizeChanged({ this, &SettingsPage::Window_SizeChanged });
 
         InitSettings();
     }
@@ -42,22 +45,18 @@ namespace winrt::Winnerino::implementation
 #pragma region Event handlers
     void SettingsPage::settingSearch_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_SuggestionChosen(AutoSuggestBox const&, AutoSuggestBoxSuggestionChosenEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_TextChanged(AutoSuggestBox const&, AutoSuggestBoxTextChangedEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_GotFocus(IInspectable const&, RoutedEventArgs const&)
     {
-
     }
 
     IAsyncAction SettingsPage::openSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
@@ -141,7 +140,6 @@ namespace winrt::Winnerino::implementation
     void SettingsPage::appSettingsFolderHyperlink_Click(IInspectable const&, RoutedEventArgs const&)
     {
         // Serialize all settings into a data type file and open it for the user ?
-
     }
 
     IAsyncAction SettingsPage::tempDataFolderHyperlink_Click(IInspectable const&, RoutedEventArgs const&)
@@ -158,12 +156,10 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::clearTempFolderButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-
     }
 
     void SettingsPage::clearSecureSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-
     }
 
     void SettingsPage::resetSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
@@ -205,12 +201,20 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::UseThumbnailsToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-
     }
 
     void winrt::Winnerino::implementation::SettingsPage::GoBackButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
     {
         MainWindow::Current().GoBack();
+    }
+
+    void SettingsPage::AnimatedIconToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
+    {
+    }
+
+    void SettingsPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        MainWindow::Current().SizeChanged(mainWindowSizeChanged);
     }
 #pragma endregion
 
@@ -246,5 +250,52 @@ namespace winrt::Winnerino::implementation
             ShowSpecialsFolderToggleSwitch().IsOn(false);
             CalculateDirectorySizeToggleSwitch().IsOn(true);
         }
+    }
+
+    void SettingsPage::SetLayout(float const& width)
+    {
+        if (width < 800)
+        {
+            if (Grid::GetRow(AboutGrid()) != 2)
+            {
+                Grid::SetRow(AboutGrid(), 2);
+            }
+
+            if (Grid::GetColumn(AboutGrid()) != 0)
+            {
+                Grid::SetColumn(AboutGrid(), 0);
+                Grid::SetColumnSpan(AboutGrid(), 2);
+            }
+
+            if (Grid::GetColumnSpan(SettingsGrid()) != 2)
+            {
+                Grid::SetColumnSpan(SettingsGrid(), 2);
+                Grid::SetRowSpan(SettingsGrid(), 1);
+            }
+        }
+        else
+        {
+            if (Grid::GetRow(AboutGrid()) != 0)
+            {
+                Grid::SetRow(AboutGrid(), 0);
+            }
+
+            if (Grid::GetColumn(AboutGrid()) != 1)
+            {
+                Grid::SetColumn(AboutGrid(), 1);
+                Grid::SetColumnSpan(AboutGrid(), 1);
+            }
+
+            if (Grid::GetColumnSpan(SettingsGrid()) != 1)
+            {
+                Grid::SetColumnSpan(SettingsGrid(), 1);
+                Grid::SetRowSpan(SettingsGrid(), 2);
+            }
+        }
+    }
+
+    void SettingsPage::Window_SizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args)
+    {
+        SetLayout(args.Size().Width);
     }
 }
