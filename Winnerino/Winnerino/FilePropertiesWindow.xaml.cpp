@@ -134,13 +134,12 @@ namespace winrt::Winnerino::implementation
 #endif // DEBUG
 
         HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
-        uint8_t leftAdditionalPadding = 0;
         UINT windowDpi = GetDpiForWindow(windowHandle);
 
-        uint16_t dpi = (windowDpi * static_cast<double>(100) + (static_cast<double>(96) / 2)) / 96;
+        double dpi = (windowDpi * static_cast<double>(100) + (static_cast<double>(96) / 2)) / 96;
         double scale = dpi / static_cast<double>(100);
 
-        uint8_t appTitleBarHeight = 48 * scale;
+        int32_t appTitleBarHeight = static_cast<int32_t>(48 * scale);
 
         double leftPadding = appWindow.TitleBar().LeftInset() / scale;
         double rightPadding = appWindow.TitleBar().RightInset() / scale;
@@ -149,16 +148,16 @@ namespace winrt::Winnerino::implementation
         LeftPaddingColumn().Width(GridLength{ leftPadding });
 
         RectInt32 dragRectangleRight{};
-        dragRectangleRight.X = (appWindow.ClientSize().Width - RightDragColumn().ActualWidth() - RightPaddingColumn().ActualWidth()) * scale;
+        dragRectangleRight.X = static_cast<int32_t>((appWindow.ClientSize().Width - RightDragColumn().ActualWidth() - RightPaddingColumn().ActualWidth()) * scale);
         dragRectangleRight.Y = 0;
         dragRectangleRight.Height = appTitleBarHeight;
-        dragRectangleRight.Width = RightDragColumn().ActualWidth() * scale;
+        dragRectangleRight.Width = static_cast<int32_t>(RightDragColumn().ActualWidth() * scale);
 
         RectInt32 dragRectangleLeft{};
-        dragRectangleLeft.X = LeftPaddingColumn().ActualWidth() * scale;
+        dragRectangleLeft.X = static_cast<int32_t>(LeftPaddingColumn().ActualWidth() * scale);
         dragRectangleLeft.Y = 0;
         dragRectangleLeft.Height = appTitleBarHeight;
-        dragRectangleLeft.Width = LeftDragColumn().ActualWidth() * scale;
+        dragRectangleLeft.Width = static_cast<int32_t>(LeftDragColumn().ActualWidth() * scale);
 
         if (dragRectangleLeft.Width < 0)
         {
