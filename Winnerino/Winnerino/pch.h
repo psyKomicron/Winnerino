@@ -29,10 +29,11 @@
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
 
 #include <microsoft.ui.xaml.window.h>
 
-#include "winrt/Windows.ApplicationModel.DataTransfer.h"
+#include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.Foundation.h>
@@ -41,8 +42,9 @@
 #include <winrt/Windows.UI.Notifications.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
-#include "winrt/Windows.Security.Cryptography.h"
-#include "winrt/Windows.Security.Cryptography.Core.h"
+#include <winrt/Windows.UI.Xaml.Media.Animation.h>
+#include <winrt/Windows.Security.Cryptography.h>
+#include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
