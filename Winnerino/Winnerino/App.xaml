@@ -15,6 +15,8 @@
             <x:Double x:Key="StackPanelButtonSpacing">10</x:Double>
             <x:Double x:Key="StackPanelDefaultSpacing">15</x:Double>
             <x:Double x:Key="HomeTitleFontSize">20</x:Double>
+            <x:Double x:Key="IconButtonFontSize">16</x:Double>
+            <x:Double x:Key="NavigationBackButtonIconSize">14</x:Double>
 
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
 
@@ -88,6 +90,51 @@
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="Height" Value="35"/>
+            </Style>
+
+            <Style x:Key="FlyoutButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            </Style>
+
+            <Style x:Key="FlyoutSeparatorStyle" TargetType="Border">
+                <Setter Property="Height" Value="1.3"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                <Setter Property="Background" Value="{StaticResource MenuFlyoutSeparatorThemeBrush}"/>
+            </Style>
+
+            <Style x:Key="ButtonExpanderStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="Padding" Value="{StaticResource ExpanderHeaderPadding}"/>
+                <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource ExpanderBorderThickness}"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource ExpanderHeaderBorderBrush}"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="MinHeight" Value="{StaticResource ExpanderMinHeight}"/>
+            </Style>
+
+            <Style x:Key="GridExpanderStyle" TargetType="Grid">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="Background" Value="{ThemeResource ExpanderBackground}"/>
+                <Setter Property="Padding" Value="16,0,8,0"/>
+                <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource ExpanderBorderThickness}"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource ExpanderHeaderBorderBrush}"/>
+                <Setter Property="MinHeight" Value="{StaticResource ExpanderMinHeight}"/>
+            </Style>
+            
+            <Style x:Key="NavigationBackButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Padding" Value="12,10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+                <Setter Property="FontSize" Value="{StaticResource NavigationBackButtonIconSize}"/>
+                <Setter Property="Content" Value="&#xe72b;"/>
             </Style>
             <!--#endregion-->
         </ResourceDictionary>
