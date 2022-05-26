@@ -1,0 +1,102 @@
+﻿<Page
+    x:Class="Winnerino.AdditionalSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="20"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="BackButton" Style="{StaticResource NavigationBackButtonStyle}" Click="BackButton_Click"/>
+
+        <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None">
+            <ListView.Header>
+                <TextBlock Text="Additional settings" Style="{ThemeResource SubheaderTextBlockStyle}" Margin="20,0,0,20"/>
+            </ListView.Header>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General"/>
+                </Expander.Header>
+
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <ToggleSwitch
+                        Header="Auto-load setting page"
+                        IsOn="False"
+                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
+                    <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="LoadLastPageToggleSwitch_Toggled"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
+                </Expander.Header>
+
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="DarkThemeButton_Click"/>
+                    <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="LightThemeButton_Click"/>
+                    <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="DefaultThemeButton_Click"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
+                </Expander.Header>
+
+                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <Button Click="OpenSettingsFile_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xE8A7;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            <TextBlock Text="Export settings"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="ResetSettingsFile_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            <TextBlock Text="Reset settings"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
+
+                    <HyperlinkButton Content="Open application folder (File explorer)" Click="AppDataFolderHyperlink_Click"/>
+                    <HyperlinkButton Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
+                    <HyperlinkButton Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe799;" Title="View" Subtitle="Enable Picture-in-picture, title bar options"/>
+                </Expander.Header>
+
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <ToggleSwitch Header="Compact mode" Toggled="CompactOverlayToggleSwitch_Toggled"/>
+                    <ToggleSwitch Header="Animated icon" Toggled="AnimatedIconToggleSwitch_Toggled"/>
+                </StackPanel>
+            </Expander>
+
+            <Grid Style="{StaticResource GridExpanderStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <local:AppExpanderHeader Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
+                <ToggleSwitch x:Name="NotificationsSwitch" Toggled="NotificationsSwitch_Toggled" Margin="0,0,-70,0" Grid.Column="1"/>
+            </Grid>
+        </ListView>
+    </Grid>
+</Page>

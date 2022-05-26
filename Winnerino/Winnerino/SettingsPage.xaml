@@ -43,59 +43,6 @@
 
                     <Expander Style="{StaticResource ExpanderSettingStyle}">
                         <Expander.Header>
-                            <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General"/>
-                        </Expander.Header>
-
-                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <ToggleSwitch
-                            Header="Auto-load setting page"
-                            IsOn="False"
-                            ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-                            <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="loadLastPageToggleSwitch_Toggled"/>
-                        </StackPanel>
-                    </Expander>
-
-                    <Expander Style="{StaticResource ExpanderSettingStyle}">
-                        <Expander.Header>
-                            <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
-                        </Expander.Header>
-
-                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="darkThemeButton_Click"/>
-                            <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="lightThemeButton_Click"/>
-                            <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="defaultThemeButton_Click"/>
-                        </StackPanel>
-                    </Expander>
-
-                    <Expander Style="{StaticResource ExpanderSettingStyle}">
-                        <Expander.Header>
-                            <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
-                        </Expander.Header>
-
-                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <Button Click="openSettingsFile_Click">
-                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                                    <FontIcon Glyph="&#xE8A7;"/>
-                                    <TextBlock Text="Export settings"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Click="resetSettingsFile_Click">
-                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                                    <FontIcon Glyph="&#xe845;"/>
-                                    <TextBlock Text="Reset settings"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Content="Clear temporary folder" Click="clearTempFolderButton_Click"/>
-
-                            <HyperlinkButton Content="Open application folder (File explorer)" Click="appDataFolderHyperlink_Click"/>
-                            <HyperlinkButton Content="Open application settings folder (File explorer)" Click="appSettingsFolderHyperlink_Click"/>
-                            <HyperlinkButton Content="Open temporary folder (File explorer)" Click="tempDataFolderHyperlink_Click"/>
-                        </StackPanel>
-                    </Expander>
-
-                    <Expander Style="{StaticResource ExpanderSettingStyle}">
-                        <Expander.Header>
                             <local:AppExpanderHeader Glyph="&#xec50;" Title="Files &amp; folders" Subtitle="File explorer options"/>
                         </Expander.Header>
 
@@ -115,38 +62,27 @@
                         </StackPanel>
                     </Expander>
 
-                    <Expander Style="{StaticResource ExpanderSettingStyle}">
-                        <Expander.Header>
-                            <local:AppExpanderHeader Glyph="&#xe799;" Title="View" Subtitle="Enable Picture-in-picture, title bar options"/>
-                        </Expander.Header>
+                    <ListViewHeaderItem Margin="-10,0,0,0"/>
+                    <Button x:Name="AdditionalSettingsButton" Style="{StaticResource ButtonExpanderStyle}" Click="AdditionalSettingsButton_Click">
+                        <Grid>
 
-                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <ToggleSwitch Header="Compact mode" Toggled="compactOverlayToggleSwitch_Toggled"/>
-                            <ToggleSwitch Header="Animated icon" Toggled="AnimatedIconToggleSwitch_Toggled"/>
-                        </StackPanel>
-                    </Expander>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                    <Expander Style="{StaticResource ExpanderSettingStyle}">
-                        <Expander.Header>
-                            <local:AppExpanderHeader Glyph="&#xf0fb;" Title="Security" Subtitle="Passwords, permissions"/>
-                        </Expander.Header>
+                            <local:AppExpanderHeader Glyph="&#xe9f5;" Title="Additional settings" Subtitle="App theme, app data, permissions, customization"/>
 
-                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <Button Content="Clear saved passwords" Click="clearSecureSettingsButton_Click"/>
-                        </StackPanel>
-                    </Expander>
+                            <FontIcon Glyph="&#xe76c;" Grid.Column="1" FontSize="{StaticResource ExpanderChevronGlyphSize}" Margin="8" Height="{ThemeResource ExpanderChevronButtonSize}" Width="{ThemeResource ExpanderChevronButtonSize}"/>
+                        </Grid>
+                    </Button>
                 </ListView>
 
                 <Button 
                     x:Name="GoBackButton" 
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Padding="12,10"
-                    Margin="10"
+                    Style="{StaticResource NavigationBackButtonStyle}"
                     Grid.Column="0"
-                    Click="GoBackButton_Click">
-                    <FontIcon Glyph="&#xe72b;" FontSize="14"/>
-                </Button>
+                    Click="GoBackButton_Click"/>
 
                 <AutoSuggestBox
                     x:Name="SettingSearch"
@@ -171,6 +107,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="About this app" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Row="0"/>
@@ -179,6 +116,12 @@
                 <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)" Grid.Row="3"/>
                 <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk" Grid.Row="4"/>
                 <HyperlinkButton Content="Help" IsEnabled="False" Grid.Row="5"/>
+                <HyperlinkButton x:Name="NewContentButton" Grid.Row="6" Click="NewContentButton_Click">
+                    <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                        <FontIcon Glyph="&#xe789;"/>
+                        <TextBlock Text="What's new"/>
+                    </StackPanel>
+                </HyperlinkButton>
             </Grid>
 
             <!--#region ContentDialog -->
