@@ -3,13 +3,13 @@
 #if __has_include("ExplorerPage.g.cpp")
 #include "ExplorerPage.g.cpp"
 #endif
-using namespace winrt::Microsoft::UI::Xaml::Navigation;
 
 using namespace winrt;
 using namespace std;
 
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI::Xaml::Navigation;
 
 using namespace Windows::ApplicationModel::DataTransfer;
 using namespace Windows::Foundation;
@@ -38,7 +38,7 @@ namespace winrt::Winnerino::implementation
             if (tabs)
             {
                 auto containers = tabs.Values();
-                for (auto const& c : containers)
+                for (auto&& c : containers)
                 {
                     ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
                     hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
@@ -65,7 +65,6 @@ namespace winrt::Winnerino::implementation
     {
         if (windowClosedToken)
         {
-            // might fail if the window has completly been destroyed before an instance of this object
             MainWindow::Current().Closed(windowClosedToken);
         }
     }
