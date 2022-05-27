@@ -122,6 +122,10 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdditionalSettingsPage.xaml.h">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="AppExpanderHeader.xaml.h">
       <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -179,6 +183,9 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="AdditionalSettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="AppExpanderHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -212,6 +219,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdditionalSettingsPage.xaml.cpp">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="AppExpanderHeader.xaml.cpp">
       <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -270,6 +281,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="AdditionalSettingsPage.idl">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="App.idl">
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>

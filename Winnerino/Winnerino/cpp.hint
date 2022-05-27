@@ -10,3 +10,15 @@
 #define S_FALSE ((HRESULT)1L)
 #define DeleteFileTransacted
 #define PathCombine
+#define GetFinalPathNameByHandle
+#define NULL
+#define NULL ((void *)0)
+#define CreateFile
+#define GENERIC_READ (0x80000000L)
+#define FILE_SHARE_READ
+#define OPEN_EXISTING
+#define FILE_FLAG_BACKUP_SEMANTICS
+#define VOLUME_NAME_DOS
+#define GetLogicalDriveStrings
+#define PathFindExtension
+#define _DEBUG

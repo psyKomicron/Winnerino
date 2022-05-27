@@ -33,6 +33,9 @@
     <Page Include="FileLargeView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="AdditionalSettingsPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
