@@ -101,6 +101,7 @@ namespace winrt::Winnerino::implementation
     void MainWindow::ChangeTheme(ElementTheme const& theme)
     {
         contentGrid().RequestedTheme(theme);
+        ApplicationData::Current().LocalSettings().Values().Insert(L"AppTheme", box_value(static_cast<int32_t>(theme)));
     }
 
     bool MainWindow::NavigateTo(TypeName const& typeName)
@@ -269,6 +270,8 @@ namespace winrt::Winnerino::implementation
                 y = unbox_value<int>(posY);
             }
         }
+
+        contentGrid().RequestedTheme((ElementTheme)unbox_value_or<int32_t>(settings.Values().TryLookup(L"AppTheme"), static_cast<int32_t>(ElementTheme::Default)));
 #pragma endregion
 
         auto nativeWindow{ this->try_as<::IWindowNative>() };
@@ -316,13 +319,6 @@ namespace winrt::Winnerino::implementation
                 appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
-
-                /*std::vector<RectInt32 const> dragRectangles{};
-                RectInt32 rect{};
-                rect.Height = 32;
-                rect.Width = 
-                dragRectangles.push_back()
-                appWindow.TitleBar().SetDragRectangles(dragRectangles);*/
             }
         }
 
