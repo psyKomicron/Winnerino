@@ -6,114 +6,65 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     MinHeight="200"
-    MinWidth="200">
+    MinWidth="200"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="270"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
-
-        <Grid VerticalAlignment="Stretch">
+    <ScrollViewer>
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Button Style="{StaticResource HomeButtonStyle}" VerticalAlignment="Stretch" ToolTipService.ToolTip="See full change log" Grid.Row="0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Version:" Grid.Row="0"/>
-                    <TextBlock x:Name="versionTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                </Grid>
-            </Button>
+            <Button Style="{StaticResource NavigationBackButtonStyle}" Click="Button_Click"/>
 
-            <Button Style="{StaticResource HomeButtonStyle}" VerticalAlignment="Stretch" Grid.Row="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Release type:" Grid.Row="0"/>
-                    <TextBlock x:Name="buildTypeTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                </Grid>
-            </Button>
+            <Grid RowSpacing="40" Margin="30,0,30,10" Grid.Column="1" Grid.Row="1">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="IsTextSelectionEnabled" Value="True"/>
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                    </Style>
+                </Grid.Resources>
 
-            <Button Style="{StaticResource HomeButtonStyle}" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="#README" Grid.Row="0"/>
-                    <TextBlock Text="GitHub" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                </Grid>
-            </Button>
-        </Grid>
-
-        <ScrollViewer Grid.Column="1">
-            <Grid RowSpacing="40" Margin="0,20,20,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
-                <ListView 
-                    x:Name="updateNotesListView" 
-                    Background="{ThemeResource ControlFillColorDefault}" 
+                <ListView
+                    Background="{ThemeResource ExpanderBackground}" 
                     SelectionMode="None"
-                    CornerRadius="5"
-                    Padding="0,20"
-                    Grid.Row="0" 
-                    ScrollViewer.CanContentRenderOutsideBounds="False">
-                    <ListView.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="IsTextSelectionEnabled" Value="True"/>
-                        </Style>
-                    </ListView.Resources>
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Grid.Row="0">
                     <ListView.Header>
-                        <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
+                        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
                     </ListView.Header>
+                    
+                    <TextBlock Text="- Added file actions (cut, copy, delete, rename) for multiple files."/>
 
                     <ListViewHeaderItem/>
-                    <TextBlock Margin="0,0,0,20" Text="Redesigned" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                    <TextBlock Text="The application has been simplified in this version to only focus on the file explorer functionnalities." TextWrapping="Wrap"/>
-
-                    <ListViewHeaderItem/>
-                    <TextBlock Margin="0,0,0,20" Text="New" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                    <TextBlock Text="- Sorting (by size descending) added." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Updated user interface." TextWrapping="Wrap"/>
-                    <TextBlock Text="- More compact input zone to leave more vertical space for files and directories." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Added footer to display additional informations." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Added extra information (image preview for files, directory child items for directories) on mouse hover." TextWrapping="Wrap"/>
-
-                    <ListViewHeaderItem/>
-                    <TextBlock Margin="0,0,0,20" Text="Fixes" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                    <TextBlock Text="- Fixed application crash when open a directory before all current directory size have been calculated." TextWrapping="Wrap"/>
+                    <TextBlock Margin="0,0,0,20" Text="Fixes" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <TextBlock Text="- Fixed application crash when open a directory before all current directory size have been calculated."/>
                 </ListView>
 
                 <ListView 
                     SelectionMode="None" 
                     Grid.Row="1"
-                    CornerRadius="5"
-                    Padding="0,20"
-                    Background="{ThemeResource ControlFillColorDefault}" 
-                    ScrollViewer.CanContentRenderOutsideBounds="True">
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Background="{ThemeResource ExpanderBackground}">
                     <ListView.Header>
-                        <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Known issues" Margin="10,0,0,10" VerticalAlignment="Center"/>
+                        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="Known issues" Margin="10,0,0,10" VerticalAlignment="Center"/>
                     </ListView.Header>
                     <ListViewHeaderItem/>
 
-                    <TextBlock Text="- Scrolling through a long list may cause the application to crash." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Application becomes unresponsive when loading directory with a lot of files (Explorer page)." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Application may crash after sorting if the number of files is large (> 5000)." TextWrapping="Wrap"/>
-                    <TextBlock Text="- Application may render outside of bounds, it will be fixed in future versions." TextWrapping="Wrap"/>
+                    <TextBlock Text="- Scrolling through a long list may cause the application to crash."/>
+                    <TextBlock Text="- Application becomes unresponsive when loading a directory with a lot of files."/>
+                    <TextBlock Text="- Application may crash after sorting if the number of files is large (> 5000)."/>
+                    <TextBlock Text="- Application may move outside of screen bounds, it will be fixed in future versions."/>
                 </ListView>
             </Grid>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>
