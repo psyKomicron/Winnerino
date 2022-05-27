@@ -46,8 +46,8 @@ namespace winrt::Winnerino::Sorting
             {
                 size_t partitionIndex = Partition(vect, low, high, comparer);
 
-                Sort(vect, low, partitionIndex - 1);
-                Sort(vect, partitionIndex + 1, high);
+                Sort(vect, low, partitionIndex - 1, comparer);
+                Sort(vect, partitionIndex + 1, high, comparer);
             }
         }
 
