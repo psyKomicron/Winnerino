@@ -125,26 +125,51 @@ namespace winrt::Winnerino::implementation
         Unloaded(unloadedEventToken);
     }
 
-    int16_t FileEntryView::Compare(Winnerino::FileEntryView const& other)
+    void FileEntryView::Delete()
     {
-        if (IsDirectory() && !other.IsDirectory())
+        if (!DeleteFile(_filePath.c_str()))
         {
-            return -1;
+            MainWindow::Current().NotifyError(GetLastError(), L"Could not delete " + _fileName);
         }
-        if (!IsDirectory() && other.IsDirectory())
+        else
         {
-            return 1;
+            FileNameTextBlock().Opacity(0.5);
+            // raise deleted event or make the FileTabView handle directory changes ?
+        }
+    }
+
+    IAsyncAction FileEntryView::Rename(hstring const& newName, bool const& generateUniqueName)
+    {
+#ifdef _DEBUG
+        if (generateUniqueName && PathFileExists(newName.c_str()))
+        {
+            hstring str = newName + L"(1)";
+            uint32_t iterator = 2;
+            while (PathFileExists(newName.c_str()))
+            {
+                str = newName + L"(" + iterator + L")";
+                iterator++;
+            }
         }
 
-        if (FileBytes() > other.FileBytes())
+        StorageFile thisStorageItem = co_await StorageFile::GetFileFromPathAsync(_filePath);
+        StorageFolder parentFolder = co_await thisStorageItem.GetParentAsync();
+
+        hstring newFilePath = parentFolder.Path() + L"\\" + newName;
+
+        if (!MoveFile(_filePath.c_str(), newFilePath.c_str()))
         {
-            return -1;
+            throw hresult_error(-1, L"Could not rename " + _fileName);
         }
-        if (FileBytes() < other.FileBytes())
+        else
         {
-            return 1;
+            _fileName = newName;
+            _filePath = newFilePath;
+            m_propertyChanged(*this, PropertyChangedEventArgs{ L"FileName" });
         }
-        return 0;
+#else
+        co_return;
+#endif // _DEBUG
     }
 
     void FileEntryView::MenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
@@ -166,20 +191,6 @@ namespace winrt::Winnerino::implementation
     {
         Window propertiesWindow = make<Winnerino::implementation::FilePropertiesWindow>();
         propertiesWindow.Activate();
-    }
-
-    IAsyncAction FileEntryView::OpenInExplorerFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        try
-        {
-            string path = to_string(_filePath);
-            string parent = path.substr(0, _filePath.size() - _fileName.size());
-            co_await Launcher::LaunchUriAsync(Uri{ to_hstring(parent) });
-        }
-        catch (const hresult_error& ex)
-        {
-            MainWindow::Current().NotifyError(ex.code(), L"Failed to open file explorer");
-        }
     }
 
     void FileEntryView::OnLoaded(IInspectable const&, RoutedEventArgs const&)
@@ -275,130 +286,6 @@ namespace winrt::Winnerino::implementation
                 }
             }
         }
-    }
-
-    void FileEntryView::OpenWithFlyoutItem_Click(IInspectable const& , RoutedEventArgs const&)
-    {
-
-    }
-
-    void FileEntryView::DeleteFlyoutItem_Click(IInspectable const& , RoutedEventArgs const&)
-    {
-        if (!DeleteFile(_filePath.c_str()))
-        {
-            MainWindow::Current().NotifyError(GetLastError(), L"Could not delete " + _fileName);
-        }
-        else
-        {
-            FileNameTextBlock().Opacity(0.5);
-            // raise deleted event or make the FileTabView handle directory changes ?
-        }
-    }
-
-    IAsyncAction FileEntryView::RenameFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        RenameContentDialog().Title(box_value(L"Rename " + _fileName));
-        RenameTextBox().Text(_fileName);
-
-        if (!_isDirectory)
-        {
-            PWSTR ext = PathFindExtension(_filePath.c_str());
-            size_t extLength = wcslen(ext);
-            size_t filePathLength = _fileName.size();
-            int32_t selectionLength = static_cast<int32_t>(filePathLength) - static_cast<int32_t>(extLength);
-
-            RenameTextBox().Select(0, selectionLength);
-        }
-
-        ContentDialogResult result = co_await RenameContentDialog().ShowAsync();
-        if (result == ContentDialogResult::Primary)
-        {
-            if (!RenameTextBox().Text().empty())
-            {
-                RenameFile(RenameTextBox().Text(), GenerateUniqueNameCheckBox().IsChecked().GetBoolean());
-            }
-            else
-            {
-                MainWindow::Current().NotifyUser(L"Cannot rename file", InfoBarSeverity::Error);
-            }
-        }
-    }
-
-    IAsyncAction FileEntryView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        DataPackage data{};
-        data.RequestedOperation(DataPackageOperation::Copy);
-        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
-        if (_isDirectory)
-        {
-            items.Append(co_await StorageFolder::GetFolderFromPathAsync(_filePath));
-        }
-        else
-        {
-            items.Append(co_await StorageFile::GetFileFromPathAsync(_filePath));
-        }
-        data.SetStorageItems(items);
-
-        Clipboard::SetContent(data);
-
-#ifdef _DEBUG
-        XmlDocument toastContent{};
-        XmlElement root = toastContent.CreateElement(L"toast");
-        toastContent.AppendChild(root);
-
-        XmlElement visual = toastContent.CreateElement(L"visual");
-        root.AppendChild(visual);
-
-        XmlElement binding = toastContent.CreateElement(L"binding");
-        binding.SetAttribute(L"template", L"ToastText01");
-        visual.AppendChild(binding);
-
-        XmlElement text = toastContent.CreateElement(L"text");
-        text.SetAttribute(L"id", L"1");
-        text.InnerText(L"Copied " + _fileName + L" to clipboard");
-        binding.AppendChild(text);
-
-        ToastNotification toastNotif{ toastContent };
-        ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
-#endif
-    }
-
-    IAsyncAction FileEntryView::CutFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        DataPackage data{};
-        data.RequestedOperation(DataPackageOperation::Move);
-        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
-        if (_isDirectory)
-        {
-            items.Append(co_await StorageFolder::GetFolderFromPathAsync(_filePath));
-        }
-        else
-        {
-            items.Append(co_await StorageFile::GetFileFromPathAsync(_filePath));
-        }
-        data.SetStorageItems(items);
-
-        Clipboard::SetContent(data);
-
-#ifdef _DEBUG
-        XmlDocument toastContent{};
-        XmlElement root = toastContent.CreateElement(L"toast");
-        toastContent.AppendChild(root);
-        XmlElement visual = toastContent.CreateElement(L"visual");
-
-        root.AppendChild(visual);
-
-        XmlElement binding = toastContent.CreateElement(L"binding");
-        binding.SetAttribute(L"template", L"ToastGeneric");
-        visual.AppendChild(binding);
-
-        XmlElement text = toastContent.CreateElement(L"text");
-        text.InnerText(L"Moved " + _fileName + L" to clipboard");
-        binding.AppendChild(text);
-
-        ToastNotification toastNotif{ toastContent };
-        ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
-#endif
     }
 
 
@@ -627,8 +514,7 @@ namespace winrt::Winnerino::implementation
             result = AssocQueryString(ASSOCF_INIT_FIXED_PROGID | ASSOCF_INIT_FOR_FILE, assocation, ext, L"open", str, &bufferSize);
             if (result == S_OK)
             {
-                _opensWith = to_hstring(str);
-                OpenWithFlyoutItem().Text(OpenWithFlyoutItem().Text() + L" with " + _opensWith);
+                _opensWith = L"Opens with " + to_hstring(str);
             }
             delete[] str;
         }
@@ -721,41 +607,6 @@ namespace winrt::Winnerino::implementation
 #endif
             });
         }
-    }
-
-    IAsyncAction FileEntryView::RenameFile(hstring newName, const bool& generateUnique)
-    {
-#ifdef _DEBUG
-        if (generateUnique && PathFileExists(newName.c_str()))
-        {
-            const hstring& str = newName;
-            newName = str + L"(1)";
-            uint16_t iterator = 2;
-            while (PathFileExists(newName.c_str()))
-            {
-                newName = str + to_hstring(iterator);
-                iterator++;
-            }
-        }
-        
-        StorageFile thisStorageItem = co_await StorageFile::GetFileFromPathAsync(_filePath);
-        StorageFolder parentFolder = co_await thisStorageItem.GetParentAsync();
-
-        hstring newFilePath = parentFolder.Path() + L"\\" + newName;
-
-        if (!MoveFile(_filePath.c_str(), newFilePath.c_str()))
-        {
-            MainWindow::Current().NotifyError(GetLastError(), L"Could not rename " + _fileName);
-        }
-        else
-        {
-            _fileName = newName;
-            _filePath = newFilePath;
-            m_propertyChanged(*this, PropertyChangedEventArgs{ L"FileName" });
-        }
-#else
-        co_return;
-#endif // _DEBUG
     }
 
     inline void FileEntryView::UpdateSize(uint_fast64_t const& size)

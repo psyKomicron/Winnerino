@@ -17,6 +17,7 @@ namespace Winnerino
         Windows.Foundation.DateTime LastWrite{ get; set; };
         Boolean IsFileDangerous{ get; };
 
-        Int16 Compare(FileEntryView other);
+        void Delete();
+        Windows.Foundation.IAsyncAction Rename(String newName, Boolean generateUniqueName);
     }
 }

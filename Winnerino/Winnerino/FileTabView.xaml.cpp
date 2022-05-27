@@ -22,6 +22,7 @@ using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
+using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -31,6 +32,7 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::System;
+using namespace winrt::Windows::UI::Notifications;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -63,6 +65,7 @@ namespace winrt::Winnerino::implementation
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         std::optional<bool> isChecked = settings.Values().Lookup(L"UseSearchRegex").try_as<bool>();
         UseRegexButton().IsChecked(isChecked.value_or(false));
+        ContentNavigationView().IsPaneOpen(unbox_value_or<bool>(settings.Values().TryLookup(L"IsPaneOpen"), true));
 
         ApplicationDataContainer recents = settings.Containers().TryLookup(L"ExplorerRecents");
         if (recents)
@@ -276,7 +279,7 @@ namespace winrt::Winnerino::implementation
         MainWindow::Current().NotifyUser(L"File(s) copied to clipboard.", InfoBarSeverity::Success);
     }
 
-    void FileTabView::RenameAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
+    IAsyncAction FileTabView::RenameAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         throw winrt::hresult_not_implemented();
     }
@@ -425,9 +428,232 @@ namespace winrt::Winnerino::implementation
     {
     }
 
-    void FileTabView::ContentNavigationView_ItemInvoked(NavigationView const& sender, NavigationViewItemInvokedEventArgs const& args)
+    void FileTabView::ContentNavigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
     {
         MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>(), args.InvokedItem());
+    }
+
+    IAsyncAction FileTabView::CutFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        DataPackage data{};
+        data.RequestedOperation(DataPackageOperation::Move);
+        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
+
+        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        for (IInspectable selectedItem : selectedItems)
+        {
+            FileEntryView view = selectedItem.try_as<FileEntryView>();
+            if (view)
+            {
+                if (view.IsDirectory())
+                {
+                    items.Append(co_await StorageFolder::GetFolderFromPathAsync(view.FilePath()));
+                }
+                else
+                {
+                    items.Append(co_await StorageFile::GetFileFromPathAsync(view.FilePath()));
+                }
+            }
+        }
+
+        hstring message{};
+        if (items.Size() > 0)
+        {
+            data.SetStorageItems(items);
+            Clipboard::SetContent(data);
+            if (items.Size() == 1)
+            {
+                message = L"Moved \"" + items.GetAt(0).Name() + L"\" to clipboard";
+            }
+            else
+            {
+                message = L"Moved " + to_hstring(items.Size()) + L" to clipboard";
+            }
+        }
+        else
+        {
+            message = L"No files selected to move";
+        }
+
+        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        {
+            XmlDocument toastContent{};
+            XmlElement root = toastContent.CreateElement(L"toast");
+            toastContent.AppendChild(root);
+
+            XmlElement visual = toastContent.CreateElement(L"visual");
+            root.AppendChild(visual);
+
+            XmlElement binding = toastContent.CreateElement(L"binding");
+            binding.SetAttribute(L"template", L"ToastText01");
+            visual.AppendChild(binding);
+
+            XmlElement text = toastContent.CreateElement(L"text");
+            text.SetAttribute(L"id", L"1");
+            text.InnerText(message);
+            binding.AppendChild(text);
+
+            ToastNotification toastNotif{ toastContent };
+            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+        }
+    }
+
+    IAsyncAction FileTabView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        // I18N
+
+        DataPackage data{};
+        data.RequestedOperation(DataPackageOperation::Copy);
+        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
+
+        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        for (IInspectable selectedItem : selectedItems)
+        {
+            FileEntryView view = selectedItem.try_as<FileEntryView>();
+            if (view)
+            {
+                if (view.IsDirectory())
+                {
+                    items.Append(co_await StorageFolder::GetFolderFromPathAsync(view.FilePath()));
+                }
+                else
+                {
+                    items.Append(co_await StorageFile::GetFileFromPathAsync(view.FilePath()));
+                }
+            }
+        }
+
+        hstring message{};
+        if (items.Size() > 0)
+        {
+            data.SetStorageItems(items);
+            Clipboard::SetContent(data);
+            
+            if (items.Size() == 1)
+            {
+                message = L"Copied \"" + items.GetAt(0).Name() + L"\" to clipboard";
+            }
+            else
+            {
+                message = L"Copied " + to_hstring(items.Size()) + L" to clipboard";
+            }
+        }
+        else
+        {
+            message = L"No files selected to copy";
+        }
+
+        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        {
+            XmlDocument toastContent{};
+            XmlElement root = toastContent.CreateElement(L"toast");
+            toastContent.AppendChild(root);
+
+            XmlElement visual = toastContent.CreateElement(L"visual");
+            root.AppendChild(visual);
+
+            XmlElement binding = toastContent.CreateElement(L"binding");
+            binding.SetAttribute(L"template", L"ToastText01");
+            visual.AppendChild(binding);
+
+            XmlElement text = toastContent.CreateElement(L"text");
+            text.SetAttribute(L"id", L"1");
+            text.InnerText(message);
+            binding.AppendChild(text);
+
+            ToastNotification toastNotif{ toastContent };
+            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+        }
+    }
+
+    IAsyncAction FileTabView::RenameFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        /*RenameContentDialog().Title(box_value(L"Rename " + _fileName));
+        RenameTextBox().Text(_fileName);
+
+        if (!_isDirectory)
+        {
+            PWSTR ext = PathFindExtension(_filePath.c_str());
+            size_t extLength = wcslen(ext);
+            size_t filePathLength = _fileName.size();
+            int32_t selectionLength = static_cast<int32_t>(filePathLength) - static_cast<int32_t>(extLength);
+
+            RenameTextBox().Select(0, selectionLength);
+        }
+
+        ContentDialogResult result = co_await RenameContentDialog().ShowAsync();
+        if (result == ContentDialogResult::Primary)
+        {
+            if (!RenameTextBox().Text().empty())
+            {
+                RenameFile(RenameTextBox().Text(), GenerateUniqueNameCheckBox().IsChecked().GetBoolean());
+            }
+            else
+            {
+                MainWindow::Current().NotifyUser(L"Cannot rename file", InfoBarSeverity::Error);
+            }
+        }*/
+        co_return;
+    }
+
+    void FileTabView::DeleteFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+    }
+
+    void FileTabView::OpenWithFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+    }
+
+    void FileTabView::MenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        for (IInspectable item : selectedItems)
+        {
+            FileEntryView view = item.try_as<FileEntryView>();
+            if (view)
+            {
+                hstring filePath = view.FilePath();
+                try
+                {
+                    DataPackage dataPackage{};
+                    dataPackage.SetText(filePath);
+                    Clipboard::SetContent(dataPackage);
+                    MainWindow::Current().NotifyUser(L"Path copied to clipboard.", InfoBarSeverity::Success);
+                }
+                catch (const hresult_error& ex)
+                {
+                    MainWindow::Current().NotifyError(ex.code(), L"Failed to open file explorer");
+                }
+            }
+        }
+    }
+
+    IAsyncAction FileTabView::OpenInExplorerFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        for (IInspectable item : selectedItems)
+        {
+            FileEntryView view = item.try_as<FileEntryView>();
+            if (view)
+            {
+                hstring filePath = view.FilePath();
+                hstring fileName = view.FileName();
+                try
+                {
+                    string path = to_string(filePath);
+                    string parent = path.substr(0, filePath.size() - fileName.size());
+                    co_await Launcher::LaunchUriAsync(Uri{ to_hstring(parent) });
+                }
+                catch (const hresult_error& ex)
+                {
+                    MainWindow::Current().NotifyError(ex.code(), L"Failed to open file explorer");
+                }
+            }
+        }
+    }
+
+    void FileTabView::FileSizeFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
     }
 
 
@@ -520,7 +746,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    inline winrt::hstring FileTabView::FormatFileSize(double* size) const
+    inline hstring FileTabView::FormatFileSize(double* size) const
     {
         if (*size >= 0x10000000000)
         {
@@ -696,6 +922,7 @@ namespace winrt::Winnerino::implementation
     {
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         settings.Values().Insert(L"UseSearchRegex", box_value(UseRegexButton().IsChecked()));
+        settings.Values().Insert(L"IsPaneOpen", box_value(ContentNavigationView().IsPaneOpen()));
     }
 
     void FileTabView::Search(hstring const& query, IVector<IInspectable> const& suggestions)

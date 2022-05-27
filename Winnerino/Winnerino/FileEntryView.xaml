@@ -58,74 +58,7 @@
             <TextBlock x:Name="FileSizeTextBlock" HorizontalAlignment="Right" Grid.Column="0"/>
             <TextBlock x:Name="FileSizeExtensionTextBlock" HorizontalAlignment="Left" Grid.Column="1"/>
         </Grid>
-
-        <ContentDialog 
-            x:Name="RenameContentDialog"
-            DefaultButton="Primary" 
-            PrimaryButtonText="Rename" 
-            SecondaryButtonText="Cancel">
-            <Grid RowSpacing="20" Padding="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-
-                <TextBox x:Name="RenameTextBox" PlaceholderText="New name" Grid.Row="0"/>
-
-                <CheckBox x:Name="GenerateUniqueNameCheckBox" Content="Generate unique name" Grid.Row="1"/>
-            </Grid>
-        </ContentDialog>
     </Grid>
-    
-    <UserControl.ContextFlyout>
-        <MenuFlyout>
-            <MenuFlyoutSubItem Text="File">
-                <MenuFlyoutItem x:Name="OpenWithFlyoutItem" Text="Open" Click="OpenWithFlyoutItem_Click">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="OpenWith"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutSeparator/>
-                <MenuFlyoutItem x:Name="DeleteFlyoutItem" Text="Delete" Click="DeleteFlyoutItem_Click">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Delete"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="RenameFlyoutItem" Text="Rename" Click="RenameFlyoutItem_Click">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Rename"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="CopyFlyoutItem" Text="Copy" Click="CopyFlyoutItem_Click">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Copy"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="CutFlyoutItem" Text="Cut" Click="CutFlyoutItem_Click">
-                    <MenuFlyoutItem.Icon>
-                        <SymbolIcon Symbol="Cut"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-            </MenuFlyoutSubItem>
-
-            <MenuFlyoutSeparator/>
-            <MenuFlyoutItem Text="Copy as path" Click="MenuFlyoutItem_Click">
-                <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xe71b;"/>
-                </MenuFlyoutItem.Icon>
-            </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="OpenInExplorerFlyoutItem" Text="Open containing folder" Click="OpenInExplorerFlyoutItem_Click">
-                <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xec50;"/>
-                </MenuFlyoutItem.Icon>
-            </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="FileSizeFlyoutItem" Text="Properties" Click="FileSizeFlyoutItem_Click">
-                <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xea40;"/>
-                </MenuFlyoutItem.Icon>
-            </MenuFlyoutItem>
-        </MenuFlyout>
-    </UserControl.ContextFlyout>
 
     <ToolTipService.ToolTip>
         <ToolTip x:Name="UserControlToolTip" Width="{x:Bind Width}" Opened="ToolTip_Opened"/>

@@ -39,7 +39,8 @@ namespace winrt::Winnerino::implementation
         void LastWrite(Windows::Foundation::DateTime const& lastWrite) { _lastWrite = lastWrite; };
         bool IsFileDangerous() { return _isDangerous; };
  
-        int16_t Compare(Winnerino::FileEntryView const& other);
+        void Delete();
+        Windows::Foundation::IAsyncAction Rename(hstring const& newName, bool const& generateUniqueName = false);
 
         void MenuFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
@@ -47,11 +48,6 @@ namespace winrt::Winnerino::implementation
         void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         Windows::Foundation::IAsyncAction ToolTip_Opened(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        void OpenWithFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        void DeleteFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction RenameFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction CopyFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction CutFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
         bool loaded = true;
@@ -80,7 +76,6 @@ namespace winrt::Winnerino::implementation
         void GetIcon(PCWSTR const& ext);
         void InitFile(PCWSTR ext);
         void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
-        Windows::Foundation::IAsyncAction RenameFile(hstring newName, const bool& generateUnique = false);
         inline void UpdateSize(uint_fast64_t const& size);
     };
 }

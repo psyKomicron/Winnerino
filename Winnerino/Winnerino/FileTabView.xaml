@@ -218,6 +218,76 @@
                         <ItemsStackPanel GroupPadding="0"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
+
+                <ListView.ContextFlyout>
+                    <Flyout ShouldConstrainToRootBounds="False">
+                        <Grid RowSpacing="7" Padding="5" Margin="-15,-16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="{StaticResource ControlCornerRadius}">
+                            <Grid.Background>
+                                <AcrylicBrush TintColor="{ThemeResource SmokeFillColorDefault}" TintOpacity="0.5" TintLuminosityOpacity="0.1"/>
+                            </Grid.Background>
+                            
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="CutFlyoutItem_Click">
+                                    <FontIcon Glyph="&#xe8c6;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                </Button>
+
+                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="CopyFlyoutItem_Click">
+                                    <FontIcon Glyph="&#xe8c8;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                </Button>
+
+                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="RenameFlyoutItem_Click">
+                                    <FontIcon Glyph="&#xe8ac;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                </Button>
+
+                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="DeleteFlyoutItem_Click">
+                                    <FontIcon Glyph="&#xe74d;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                </Button>
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Style="{StaticResource FlyoutSeparatorStyle}" HorizontalAlignment="Stretch" Margin="-9,0"/>
+
+                            <Button Grid.Row="2" Style="{StaticResource FlyoutButtonStyle}" HorizontalContentAlignment="Stretch">
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <FontIcon Glyph="&#xe71b;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                    <TextBlock Text="Open with" Grid.Column="1"/>
+                                    <FontIcon Glyph="&#xe76c;" FontSize="{StaticResource IconButtonFontSize}" Grid.Column="2"/>
+                                </Grid>
+
+                                <Button.Flyout>
+                                    <MenuFlyout Placement="Right" ShowMode="Transient">
+                                        <MenuFlyoutItem Text="Bite"/>
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                            </Button>
+                            <Button Grid.Row="3" Style="{StaticResource FlyoutButtonStyle}" Click="OpenInExplorerFlyoutItem_Click">
+                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                                    <FontIcon Glyph="&#xec50;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                    <TextBlock Text="Open containing folder"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Row="4" Style="{StaticResource FlyoutButtonStyle}">
+                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                                    <FontIcon Glyph="&#xea40;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                    <TextBlock Text="Properties"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Flyout>
+                </ListView.ContextFlyout>
             </ListView>
             <ProgressRing
                 x:Name="ProgressRing" 
@@ -302,6 +372,23 @@
                     <TextBlock x:Name="FileLastWriteTextBlock" ToolTipService.ToolTip="Last write" Grid.Column="1"/>
                 </Grid>
             </Grid>
+
+            <ContentDialog 
+                x:Name="RenameContentDialog"
+                DefaultButton="Primary" 
+                PrimaryButtonText="Rename" 
+                SecondaryButtonText="Cancel">
+                <Grid RowSpacing="20" Padding="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="RenameTextBox" PlaceholderText="New name" Grid.Row="0"/>
+
+                    <CheckBox x:Name="GenerateUniqueNameCheckBox" Content="Generate unique name" Grid.Row="1"/>
+                </Grid>
+            </ContentDialog>
         </Grid>
     </NavigationView>
 </UserControl>
