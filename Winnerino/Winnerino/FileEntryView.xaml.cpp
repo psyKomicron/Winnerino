@@ -3,20 +3,19 @@
 #if __has_include("FileEntryView.g.cpp")
 #include "FileEntryView.g.cpp"
 #endif
-#include "shlwapi.h"
+
 #include <math.h>
 #include "DirectorySizeCalculator.h"
 #include "FilePropertiesWindow.xaml.h"
 
 using namespace std;
 using namespace winrt;
-
+using namespace ::Winnerino::Storage;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Documents;
 using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
-
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
@@ -26,7 +25,6 @@ using namespace winrt::Windows::System;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::FileProperties;
 
-using namespace winrt::Winnerino::Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -147,7 +145,7 @@ namespace winrt::Winnerino::implementation
             uint32_t iterator = 2;
             while (PathFileExists(newName.c_str()))
             {
-                str = newName + L"(" + iterator + L")";
+                str = newName + L"(" + to_hstring(iterator) + L")";
                 iterator++;
             }
         }
@@ -165,7 +163,7 @@ namespace winrt::Winnerino::implementation
         {
             _fileName = newName;
             _filePath = newFilePath;
-            m_propertyChanged(*this, PropertyChangedEventArgs{ L"FileName" });
+            e_propertyChanged(*this, PropertyChangedEventArgs{ L"FileName" });
         }
 #else
         co_return;
@@ -218,7 +216,8 @@ namespace winrt::Winnerino::implementation
 
                 StorageFile file = co_await StorageFile::GetFileFromPathAsync(_filePath);
                 ThumbnailMode thumbnailMode = ThumbnailMode::ListView;
-                /*switch (perceivedFileType)
+                
+                switch (this->perceivedFileType)
                 {
                     case PERCEIVED_TYPE_IMAGE:
                         thumbnailMode = ThumbnailMode::PicturesView;
@@ -244,8 +243,8 @@ namespace winrt::Winnerino::implementation
                     case PERCEIVED_TYPE_CONTACTS:
                     default:
                         break;
-                }*/
-                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 100, ThumbnailOptions::UseCurrentScale);
+                }
+                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 200, ThumbnailOptions::ResizeThumbnail);
                 co_await bitmapImage.SetSourceAsync(thumbnail);
             }
             else
@@ -325,7 +324,6 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::GetAttributes(int64_t attributes)
     {
         ResourceDictionary resources = Application::Current().Resources();
-        std::vector<IInspectable> icons{};
         if (attributes & FILE_ATTRIBUTE_ARCHIVE)
         {
             FontIcon f{};
@@ -543,39 +541,6 @@ namespace winrt::Winnerino::implementation
         if (AssocGetPerceivedType(ext, &perceived, &perceivedFlag, &perceivedType) == S_OK)
         {
             _perceivedType = to_hstring(perceivedType);
-            //perceivedFileType = perceived;
-            /*switch (perceived)
-            {
-                case PERCEIVED_TYPE_FIRST:
-                case PERCEIVED_TYPE_UNSPECIFIED:
-                    break;
-                case PERCEIVED_TYPE_FOLDER:
-                    break;
-                case PERCEIVED_TYPE_UNKNOWN:
-                    break;
-                case PERCEIVED_TYPE_TEXT:
-                    break;
-                case PERCEIVED_TYPE_IMAGE:
-                    break;
-                case PERCEIVED_TYPE_AUDIO:
-                    break;
-                case PERCEIVED_TYPE_VIDEO:
-                    break;
-                case PERCEIVED_TYPE_COMPRESSED:
-                    break;
-                case PERCEIVED_TYPE_DOCUMENT:
-                    break;
-                case PERCEIVED_TYPE_SYSTEM:
-                    break;
-                case PERCEIVED_TYPE_APPLICATION:
-                    break;
-                case PERCEIVED_TYPE_GAMEMEDIA:
-                    break;
-                case PERCEIVED_TYPE_CONTACTS:
-                    break;
-                default:
-                    break;
-            }*/
         }
     }
 

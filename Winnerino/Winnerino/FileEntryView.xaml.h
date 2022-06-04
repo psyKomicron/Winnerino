@@ -3,6 +3,7 @@
 #include "winrt/Microsoft.UI.Xaml.h"
 #include "winrt/Microsoft.UI.Xaml.Markup.h"
 #include "winrt/Microsoft.UI.Xaml.Controls.Primitives.h"
+#include "shlwapi.h"
 #include "FileEntryView.g.h"
 
 using namespace std;
@@ -19,11 +20,11 @@ namespace winrt::Winnerino::implementation
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
-            return m_propertyChanged.add(value);
+            return e_propertyChanged.add(value);
         };
         void PropertyChanged(event_token const& token)
         {
-            m_propertyChanged.remove(token);
+            e_propertyChanged.remove(token);
         };
 
         uint64_t FileBytes() { return fileSize; };
@@ -46,30 +47,29 @@ namespace winrt::Winnerino::implementation
         void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         Windows::Foundation::IAsyncAction ToolTip_Opened(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
         bool loaded = true;
-        event_token loadedEventToken;
-        event_token unloadedEventToken;
         Concurrency::task<void> calculateSizeTask;
         Concurrency::cancellation_token_source cancellationToken{};
-        //PERCEIVED perceivedFileType;
         double _displayFileSize = 0;
+        event_token loadedEventToken;
+        PERCEIVED perceivedFileType;
+        event_token unloadedEventToken;
         hstring _fileSizeExtension;
         hstring _fileName;
         hstring _filePath;
         uint64_t fileSize = 0;
         hstring _icon;
+        bool _isDangerous = false;
         bool _isDirectory = false;
         bool _isSystem = false;
         Windows::Foundation::DateTime _lastWrite;
         hstring _opensWith;
         hstring _perceivedType;
-        bool _isDangerous = false;
 
-        event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+        event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
         inline hstring FormatSize(double* size);
         void GetAttributes(int64_t attributes);
