@@ -12,6 +12,8 @@ namespace winrt::Winnerino::implementation
     public:
         FileLargeView();
         FileLargeView(hstring const& path);
+        FileLargeView(winrt::Windows::Storage::StorageFile const& file, winrt::Windows::Foundation::IInspectable const& dummy);
+        void UserControl_PointerPressed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
 
         void Grid_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void Grid_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
@@ -20,8 +22,7 @@ namespace winrt::Winnerino::implementation
         //Windows::Storage::StorageFolder folder;
 
         winrt::Windows::Foundation::IAsyncAction LoadFile(hstring const& path);
-    public:
-        void UserControl_PointerPressed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile file);
     };
 }
 

@@ -30,7 +30,7 @@
 
         <Grid x:Name="OverlayGrid" Grid.Row="0" Padding="15" CornerRadius="{StaticResource ControlCornerRadius}" Visibility="Collapsed" Opacity="0">
             <Grid.OpacityTransition>
-                <ScalarTransition Duration="00:00:00.25"/>
+                <ScalarTransition Duration="00:00:00.17"/>
             </Grid.OpacityTransition>
             <Grid.Background>
                 <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>

@@ -3,12 +3,16 @@
 #if __has_include("LibraryTabView.g.cpp")
 #include "LibraryTabView.g.cpp"
 #endif
-using namespace winrt::Microsoft::UI::Xaml::Controls;
-using namespace winrt::Windows::Foundation::Collections;
 
+#include <DirectoryEnumerator.h>
+
+using namespace std;
+using namespace ::Winnerino::Storage;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -28,6 +32,47 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction LibraryTabView::LoadFiles(hstring const& tag)
     {
+#ifdef _DEBUG
+        StorageLibrary documents = nullptr;
+        if (tag == L"Documents")
+        {
+            documents = co_await StorageLibrary::GetLibraryAsync(KnownLibraryId::Documents);
+        }
+        else if (tag == L"Music")
+        {
+            documents = co_await StorageLibrary::GetLibraryAsync(KnownLibraryId::Music);
+        }
+        else if (tag == L"Pictures")
+        {
+            documents = co_await StorageLibrary::GetLibraryAsync(KnownLibraryId::Pictures);
+        }
+        else if (tag == L"Videos")
+        {
+            documents = co_await StorageLibrary::GetLibraryAsync(KnownLibraryId::Videos);
+        }
+        else
+        {
+            co_return;
+        }
+
+        DirectoryEnumerator enumerator{};
+        auto&& folders = documents.Folders();
+
+        for (auto&& folder : folders)
+        {
+            hstring path = folder.Path();
+            unique_ptr<vector<hstring>> vect{ enumerator.Enumerate(path) };
+
+            for (size_t i = 0; i < vect->size(); i++)
+            {
+                DispatcherQueue().TryEnqueue([this, path = vect->at(i)]()
+                {
+                    FileLargeView view{ path };
+                    FilesList().Children().Append(view);
+                });
+            }
+        }
+#else
         StorageFolder documents = nullptr;
 
         if (tag == L"Documents")
@@ -52,8 +97,7 @@ namespace winrt::Winnerino::implementation
         }
 
         IVectorView<StorageFile> files = co_await documents.GetFilesAsync();
-
-        for (const StorageFile& file : files)
+        for (StorageFile file : files)
         {
             DispatcherQueue().TryEnqueue([this, path = file.Path()]()
             {
@@ -61,5 +105,6 @@ namespace winrt::Winnerino::implementation
                 FilesList().Children().Append(view);
             });
         }
+#endif
     }
 }

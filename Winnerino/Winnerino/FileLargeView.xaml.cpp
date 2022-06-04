@@ -3,6 +3,7 @@
 #if __has_include("FileLargeView.g.cpp")
 #include "FileLargeView.g.cpp"
 #endif
+
 #include <regex>
 
 using namespace std;
@@ -28,6 +29,11 @@ namespace winrt::Winnerino::implementation
     FileLargeView::FileLargeView(hstring const& path) : FileLargeView()
     {
         LoadFile(path);
+    }
+
+    FileLargeView::FileLargeView(StorageFile const& file, IInspectable const&)
+    {
+        LoadFile(file);
     }
 
     void FileLargeView::Grid_PointerEntered(IInspectable const&, PointerRoutedEventArgs const&)
@@ -56,6 +62,47 @@ namespace winrt::Winnerino::implementation
         try
         {
             StorageFile file = co_await StorageFile::GetFileFromPathAsync(path);
+            ThumbnailMode mode = ThumbnailMode::ListView;
+
+            wregex audioRe = wregex{ L"^audio" };
+            wregex videoRe = wregex{ L"^video" };
+            wregex imageRe = wregex{ L"^image" };
+
+            hstring contentType = file.ContentType();
+            if (regex_search(contentType.c_str(), audioRe))
+            {
+                mode = ThumbnailMode::MusicView;
+            }
+            else if (regex_search(contentType.c_str(), videoRe))
+            {
+                mode = ThumbnailMode::VideosView;
+            }
+            else if (regex_search(contentType.c_str(), imageRe))
+            {
+                mode = ThumbnailMode::PicturesView;
+            }
+
+            co_await imageSource.SetSourceAsync(co_await file.GetThumbnailAsync(mode, 200));
+            DispatcherQueue().TryEnqueue([this]()
+            {
+                ImageProgressRing().IsIndeterminate(false);
+            });
+        }
+        catch (const hresult_error& ex)
+        {
+            OutputDebugString((ex.message() + L"\n").c_str());
+        }
+    }
+
+    IAsyncAction FileLargeView::LoadFile(StorageFile file)
+    {
+        ImageProgressRing().IsIndeterminate(true);
+        FileName().Text(file.Path());
+        BitmapImage imageSource{};
+        Thumbnail().Source(imageSource);
+
+        try
+        {
             ThumbnailMode mode = ThumbnailMode::ListView;
 
             wregex audioRe = wregex{ L"^audio" };

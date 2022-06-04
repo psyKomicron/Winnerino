@@ -5,5 +5,6 @@ namespace Winnerino
     {
         FileLargeView();
         FileLargeView(String path);
+        FileLargeView(Windows.Storage.StorageFile file, IInspectable dummy);
     }
 }
