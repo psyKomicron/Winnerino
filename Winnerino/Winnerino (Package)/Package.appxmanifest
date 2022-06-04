@@ -10,8 +10,8 @@
 
   <Identity
     Name="429ebafe-24cd-4551-b155-f93682aa9bf7"
-    Publisher="CN=MonsieurJ"
-    Version="2.0.9.0" />
+    Publisher="CN=psyKomicron"
+    Version="2.0.12.0" />
 
   <Properties>
     <DisplayName>Winnerino</DisplayName>

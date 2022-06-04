@@ -130,6 +130,7 @@
       <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="DirectoryEnumerator.h" />
     <ClInclude Include="DirectorySizeCalculator.h" />
     <ClInclude Include="DriveSearchModel.h">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
@@ -227,6 +228,7 @@
       <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="DirectoryEnumerator.cpp" />
     <ClCompile Include="DirectorySizeCalculator.cpp" />
     <ClCompile Include="DriveSearchModel.cpp">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
