@@ -220,13 +220,14 @@
                 </ListView.ItemsPanel>
 
                 <ListView.ContextFlyout>
-                    <Flyout ShouldConstrainToRootBounds="False">
+                    <Flyout ShouldConstrainToRootBounds="True">
                         <Grid RowSpacing="7" Padding="5" Margin="-15,-16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="{StaticResource ControlCornerRadius}">
                             <Grid.Background>
-                                <AcrylicBrush TintColor="{ThemeResource SmokeFillColorDefault}" TintOpacity="0.5" TintLuminosityOpacity="0.1"/>
+                                <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>
                             </Grid.Background>
                             
                             <Grid.RowDefinitions>
+                                <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -273,13 +274,22 @@
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>
+                            
                             <Button Grid.Row="3" Style="{StaticResource FlyoutButtonStyle}" Click="OpenInExplorerFlyoutItem_Click">
                                 <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                                     <FontIcon Glyph="&#xec50;" FontSize="{StaticResource IconButtonFontSize}"/>
                                     <TextBlock Text="Open containing folder"/>
                                 </StackPanel>
                             </Button>
-                            <Button Grid.Row="4" Style="{StaticResource FlyoutButtonStyle}">
+
+                            <Button Grid.Row="4" Style="{StaticResource FlyoutButtonStyle}" Click="CopyPathFlyoutItem_Click">
+                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                                    <FontIcon Glyph="&#xe756;" FontSize="{StaticResource IconButtonFontSize}"/>
+                                    <TextBlock Text="Copy as path"/>
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button Grid.Row="5" Style="{StaticResource FlyoutButtonStyle}">
                                 <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                                     <FontIcon Glyph="&#xea40;" FontSize="{StaticResource IconButtonFontSize}"/>
                                     <TextBlock Text="Properties"/>

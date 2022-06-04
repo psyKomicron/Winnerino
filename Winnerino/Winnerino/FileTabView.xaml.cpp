@@ -263,30 +263,8 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::CutAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void FileTabView::UpButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        MainWindow::Current().NotifyUser(L"Cutting files to clipboard is not supported yet.", InfoBarSeverity::Error);
-    }
-
-    void FileTabView::CopyAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        DataPackage dataPackage{};
-        IVector<IStorageItem> items{};
-
-        dataPackage.SetStorageItems(items);
-        dataPackage.RequestedOperation(DataPackageOperation::Copy);
-        Clipboard::SetContent(dataPackage);
-        MainWindow::Current().NotifyUser(L"File(s) copied to clipboard.", InfoBarSeverity::Success);
-    }
-
-    IAsyncAction FileTabView::RenameAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        throw winrt::hresult_not_implemented();
-    }
-
-    void FileTabView::DeleteAppBarButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        throw winrt::hresult_not_implemented();
     }
 
     void FileTabView::RecentsButton_Click(SplitButton const&, SplitButtonClickEventArgs const&)
@@ -424,10 +402,6 @@ namespace winrt::Winnerino::implementation
         MainWindow::Current().NavigateTo(xaml_typename<SettingsPage>());
     }
 
-    void FileTabView::UpButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-    }
-
     void FileTabView::ContentNavigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
     {
         MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>(), args.InvokedItem());
@@ -435,6 +409,8 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::CutFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
+        // I18N
+
         DataPackage data{};
         data.RequestedOperation(DataPackageOperation::Move);
         IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
@@ -604,7 +580,7 @@ namespace winrt::Winnerino::implementation
     {
     }
 
-    void FileTabView::MenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    void FileTabView::CopyPathFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
         IVector<IInspectable> selectedItems = FileListView().SelectedItems();
         for (IInspectable item : selectedItems)
