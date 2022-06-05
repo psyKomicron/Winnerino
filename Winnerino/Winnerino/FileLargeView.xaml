@@ -35,13 +35,8 @@
             <Grid.Background>
                 <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>
             </Grid.Background>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Album"/>
-            <TextBlock Text="dslkfnds" Grid.Column="1"/>
+            <ListView x:Name="AttributesListView" SelectionMode="None"/>
         </Grid>
     </Grid>
 </UserControl>

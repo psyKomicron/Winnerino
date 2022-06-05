@@ -46,6 +46,7 @@
             <VariableSizedWrapGrid
                 x:Name="FilesList"
                 ItemHeight="200"
+                ItemWidth="300"
                 Orientation="Horizontal"/>
         </ScrollViewer>
     </Grid>

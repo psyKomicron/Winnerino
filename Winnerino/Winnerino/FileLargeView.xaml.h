@@ -19,10 +19,11 @@ namespace winrt::Winnerino::implementation
         void Grid_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
 
     private:
-        //Windows::Storage::StorageFolder folder;
+        Windows::Storage::StorageFile file = nullptr;
 
         winrt::Windows::Foundation::IAsyncAction LoadFile(hstring const& path);
         winrt::Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile file);
+        inline void OnException(winrt::hstring const& message);
     };
 }
 

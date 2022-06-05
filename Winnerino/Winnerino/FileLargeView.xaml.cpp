@@ -55,13 +55,13 @@ namespace winrt::Winnerino::implementation
     IAsyncAction FileLargeView::LoadFile(hstring const& path)
     {
         ImageProgressRing().IsIndeterminate(true);
-        FileName().Text(path);
         BitmapImage imageSource{};
         Thumbnail().Source(imageSource);
 
         try
         {
-            StorageFile file = co_await StorageFile::GetFileFromPathAsync(path);
+            file = co_await StorageFile::GetFileFromPathAsync(path);
+
             ThumbnailMode mode = ThumbnailMode::ListView;
 
             wregex audioRe = wregex{ L"^audio" };
@@ -86,11 +86,23 @@ namespace winrt::Winnerino::implementation
             DispatcherQueue().TryEnqueue([this]()
             {
                 ImageProgressRing().IsIndeterminate(false);
+                FileName().Text(file.Name());
+
+                AttributesListView().Items().Append(box_value(L"Display name : " + file.DisplayName()));
+                AttributesListView().Items().Append(box_value(L"File path : " + file.Path()));
+                AttributesListView().Items().Append(box_value(L"Content type : " + file.ContentType()));
+                AttributesListView().Items().Append(box_value(L"Display type : " + file.DisplayType()));
             });
+        }
+        catch (hresult_invalid_argument const& ex)
+        {
+            OutputDebugString((L"[" + to_hstring(ex.code()) + L"] " + ex.message() + L"\n").c_str());
+            OnException();
         }
         catch (const hresult_error& ex)
         {
             OutputDebugString((ex.message() + L"\n").c_str());
+            OnException();
         }
     }
 
@@ -132,6 +144,23 @@ namespace winrt::Winnerino::implementation
         catch (const hresult_error& ex)
         {
             OutputDebugString((ex.message() + L"\n").c_str());
+        }
+    }
+
+    inline void FileLargeView::OnException()
+    {
+        if (DispatcherQueue().HasThreadAccess())
+        {
+            ImageProgressRing().IsIndeterminate(false);
+            FileName().Text(L"Failed to access file");
+        }
+        else
+        {
+            DispatcherQueue().TryEnqueue([this]()
+            {
+                ImageProgressRing().IsIndeterminate(false);
+                FileName().Text(L"Failed to access file");
+            });
         }
     }
 }
