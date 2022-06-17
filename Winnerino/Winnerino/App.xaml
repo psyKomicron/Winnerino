@@ -17,6 +17,7 @@
             <x:Double x:Key="HomeTitleFontSize">20</x:Double>
             <x:Double x:Key="IconButtonFontSize">16</x:Double>
             <x:Double x:Key="NavigationBackButtonIconSize">14</x:Double>
+            <x:Double x:Key="ProgressBarHeight">14</x:Double>
 
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
 
@@ -40,6 +41,8 @@
             <x:String x:Key="FILE_ATTRIBUTE_SYSTEM_IconGlyph">&#xE770;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_TEMPORARY_IconGlyph">&#xE74D;</x:String>
             <x:String x:Key="FILE_ATTRIBUTE_VIRTUAL_IconGlyph">&#xE839;</x:String>
+
+            <x:String x:Key="ListViewBulletGlyph">&#xe9ae;</x:String>
             <!--#endregion-->
 
             <!--#region Styles -->
@@ -137,6 +140,21 @@
                 <Setter Property="Content" Value="&#xe72b;"/>
             </Style>
             <!--#endregion-->
+
+            <!--#region Data templates -->
+            <DataTemplate x:Key="SettingsListViewDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="{StaticResource ListViewBulletGlyph}" Grid.Column="0"/>
+                    <TextBlock Text="{Binding}" Grid.Column="1" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+                </Grid>
+            </DataTemplate>
+            <!--#endregion-->
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
