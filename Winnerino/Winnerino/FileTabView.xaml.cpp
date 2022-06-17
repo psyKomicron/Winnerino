@@ -5,22 +5,23 @@
 #endif
 
 #include <chrono>
-#include <wchar.h>
 #include <regex>
 #include "shlwapi.h"
 #include "fileapi.h"
 #include "DirectorySizeCalculator.h"
 #include "QuickSort.h"
+#include "Helpers.h"
+#include <FileSearcher.h>
 
+using namespace ::Winnerino;
+using namespace ::Winnerino::Storage;
 using namespace std;
 using namespace winrt;
-
 using namespace winrt::Microsoft::UI;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
-
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
@@ -42,26 +43,7 @@ namespace winrt::Winnerino::implementation
     FileTabView::FileTabView()
     {
         InitializeComponent();
-        
-        windowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
-        windowSizeChangedToken = MainWindow::Current().SizeChanged({ this, &FileTabView::Window_SizeChanged });
-    }
 
-    FileTabView::FileTabView(const hstring& path) : FileTabView()
-    {
-        InitializeComponent();
-        LoadPath(path);
-    }
-
-    FileTabView::~FileTabView()
-    {
-        MainWindow::Current().Closed(windowClosedToken);
-        MainWindow::Current().SizeChanged(windowSizeChangedToken);
-    }
-
-
-    void FileTabView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
-    {
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         std::optional<bool> isChecked = settings.Values().Lookup(L"UseSearchRegex").try_as<bool>();
         UseRegexButton().IsChecked(isChecked.value_or(false));
@@ -83,8 +65,33 @@ namespace winrt::Winnerino::implementation
                 }
             }
         }
+        
+        windowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
+        windowSizeChangedToken = MainWindow::Current().SizeChanged({ this, &FileTabView::Window_SizeChanged });
+    }
 
+    FileTabView::FileTabView(const hstring& path) : FileTabView()
+    {
+        InitializeComponent();
+        LoadPath(path);
+    }
+
+    FileTabView::~FileTabView()
+    {
+        MainWindow::Current().Closed(windowClosedToken);
+        MainWindow::Current().SizeChanged(windowSizeChangedToken);
+    }
+
+
+    void FileTabView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
+    {
         SetLayout(MainWindow::Current().Size().Width);
+    }
+
+    void FileTabView::ContentNavigationView_PaneChanged(NavigationView const&, IInspectable const&)
+    {
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        settings.Values().Insert(L"IsPaneOpen", box_value(ContentNavigationView().IsPaneOpen()));
     }
 
     void FileTabView::PathInputBox_SuggestionChosen(AutoSuggestBox const& sender, AutoSuggestBoxSuggestionChosenEventArgs const& args)
@@ -152,12 +159,50 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::PathInputBox_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const& args)
+    void FileTabView::PathInputBox_QuerySubmitted(AutoSuggestBox const& sender, AutoSuggestBoxQuerySubmittedEventArgs const& args)
     {
         if (InputModeButton().IsChecked())
         {
-            hstring path = previousInput + unbox_value_or<hstring>(args.ChosenSuggestion(), L"");
-            LoadPath(path);
+            _files.Clear();
+            ProgressRing().Visibility(Visibility::Visible);
+
+            concurrency::create_task([this, path = args.QueryText().c_str()]()
+            {
+                FileSearcher searcher{};
+                vector<hstring> results{};
+                searcher.MatchFound({ [this](IInspectable const& sender, winrt::hstring const& match)
+                {
+                    DispatcherQueue().TryEnqueue([this, filePath = match]()
+                    {
+                        TextBlock text{};
+                        text.Text(filePath);
+                        text.TextWrapping(TextWrapping::Wrap);
+                        _files.Append(text);
+                    });
+                } });
+
+                searcher.Search(wregex{ path }, &results);
+                DispatcherQueue().TryEnqueue([this]()
+                {
+                    _files.Clear();
+                });
+                IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
+                for (auto&& path : results)
+                {
+                    DispatcherQueue().TryEnqueue([this, filePath = path]()
+                    {
+                        TextBlock text{};
+                        text.Text(filePath);
+                        text.TextWrapping(TextWrapping::Wrap);
+                        _files.Append(text);
+                    });
+                }
+
+                DispatcherQueue().TryEnqueue([this]()
+                {
+                    ProgressRing().Visibility(Visibility::Collapsed);
+                });
+            });
         }
         else
         {
@@ -707,17 +752,11 @@ namespace winrt::Winnerino::implementation
                 }
             }
 
-            WCHAR drives[512]{};
-            WCHAR* pointer = drives;
-            GetLogicalDriveStrings(512, drives); // ignoring return value
-            while (1)
+            vector<hstring> drives{};
+            list_local_drives(&drives);
+            for (size_t i = 0; i < drives.size(); i++)
             {
-                if (*pointer == NULL)
-                {
-                    break;
-                }
-                suggestions.Append(box_value(hstring{ pointer }));
-                while (*pointer++);
+                suggestions.Append(box_value(drives[i]));
             }
         }
     }
@@ -903,19 +942,26 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::Search(hstring const& query, IVector<IInspectable> const& suggestions)
     {
-        wregex re = wregex(query.data(), regex_constants::icase);
-        IVector<IInspectable> listViewItems = FileListView().Items();
-        
-        for (IInspectable const& listViewItem : listViewItems)
+        try
         {
-            FileEntryView entry = listViewItem.try_as<FileEntryView>();
-            if (entry)
+            wregex re = wregex(query.data(), regex_constants::icase);
+            IVector<IInspectable> listViewItems = FileListView().Items();
+
+            for (IInspectable const& listViewItem : listViewItems)
             {
-                if (entry.FileName() != L"." && entry.FileName() != L".." && regex_search(entry.FileName().c_str(), re))
+                FileEntryView entry = listViewItem.try_as<FileEntryView>();
+                if (entry)
                 {
-                    suggestions.Append(box_value(entry.FileName()));
+                    if (entry.FileName() != L"." && entry.FileName() != L".." && regex_search(entry.FileName().c_str(), re))
+                    {
+                        suggestions.Append(box_value(entry.FileName()));
+                    }
                 }
             }
+        }
+        catch (regex_error const& ex)
+        {
+            MainWindow::Current().NotifyError(ex.code(), L"Cannot create search regex");
         }
     }
 

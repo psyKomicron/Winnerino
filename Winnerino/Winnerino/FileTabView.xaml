@@ -11,14 +11,16 @@
     <NavigationView 
         x:Name="ContentNavigationView"
         Grid.RowSpan="2" 
-        Grid.Column="0" 
-        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+        Grid.Column="0"
         CornerRadius="0,5,0,0"
         OpenPaneLength="230"
         SelectionFollowsFocus="Disabled"
         IsSettingsVisible="False"
         IsBackButtonVisible="Collapsed"
-        ItemInvoked="ContentNavigationView_ItemInvoked">
+        Background="{ThemeResource SolidBackgroundFillColorBase}"
+        ItemInvoked="ContentNavigationView_ItemInvoked"
+        PaneClosed="ContentNavigationView_PaneChanged"
+        PaneOpened="ContentNavigationView_PaneChanged">
         <NavigationView.MenuItems>
             <NavigationViewItem x:Name="DocumentsNavigationItem" Content="Documents" Tag="Documents">
                 <NavigationViewItem.Icon>
@@ -51,7 +53,7 @@
             </NavigationViewItem>
         </NavigationView.MenuItems>
 
-        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Background="{ThemeResource TabViewSelectedItemBorderBrush}">
+        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Opacity="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -61,7 +63,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Margin="5,0" VerticalAlignment="Stretch" Grid.Column="1">
+            <Grid VerticalAlignment="Stretch" Grid.Column="1" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,0,0,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition x:Name="InputModeButtonColumn" Width="Auto"/>
@@ -104,13 +106,14 @@
 
                     <AutoSuggestBox 
                         x:Name="PathInputBox"
+                        Grid.Column="3"
                         PlaceholderText="Path"
                         MinHeight="35"
                         MaxHeight="35"
                         UpdateTextOnSelect="False"
                         VerticalAlignment="Center"
-                        MaxSuggestionListHeight="200"
-                        Grid.Column="3"
+                        MaxSuggestionListHeight="300"
+                        Margin="10,0,0,0"
                         SuggestionChosen="PathInputBox_SuggestionChosen"
                         GotFocus="PathInputBox_GotFocus"
                         TextChanged="PathInputBox_TextChanged"
@@ -221,10 +224,10 @@
                 </ListView.ItemsPanel>
 
                 <ListView.ContextFlyout>
-                    <Flyout ShouldConstrainToRootBounds="True">
+                    <Flyout>
                         <Grid RowSpacing="7" Padding="5" Margin="-15,-16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="{StaticResource ControlCornerRadius}">
                             <Grid.Background>
-                                <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>
+                                <AcrylicBrush TintColor="{ThemeResource LayerOnAcrylicFillColorDefault}" TintLuminosityOpacity="0.016" TintOpacity="0.501" Opacity="0.91"/>
                             </Grid.Background>
                             
                             <Grid.RowDefinitions>
@@ -300,28 +303,14 @@
                     </Flyout>
                 </ListView.ContextFlyout>
             </ListView>
-            <ProgressRing
-                x:Name="ProgressRing" 
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Height="50"
-                Width="50"
-                Visibility="Collapsed"
-                IsIndeterminate="True"
-                IsHitTestVisible="False"
-                Grid.Row="1"
-                Grid.ColumnSpan="4"/>
+            
+            <ProgressRing x:Name="ProgressRing" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="50" Visibility="Collapsed" IsIndeterminate="True" IsHitTestVisible="False" Grid.Row="1" Grid.ColumnSpan="4"/>
 
-            <Grid
-                x:DefaultBindMode="OneWay"
-                ColumnSpacing="20"
-                VerticalAlignment="Bottom"
-                Padding="10,3" 
-                Grid.Row="2"
-                Grid.ColumnSpan="2">
+            <Grid x:DefaultBindMode="OneWay" ColumnSpacing="20" VerticalAlignment="Bottom" Padding="10,3" Grid.Row="2" Grid.ColumnSpan="2">
                 <Grid.Background>
                     <AcrylicBrush TintColor="{ThemeResource SmokeFillColorDefault}" TintOpacity="0.5" TintLuminosityOpacity="0.1"/>
                 </Grid.Background>
+
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="FontSize" Value="12"/>
@@ -329,6 +318,7 @@
                         <Setter Property="FontStretch" Value="Expanded"/>
                     </Style>
                 </Grid.Resources>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
@@ -384,11 +374,7 @@
                 </Grid>
             </Grid>
 
-            <ContentDialog 
-                x:Name="RenameContentDialog"
-                DefaultButton="Primary" 
-                PrimaryButtonText="Rename" 
-                SecondaryButtonText="Cancel">
+            <ContentDialog x:Name="RenameContentDialog" DefaultButton="Primary" PrimaryButtonText="Rename" SecondaryButtonText="Cancel">
                 <Grid RowSpacing="20" Padding="10">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -396,7 +382,6 @@
                     </Grid.RowDefinitions>
 
                     <TextBox x:Name="RenameTextBox" PlaceholderText="New name" Grid.Row="0"/>
-
                     <CheckBox x:Name="GenerateUniqueNameCheckBox" Content="Generate unique name" Grid.Row="1"/>
                 </Grid>
             </ContentDialog>

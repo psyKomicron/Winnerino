@@ -8,6 +8,6 @@ namespace Winnerino
 
         String ItemCount{ get; };
         String SelectedItemsCount{ get; };
-        Windows.Foundation.Collections.IObservableVector<Microsoft.UI.Xaml.Controls.UserControl> Files{ get; };
+        Windows.Foundation.Collections.IObservableVector<Microsoft.UI.Xaml.FrameworkElement> Files{ get; };
     }
 }
