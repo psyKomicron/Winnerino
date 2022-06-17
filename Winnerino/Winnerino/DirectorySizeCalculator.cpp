@@ -1,12 +1,12 @@
 #include "pch.h"
 #include "DirectorySizeCalculator.h"
+
+#include <vector>
 #include <array>
 #include <atomic>
 #include "fileapi.h"
 #include "ppl.h"
 #include "shlwapi.h"
-
-constexpr int16_t BUFFER_MAX_SIZE = 1024;
 
 using namespace std;
 using namespace concurrency;
@@ -52,7 +52,7 @@ namespace Winnerino::Storage
             {
                 parallel_for_each(begin(pathes), end(pathes), [this, wstr = path, &atomicDirSize, &parallelize](const hstring& dir)
                 {
-                    WCHAR combinedPath[BUFFER_MAX_SIZE];
+                    WCHAR combinedPath[ALTERNATE_MAX_PATH];
                     PathCombine(combinedPath, wstr.c_str(), dir.c_str());
                     hstring deepPath = to_hstring(combinedPath) + L"\\";
 
@@ -66,7 +66,7 @@ namespace Winnerino::Storage
                 size_t max = pathes.size();
                 for (size_t i = 0; i < max; i++)
                 {
-                    WCHAR combinedPath[BUFFER_MAX_SIZE];
+                    WCHAR combinedPath[ALTERNATE_MAX_PATH];
                     PathCombine(combinedPath, path.c_str(), pathes[i].c_str());
                     hstring deepPath = to_hstring(combinedPath) + L"\\";
 
