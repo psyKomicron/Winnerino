@@ -1,0 +1,13 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass DriveHealthView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        DriveHealthView();
+        DriveHealthView(String drive);
+
+        String DriveName{ get; };
+        Double DriveFreeSpace{ get; };
+        Double DriveTotalSpace{ get; };
+    }
+}

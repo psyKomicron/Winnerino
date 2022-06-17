@@ -1,0 +1,43 @@
+﻿<UserControl
+    x:Class="Winnerino.SystemHealthView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid ColumnSpacing="20" Padding="5" Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="Result"/>
+        <AutoSuggestBox x:Name="DeviceNameBox" Text="\\.\PhysicalDrive0" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" MinWidth="300" QuerySubmitted="DeviceNameBox_QuerySubmitted"/>
+
+        <Grid Grid.Column="0" Grid.Row="1" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <ProgressRing Grid.Row="0" Grid.ColumnSpan="2" Height="170" Width="170" IsIndeterminate="False" Foreground="{ThemeResource SystemFillColorSuccess}"/>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource DisplayTextBlockStyle}" />
+
+            <ProgressRing Grid.Row="1" Height="170" Width="170" IsIndeterminate="False" Value="10" Foreground="{ThemeResource SystemFillColorSuccess}"/>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="1" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+            <ListView x:Name="Drives" SelectionMode="None"/>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,10 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass SystemHealthView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        SystemHealthView();
+        
+        Double SystemGeneralHealth{ get; set; };
+    }
+}
