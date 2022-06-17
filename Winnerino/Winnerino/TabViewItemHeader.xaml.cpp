@@ -35,7 +35,7 @@ namespace winrt::Winnerino::implementation
         m_propertyChanged(*this, PropertyChangedEventArgs{ L"Text" });
     }
 
-    void TabViewItemHeader::Button_Click(IInspectable const&, RoutedEventArgs const& e)
+    void TabViewItemHeader::Button_Click(IInspectable const&, RoutedEventArgs const&)
     {
         ControlTextBox().Visibility(ControlTextBox().Visibility() == Visibility::Visible ? Visibility::Collapsed : Visibility::Visible);
         ControlTextBlock().Visibility(ControlTextBlock().Visibility() == Visibility::Visible ? Visibility::Collapsed : Visibility::Visible);
