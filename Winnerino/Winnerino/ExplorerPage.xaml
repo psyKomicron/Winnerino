@@ -2,7 +2,6 @@
     x:Class="Winnerino.ExplorerPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -11,27 +10,12 @@
     NavigationCacheMode="Required">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
         <TabView
             x:Name="Pages" 
             VerticalAlignment="Stretch"
             CornerRadius="5"
             CanReorderTabs="True"
-            TabWidthMode="Equal"
-            Grid.Column="0"
-            Grid.Row="0"
             AddTabButtonClick="TabView_AddTabButtonClick"
-            TabCloseRequested="TabView_TabCloseRequested">
-
-            <TabView.TabStripFooter>
-                <Grid MinWidth="100" Background="Transparent"/>
-            </TabView.TabStripFooter>
-        </TabView>
+            TabCloseRequested="TabView_TabCloseRequested"/>
     </Grid>
 </Page>
