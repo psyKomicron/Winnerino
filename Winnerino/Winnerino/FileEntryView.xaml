@@ -61,6 +61,6 @@
     </Grid>
 
     <ToolTipService.ToolTip>
-        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind Width}" Opened="ToolTip_Opened"/>
+        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind ActualWidth}" Opened="ToolTip_Opened"/>
     </ToolTipService.ToolTip>
 </UserControl>
