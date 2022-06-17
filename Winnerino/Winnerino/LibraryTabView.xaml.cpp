@@ -57,7 +57,6 @@ namespace winrt::Winnerino::implementation
 
         DirectoryEnumerator enumerator{};
         auto&& folders = documents.Folders();
-
         for (auto&& folder : folders)
         {
             hstring path = folder.Path();

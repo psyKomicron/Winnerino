@@ -62,7 +62,7 @@ namespace winrt::Winnerino::implementation
     }
 
 
-    void FilePropertiesWindow::OnWindowChanged(winrt::Microsoft::UI::Windowing::AppWindow const&, winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args)
+    void FilePropertiesWindow::OnWindowChanged(winrt::Microsoft::UI::Windowing::AppWindow const&, winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const&)
     {
         /*if (args.DidSizeChange())
         {

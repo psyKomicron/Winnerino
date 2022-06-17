@@ -18,7 +18,7 @@ namespace winrt::Winnerino::implementation
         InitializeComponent();
     }
 
-    void MainPage::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&)
+    void MainPage::Button_Click(winrt::Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
         MainWindow::Current().GoBack();
     }
