@@ -19,7 +19,7 @@
         <TabView 
             x:Name="LocalTabView"
             VerticalAlignment="Stretch"
-            CornerRadius="5"
+            CornerRadius="{StaticResource ControlCornerRadius}"
             CanReorderTabs="True"
             TabWidthMode="Equal"
             Grid.Column="1"
