@@ -18,7 +18,7 @@
 
             <Button Style="{StaticResource NavigationBackButtonStyle}" Click="Button_Click"/>
 
-            <Grid RowSpacing="40" Margin="30,0,30,10" Grid.Column="1" Grid.Row="1">
+            <Grid RowSpacing="20" Margin="30,0,30,10" Grid.Column="1" Grid.Row="1">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="IsTextSelectionEnabled" Value="True"/>
@@ -27,8 +27,10 @@
                 </Grid.Resources>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <ListView
@@ -36,33 +38,47 @@
                     SelectionMode="None"
                     CornerRadius="{StaticResource ControlCornerRadius}"
                     Padding="16"
-                    Grid.Row="0">
+                    Grid.Row="0"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
                     <ListView.Header>
-                        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
+                        <TextBlock Text="What's new" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
                     </ListView.Header>
-                    
-                    <TextBlock Text="- Added file actions (cut, copy, delete, rename) for multiple files."/>
 
-                    <ListViewHeaderItem/>
-                    <TextBlock Margin="0,0,0,20" Text="Fixes" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                    <TextBlock Text="- Fixed application crash when open a directory before all current directory size have been calculated."/>
+                    <x:String>Added file actions (cut, copy, delete, rename) for multiple files with right click.</x:String>
+                    <x:String>Updated settings to be easier to navigate</x:String>
+                    <x:String>Side navigation view for libraries (in construction)</x:String>
+                    <x:String>Now saving application theme (dark, light, system setting/default)</x:String>
+                </ListView>
+
+                <ListView
+                    Background="{ThemeResource ExpanderBackground}" 
+                    SelectionMode="None"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Grid.Row="1"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
+                    <ListView.Header>
+                        <TextBlock Text="Fixes" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
+                    </ListView.Header>
+
+                    <x:String>Fixed application crash when open a directory before all current directory size have been calculated.</x:String>
                 </ListView>
 
                 <ListView 
                     SelectionMode="None" 
-                    Grid.Row="1"
+                    Grid.Row="2"
                     CornerRadius="{StaticResource ControlCornerRadius}"
                     Padding="16"
-                    Background="{ThemeResource ExpanderBackground}">
+                    Background="{ThemeResource ExpanderBackground}"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
                     <ListView.Header>
-                        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="Known issues" Margin="10,0,0,10" VerticalAlignment="Center"/>
+                        <TextBlock Text="Known issues" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
                     </ListView.Header>
-                    <ListViewHeaderItem/>
 
-                    <TextBlock Text="- Scrolling through a long list may cause the application to crash."/>
-                    <TextBlock Text="- Application becomes unresponsive when loading a directory with a lot of files."/>
-                    <TextBlock Text="- Application may crash after sorting if the number of files is large (> 5000)."/>
-                    <TextBlock Text="- Application may move outside of screen bounds, it will be fixed in future versions."/>
+                    <x:String>Scrolling through a long list may cause the application to crash.</x:String>
+                    <x:String>Application becomes unresponsive when loading a directory with a lot of files.</x:String>
+                    <x:String>Application may crash after sorting if the number of files is large (> 5000).</x:String>
+                    <x:String>Application may move outside of screen bounds, it will be fixed in future versions.</x:String>
                 </ListView>
             </Grid>
         </Grid>
