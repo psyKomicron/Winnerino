@@ -9,6 +9,7 @@
 using namespace std;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 using namespace winrt::Windows::Foundation;
@@ -45,6 +46,7 @@ namespace winrt::Winnerino::implementation
     void FileLargeView::Grid_PointerExited(IInspectable const&, PointerRoutedEventArgs const&)
     {
         OverlayGrid().Opacity(0);
+        OverlayGrid().Visibility(Visibility::Collapsed);
     }
 
     void FileLargeView::UserControl_PointerPressed(IInspectable const&, PointerRoutedEventArgs const&)
@@ -52,7 +54,7 @@ namespace winrt::Winnerino::implementation
     }
 
 
-    IAsyncAction FileLargeView::LoadFile(hstring const& path)
+    IAsyncAction FileLargeView::LoadFile(hstring path)
     {
         ImageProgressRing().IsIndeterminate(true);
         BitmapImage imageSource{};
@@ -67,7 +69,6 @@ namespace winrt::Winnerino::implementation
             wregex audioRe = wregex{ L"^audio" };
             wregex videoRe = wregex{ L"^video" };
             wregex imageRe = wregex{ L"^image" };
-
             hstring contentType = file.ContentType();
             if (regex_search(contentType.c_str(), audioRe))
             {
@@ -83,6 +84,7 @@ namespace winrt::Winnerino::implementation
             }
 
             co_await imageSource.SetSourceAsync(co_await file.GetThumbnailAsync(mode, 200));
+
             DispatcherQueue().TryEnqueue([this]()
             {
                 ImageProgressRing().IsIndeterminate(false);
@@ -93,16 +95,38 @@ namespace winrt::Winnerino::implementation
                 AttributesListView().Items().Append(box_value(L"Content type : " + file.ContentType()));
                 AttributesListView().Items().Append(box_value(L"Display type : " + file.DisplayType()));
             });
+
+            co_return;
         }
         catch (hresult_invalid_argument const& ex)
         {
-            OutputDebugString((L"[" + to_hstring(ex.code()) + L"] " + ex.message() + L"\n").c_str());
-            OnException();
         }
         catch (const hresult_error& ex)
         {
-            OutputDebugString((ex.message() + L"\n").c_str());
-            OnException();
+            OnException(ex.message(), path);
+            co_return;
+        }
+
+        try
+        {
+            StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(path);
+            ThumbnailMode mode = ThumbnailMode::SingleItem;
+            auto&& thumbnail = co_await folder.GetThumbnailAsync(mode, 200);
+            co_await imageSource.SetSourceAsync(thumbnail);
+
+            DispatcherQueue().TryEnqueue([this, name = folder.Name(), displayName = folder.DisplayName(), path = folder.Path()]()
+            {
+                ImageProgressRing().IsIndeterminate(false);
+                FileName().Text(name);
+
+                AttributesListView().Items().Append(box_value(L"Folder"));
+                AttributesListView().Items().Append(box_value(L"Display name : " + displayName));
+                AttributesListView().Items().Append(box_value(L"File path : " + path));
+            });
+        }
+        catch (hresult_error const& ex)
+        {
+            OnException(ex.message(), path);
         }
     }
 
@@ -149,17 +173,32 @@ namespace winrt::Winnerino::implementation
 
     inline void FileLargeView::OnException()
     {
+        OnException(L"Failed to access file", L"");
+    }
+
+    inline void FileLargeView::OnException(hstring const& message, hstring const& name)
+    {
         if (DispatcherQueue().HasThreadAccess())
         {
             ImageProgressRing().IsIndeterminate(false);
-            FileName().Text(L"Failed to access file");
+            FileName().Text(message);
+
+            TextBlock textBlock{};
+            textBlock.TextWrapping(TextWrapping::Wrap);
+            textBlock.Text(L"File path : " + name);
+            AttributesListView().Items().Append(textBlock);
         }
         else
         {
-            DispatcherQueue().TryEnqueue([this]()
+            DispatcherQueue().TryEnqueue([this, _message = message, _name = name]()
             {
                 ImageProgressRing().IsIndeterminate(false);
-                FileName().Text(L"Failed to access file");
+                FileName().Text(_message);
+
+                TextBlock textBlock{};
+                textBlock.TextWrapping(TextWrapping::Wrap);
+                textBlock.Text(L"File path : " + _name);
+                AttributesListView().Items().Append(textBlock);
             });
         }
     }

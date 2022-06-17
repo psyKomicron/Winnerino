@@ -21,9 +21,10 @@ namespace winrt::Winnerino::implementation
     private:
         Windows::Storage::StorageFile file = nullptr;
 
-        winrt::Windows::Foundation::IAsyncAction LoadFile(hstring const& path);
+        winrt::Windows::Foundation::IAsyncAction LoadFile(hstring path);
         winrt::Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile file);
-        inline void OnException(winrt::hstring const& message);
+        inline void OnException();
+        inline void OnException(winrt::hstring const& message, winrt::hstring const& name);
     };
 }
 

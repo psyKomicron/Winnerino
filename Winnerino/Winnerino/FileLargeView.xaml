@@ -15,6 +15,12 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <AddDeleteThemeTransition/>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
 
         <Grid Background="{x:Bind Background, Mode=OneWay}" Padding="15" CornerRadius="{StaticResource ControlCornerRadius}" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -30,7 +36,7 @@
 
         <Grid x:Name="OverlayGrid" Grid.Row="0" Padding="15" CornerRadius="{StaticResource ControlCornerRadius}" Visibility="Collapsed" Opacity="0">
             <Grid.OpacityTransition>
-                <ScalarTransition Duration="00:00:00.17"/>
+                <ScalarTransition Duration="00:00:00.16"/>
             </Grid.OpacityTransition>
             <Grid.Background>
                 <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>
