@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "DirectoryEnumerator.h"
 
-#include "shlwapi.h"
+#include <Shlwapi.h>
 
 using namespace winrt;
 using namespace std;
@@ -107,6 +107,30 @@ namespace Winnerino::Storage
         }
 
         return driveList;
+    }
+
+    vector<FileInfo>* DirectoryEnumerator::GetFiles(winrt::hstring const& directory)
+    {
+        vector<FileInfo>* files = nullptr;
+        hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
+        WIN32_FIND_DATA findData{};
+        HANDLE findHandle = FindFirstFile((toEnumerate + L"*").c_str(), &findData);
+        if (findHandle != INVALID_HANDLE_VALUE)
+        {
+            files = new vector<FileInfo>();
+            do
+            {
+                // is file
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+                {
+                    FileInfo fileInfo = FileInfo(&findData, toEnumerate);
+                    
+                }
+            } while (FindNextFile(findHandle, &findData));
+
+            FindClose(findHandle);
+        }
+        return files;
     }
 
     inline void DirectoryEnumerator::CheckArguments(hstring const& path)

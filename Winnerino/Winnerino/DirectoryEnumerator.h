@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FileInfo.h"
+
 namespace Winnerino::Storage
 {
     class DirectoryEnumerator
@@ -13,6 +15,7 @@ namespace Winnerino::Storage
         std::vector<winrt::hstring>* EnumerateDirectories(winrt::hstring const& path);
         std::vector<winrt::hstring>* EnumerateFiles(winrt::hstring const& path);
         std::vector<winrt::hstring>* EnumerateDrives();
+        std::vector<::Winnerino::Storage::FileInfo>* GetFiles(winrt::hstring const& directory);
 
     private:
         bool includeSpecials = false;
