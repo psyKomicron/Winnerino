@@ -9,7 +9,7 @@
 
     <Grid x:Name="contentGrid" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32" MinHeight="32"/>
+            <RowDefinition Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -41,7 +41,7 @@
                 Grid.Column="2"/>
         </Grid>
 
-        <Grid Background="{ThemeResource PageBackgroundBrush}" Grid.Row="1">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -56,7 +56,7 @@
 
             <InfoBar x:Name="NotifInfoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="InfoBar_Closed"/>
 
-            <Frame x:Name="ContentFrame" Grid.Row="1" Loaded="View_Loaded"></Frame>
+            <Frame x:Name="ContentFrame" Grid.Row="1" Loaded="View_Loaded" NavigationFailed="ContentFrame_NavigationFailed"></Frame>
         </Grid>
     </Grid>
 </Window>
