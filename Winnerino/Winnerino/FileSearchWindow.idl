@@ -1,0 +1,10 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass FileSearchWindow : Microsoft.UI.Xaml.Window
+    {
+        FileSearchWindow();
+
+        void SetPosition(Windows.Graphics.PointInt32 position);
+    }
+}
