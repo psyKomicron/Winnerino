@@ -5,7 +5,7 @@
 #endif
 
 #include <math.h>
-#include "DirectorySizeCalculator.h"
+#include "fileapi.h"
 #include "FilePropertiesWindow.xaml.h"
 
 using namespace std;
@@ -51,42 +51,6 @@ namespace winrt::Winnerino::implementation
 
             InitializeComponent();
             FileTypeName().Text(L"Directory");
-            if (_fileName != L"." && _fileName != L"..")
-            {
-                calculateSizeTask = concurrency::create_task([this]()
-                {
-                    try
-                    {
-                        DirectorySizeCalculator calc{};
-                        event_token token = calc.Progress({ this, &FileEntryView::ProgressHandler });
-                        int_fast64_t dirSize = calc.getSize(_filePath + L"\\", true);
-                        calc.Progress(token);
-                        UpdateSize(dirSize);
-
-                        if (loaded)
-                        {
-                            DispatcherQueue().TryEnqueue([this]()
-                            {
-                                FileSizeTextBlock().Text(to_hstring(_displayFileSize));
-                                FileSizeExtensionTextBlock().Text(_fileSizeExtension);
-
-                                FileSizeProgressRing().IsIndeterminate(false);
-                                FileSizeProgressRing().Visibility(Visibility::Collapsed);
-                            });
-                        }
-                    }
-                    catch (const std::exception& error)
-                    {
-                        OutputDebugString(to_hstring(error.what()).c_str());
-                        OutputDebugString(L"\n");
-                    }
-                    catch (hresult_error const& error)
-                    {
-                        OutputDebugString(error.message().c_str());
-                        OutputDebugString(L"\n");
-                    }
-                }, cancellationToken.get_token());
-            }
         }
         else
         {
@@ -109,15 +73,19 @@ namespace winrt::Winnerino::implementation
         GetAttributes(attributes);
     }
 
+    FileEntryView::FileEntryView(hstring const&)
+    {
+    }
+
     FileEntryView::~FileEntryView()
     {
         cancellationToken.cancel();
-        try
+        /*try
         {
             calculateSizeTask.wait();
         }
         catch (const hresult_error&) {}
-        catch (const std::exception&) {}
+        catch (const std::exception&) {}*/
 
         Loaded(loadedEventToken);
         Unloaded(unloadedEventToken);
@@ -194,11 +162,50 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::OnLoaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded = true;
+        if (_isDirectory)
+        {
+            if (_fileName != L"." && _fileName != L"..")
+            {
+                concurrency::create_task([this]()
+                {
+                    try
+                    {
+                        sizeProgressToken = calculator.Progress({ get_weak(), &FileEntryView::ProgressHandler });
+                        int_fast64_t dirSize = calculator.GetSize(_filePath + L"\\", true);
+                        calculator.Progress(sizeProgressToken);
+                        UpdateSize(dirSize);
+
+                        if (loaded)
+                        {
+                            DispatcherQueue().TryEnqueue([this]()
+                            {
+                                FileSizeTextBlock().Text(to_hstring(_displayFileSize));
+                                FileSizeExtensionTextBlock().Text(_fileSizeExtension);
+
+                                FileSizeProgressRing().IsIndeterminate(false);
+                                FileSizeProgressRing().Visibility(Visibility::Collapsed);
+                            });
+                        }
+                    }
+                    catch (const std::exception& error)
+                    {
+                        OutputDebugString(to_hstring(error.what()).c_str());
+                        OutputDebugString(L"\n");
+                    }
+                    catch (hresult_error const& error)
+                    {
+                        OutputDebugString(error.message().c_str());
+                        OutputDebugString(L"\n");
+                    }
+            }, cancellationToken.get_token());
+            }
+        }
     }
 
     void FileEntryView::OnUnloaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded = false;
+        calculator.Progress(sizeProgressToken);
     }
 
     IAsyncAction FileEntryView::ToolTip_Opened(IInspectable const&, RoutedEventArgs const&)
@@ -550,28 +557,31 @@ namespace winrt::Winnerino::implementation
         fileSize += newSize;
         double displayFileSize = static_cast<double>(fileSize);
         hstring c_ext = FormatSize(&displayFileSize);
-
+        
+#if FALSE
         if (loaded && displayFileSize != _displayFileSize)
         {
+            _displayFileSize = displayFileSize;
             DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
             {
-#if !_DEBUG
                 if (FileSizeExtensionTextBlock() && FileSizeTextBlock())
                 {
                     FileSizeExtensionTextBlock().Text(c_ext);
                     FileSizeTextBlock().Text(to_hstring(c_newSize));
                 }
-#else
-                try
-                {
-                    FileSizeExtensionTextBlock().Text(c_ext);
-                    FileSizeTextBlock().Text(to_hstring(c_newSize));
-                }
-                catch (const hresult_error&) {}
-                catch (const std::exception&) {}
-#endif
             });
         }
+#else
+        if (loaded && (displayFileSize - _displayFileSize) > 0.1)
+        {
+            _displayFileSize = displayFileSize;
+            DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
+            {
+                FileSizeExtensionTextBlock().Text(c_ext);
+                FileSizeTextBlock().Text(to_hstring(c_newSize));
+            });
+        }
+#endif
     }
 
     inline void FileEntryView::UpdateSize(uint_fast64_t const& size)

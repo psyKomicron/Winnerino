@@ -16,25 +16,27 @@
             <!-- file type -->
             <ColumnDefinition Width="1*"/>
             <!-- attributes -->
-            <ColumnDefinition MaxWidth="100"/>
+            <ColumnDefinition Width="Auto" MaxWidth="100"/>
             <!-- size? -->
             <ColumnDefinition MinWidth="20" MaxWidth="66"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <FontIcon 
-            Grid.Row="0" 
+            Grid.RowSpan="2" 
             Glyph="{x:Bind FileIcon}" 
             HorizontalAlignment="Center" 
             Style="{StaticResource FileAttributeFontIconStyle}" 
             Foreground="{ThemeResource SystemAccentColor}"/>
-        <ProgressRing x:Name="FileSizeProgressRing" Grid.Row="0" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
+        
+        <ProgressRing x:Name="FileSizeProgressRing" Grid.RowSpan="2" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
 
-        <TextBlock x:Name="FileNameTextBlock" Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
+        <TextBlock x:Name="FileNameTextBlock" Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
 
-        <TextBlock x:Name="FileTypeName" Text="File type" VerticalAlignment="Center" Grid.Column="2"/>
+        <TextBlock x:Name="FileTypeName" Text="File type" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Grid.Column="2" Grid.RowSpan="2"/>
 
         <StackPanel
             x:Name="attributesStackPanel" 
@@ -43,13 +45,15 @@
             Spacing="{StaticResource StackPanelButtonSpacing}" 
             Orientation="Horizontal"
             VerticalAlignment="Center"
-            Grid.Column="3">
+            HorizontalAlignment="Right"
+            Grid.Column="3"
+            Grid.RowSpan="2">
             <StackPanel.Resources>
                 <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}"/>
             </StackPanel.Resources>
         </StackPanel>
 
-        <Grid Grid.Column="4" VerticalAlignment="Center">
+        <Grid Grid.Column="4" VerticalAlignment="Center" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -58,6 +62,15 @@
             <TextBlock x:Name="FileSizeTextBlock" HorizontalAlignment="Right" Grid.Column="0"/>
             <TextBlock x:Name="FileSizeExtensionTextBlock" HorizontalAlignment="Left" Grid.Column="1"/>
         </Grid>
+
+        <TextBlock 
+            x:Name="FilePathTextBlock"
+            Text="{x:Bind FilePath}"
+            Visibility="{x:Bind ShowFilePath}"
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Opacity="{StaticResource CaptionTextBlockOpacity}"/>
     </Grid>
 
     <ToolTipService.ToolTip>

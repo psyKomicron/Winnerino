@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-#include "winrt/Microsoft.UI.Xaml.h"
-#include "winrt/Microsoft.UI.Xaml.Markup.h"
-#include "winrt/Microsoft.UI.Xaml.Controls.Primitives.h"
-#include "shlwapi.h"
 #include "FileEntryView.g.h"
+#include <shlwapi.h>
+#include "DirectorySizeCalculator.h"
 
 using namespace std;
 using namespace winrt;
@@ -16,6 +14,7 @@ namespace winrt::Winnerino::implementation
     public:
         FileEntryView();
         FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes);
+        FileEntryView(hstring const& systemPath);
         ~FileEntryView();
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
@@ -39,6 +38,15 @@ namespace winrt::Winnerino::implementation
         Windows::Foundation::DateTime LastWrite() { return _lastWrite; };
         void LastWrite(Windows::Foundation::DateTime const& lastWrite) { _lastWrite = lastWrite; };
         bool IsFileDangerous() { return _isDangerous; };
+        bool ShowFilePath()
+        {
+            return _showFilePath;
+        };
+        void ShowFilePath(bool value)
+        {
+            _showFilePath = value;
+            e_propertyChanged(*this, PropertyChangedEventArgs{ L"ShowFilePath" });
+        };
  
         void Delete();
         Windows::Foundation::IAsyncAction Rename(hstring const& newName, bool const& generateUniqueName = false);
@@ -51,12 +59,13 @@ namespace winrt::Winnerino::implementation
 
     private:
         bool loaded = true;
-        Concurrency::task<void> calculateSizeTask;
         Concurrency::cancellation_token_source cancellationToken{};
-        double _displayFileSize = 0;
         event_token loadedEventToken;
-        PERCEIVED perceivedFileType;
         event_token unloadedEventToken;
+        event_token sizeProgressToken;
+        ::Winnerino::Storage::DirectorySizeCalculator calculator{};
+        double _displayFileSize = 0;
+        PERCEIVED perceivedFileType;
         hstring _fileSizeExtension;
         hstring _fileName;
         hstring _filePath;
@@ -68,6 +77,7 @@ namespace winrt::Winnerino::implementation
         Windows::Foundation::DateTime _lastWrite;
         hstring _opensWith;
         hstring _perceivedType;
+        bool _showFilePath = false;
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
