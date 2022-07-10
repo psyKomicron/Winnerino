@@ -15,19 +15,25 @@ namespace winrt::Winnerino::implementation
         FilePropertiesWindow();
         ~FilePropertiesWindow();
 
-        void TitleBarGrid_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void LocalTabView_TabCloseRequested(winrt::Microsoft::UI::Xaml::Controls::TabView const& sender, winrt::Microsoft::UI::Xaml::Controls::TabViewTabCloseRequestedEventArgs const& args);
-        void LocalTabView_AddTabButtonClick(winrt::Microsoft::UI::Xaml::Controls::TabView const& sender, winrt::Windows::Foundation::IInspectable const& args);
+        void Control_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void RootGrid_SizeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e);
 
     private:
         Microsoft::UI::Windowing::AppWindow appWindow = nullptr;
+        event_token appWindowClosingToken;
         event_token appWindowChangedEventToken;
+        event_token mainWindowClosedEventToken;
+        event_token mainWindowThemeChangedToken;
+        winrt::Windows::System::DispatcherQueueController dispatcherQueueController = nullptr;
+        winrt::Microsoft::UI::Composition::SystemBackdrops::SystemBackdropConfiguration systemBackdropConfiguration = nullptr;
+        winrt::Microsoft::UI::Xaml::Window::Activated_revoker activatedRevoker;
+        winrt::Microsoft::UI::Xaml::FrameworkElement::ActualThemeChanged_revoker themeChangedRevoker;
+        winrt::Microsoft::UI::Composition::SystemBackdrops::DesktopAcrylicController backdropController = nullptr;
 
-        void OnWindowChanged(winrt::Microsoft::UI::Windowing::AppWindow const&, winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args);
         void InitWindow();
-        void SetDragRectangles();
-    public:
-        void TabStripFooter_SizeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e);
+        void MainWindow_Closed(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&);
+        void SetBackground();
+        void AppWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const&);
     };
 }
 

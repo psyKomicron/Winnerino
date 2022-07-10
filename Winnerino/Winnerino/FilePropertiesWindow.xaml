@@ -7,119 +7,101 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="TitleBarGrid" Background="{ThemeResource PageBackgroundBrush}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ContentColumn" Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged" Loaded="Control_Loaded">
         <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="34"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TabView 
-            x:Name="LocalTabView"
-            VerticalAlignment="Stretch"
-            CornerRadius="{StaticResource ControlCornerRadius}"
-            CanReorderTabs="True"
-            TabWidthMode="Equal"
-            Grid.Column="1"
-            Grid.RowSpan="2"
-            TabCloseRequested="LocalTabView_TabCloseRequested"
-            AddTabButtonClick="LocalTabView_AddTabButtonClick"
-            Loaded="TitleBarGrid_Loaded">
-            <TabView.TabStripHeader>
-                <Grid x:Name="TabStripHeader" HorizontalAlignment="Stretch" Background="DarkSlateBlue">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
-                        <ColumnDefinition x:Name="LeftDragColumn" Width="*" MaxWidth="20"/>
-                    </Grid.ColumnDefinitions>
-                </Grid>
-            </TabView.TabStripHeader>
-            <TabView.TabStripFooter>
-                <Grid x:Name="TabStripFooter" HorizontalAlignment="Stretch" Background="DarkSlateBlue" SizeChanged="TabStripFooter_SizeChanged">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
-                        <ColumnDefinition x:Name="RightPaddingColumn" Width="138"/>
-                    </Grid.ColumnDefinitions>
-                </Grid>
-            </TabView.TabStripFooter>
+        <Grid x:Name="TitleGrid" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,0,0,2">
+            <Grid.Background>
+                <AcrylicBrush 
+                    FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
+                    TintColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
+                    TintOpacity="0.8"/>
+            </Grid.Background>
 
-            <TabViewItem Header="Display" Height="40">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="20">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="Window width:"/>
-                        <TextBlock x:Name="WindowWidthTextBlock"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="Drag rectangle X:"/>
-                        <TextBlock x:Name="FooterX"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="Drag rectangle width:"/>
-                        <TextBlock x:Name="FooterWidth"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="Tab strip footer width:"/>
-                        <TextBlock x:Name="RightPaddingTextBlock"/>
-                    </StackPanel>
-                </StackPanel>
-            </TabViewItem>
-        </TabView>
-
-        <!--<Grid SizeChanged="TabStripFooter_SizeChanged">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
-                <ColumnDefinition x:Name="LeftDragColumn" Width="*" MaxWidth="20"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
-                <ColumnDefinition x:Name="RightPaddingColumn" Width="138"/>
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="2" Content="Button 1"/>
-            <Button Grid.Column="3" Content="Button 2"/>
-            <Button Grid.Column="4" Content="Button 3"/>
-            <Button Grid.Column="5" Content="Button 4"/>
-            <Button Grid.Column="6" Content="Button 5"/>
-            <Button Grid.Column="7" Content="Button 6"/>
-            <Button Grid.Column="8" Content="Button 7"/>
-            <Button Grid.Column="9" Content="Button 8"/>
-            <Button Grid.Column="10" Content="Button 9"/>
-
-            <Border Grid.Column="11" Background="DarkSlateGray"/>
-            <Border Grid.Column="1" Background="DarkSlateGray"/>
+            <TextBlock Text="{x:Bind Title}" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
         </Grid>
 
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="20" Grid.Row="1">
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="Window width:"/>
-                <TextBlock x:Name="WindowWidthTextBlock"/>
-            </StackPanel>
+        <Grid Grid.Row="1" Padding="10">
+            <Grid.Background>
+                <AcrylicBrush 
+                    FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
+                    TintColor="{ThemeResource SolidBackgroundFillColorBase}" 
+                    TintOpacity="0.65"
+                    TintLuminosityOpacity="0"/>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="Drag rectangle X:"/>
-                <TextBlock x:Name="FooterX"/>
-            </StackPanel>
+            <Grid Grid.Row="0" ColumnSpacing="10" Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="Drag rectangle width:"/>
-                <TextBlock x:Name="FooterWidth"/>
-            </StackPanel>
+                <Viewbox  x:Name="ImageViewBox" Grid.Column="0">
+                    <SymbolIcon Symbol="AllApps"/>
+                </Viewbox>
+                <TextBox Text="veibae gachimuchi" Grid.Column="1" Height="30"/>
+            </Grid>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="Tab strip footer width:"/>
-                <TextBlock x:Name="RightPaddingTextBlock"/>
-            </StackPanel>
-        </StackPanel>-->
+            <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.Row="1"/>
+
+            <Grid Grid.Row="2" ColumnSpacing="15" RowSpacing="9" Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!--Type of file-->
+                <TextBlock Text="File type"/>
+                <TextBlock Text="Video" Grid.Column="1"/>
+
+                <!--Default app-->
+                <TextBlock Text="Opens with" Grid.Row="1"/>
+                <TextBlock Text="Youtube" Grid.Column="1" Grid.Row="1"/>
+
+                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="2"/>
+
+                <!--Full path-->
+                <TextBlock Text="Location" Grid.Row="3"/>
+                <TextBlock Text="C:\Users\julie\Videos" Grid.Column="1" Grid.Row="3"/>
+
+                <!--Size (bytes)-->
+                <!--Size compressed-->
+                <TextBlock Text="Size" Grid.Row="4"/>
+                <TextBlock Text="200 Mb" Grid.Row="4" Grid.Column="1"/>
+
+                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="5"/>
+
+                <!--Created-->
+                <TextBlock Text="Created" Grid.Row="6"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="6"/>
+                <!--Modified-->
+                <TextBlock Text="Modified" Grid.Row="7"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="7"/>
+                <!--Accessed-->
+                <TextBlock Text="Accessed" Grid.Row="8"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="8"/>
+                
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

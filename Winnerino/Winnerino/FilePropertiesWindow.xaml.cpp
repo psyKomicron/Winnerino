@@ -4,15 +4,29 @@
 #include "FilePropertiesWindow.g.cpp"
 #endif
 
+#include "FileSearcher.h"
+#include "FileInfo.h"
+#include "FileSearcher2.h"
+#include "Helpers.h"
+
 #define INVALIDATE_VIEW 0
 #define RESET_TITLE_BAR 0
 
+using namespace ::Winnerino::Storage;
+
 using namespace winrt;
-using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI;
+using namespace winrt::Microsoft::UI::Composition;
+using namespace winrt::Microsoft::UI::Composition::SystemBackdrops;
+using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI::Xaml::Media;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Graphics;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,52 +37,32 @@ namespace winrt::Winnerino::implementation
     {
         InitializeComponent();
         InitWindow();
+
+        mainWindowClosedEventToken = MainWindow::Current().Closed({ get_weak(), &FilePropertiesWindow::MainWindow_Closed});
+        mainWindowThemeChangedToken = MainWindow::Current().ThemeChanged([&](auto const&, auto const& args)
+        {
+            RootGrid().RequestedTheme(args);
+        });
     }
 
     FilePropertiesWindow::~FilePropertiesWindow()
     {
+        MainWindow::Current().Closed(mainWindowClosedEventToken);
+        MainWindow::Current().ThemeChanged(mainWindowThemeChangedToken);
         appWindow.Changed(appWindowChangedEventToken);
+        appWindow.Closing(appWindowClosingToken);
         appWindow.Destroy();
     }
 
-    void FilePropertiesWindow::TitleBarGrid_Loaded(IInspectable const&, RoutedEventArgs const&)
+    void FilePropertiesWindow::Control_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
-        if (AppWindowTitleBar::IsCustomizationSupported() && appWindow.TitleBar().ExtendsContentIntoTitleBar())
-        {
-            //SetDragRectangles();
-        }
+        RootGrid().RequestedTheme((ElementTheme)unbox_value_or<int32_t>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"AppTheme"), static_cast<int32_t>(ElementTheme::Default)));
     }
 
-    void FilePropertiesWindow::LocalTabView_TabCloseRequested(TabView const& sender, TabViewTabCloseRequestedEventArgs const& args)
+    void FilePropertiesWindow::RootGrid_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
     {
-        uint32_t indexOf;
-        if (sender.TabItems().IndexOf(args.Item(), indexOf))
-        {
-            sender.TabItems().RemoveAt(indexOf); // why do we need to do this ? Can't the TabView do that itself ?
-        }
     }
 
-    void FilePropertiesWindow::LocalTabView_AddTabButtonClick(TabView const& sender, IInspectable const&)
-    {
-        TabViewItem item{};
-        item.Header(box_value(L"New tab"));
-        sender.TabItems().Append(item);
-    }
-
-    void FilePropertiesWindow::TabStripFooter_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
-    {
-        OutputDebugString(L"Size changed\n");
-        SetDragRectangles();
-    }
-
-
-    void FilePropertiesWindow::OnWindowChanged(winrt::Microsoft::UI::Windowing::AppWindow const&, winrt::Microsoft::UI::Windowing::AppWindowChangedEventArgs const&)
-    {
-        /*if (args.DidSizeChange())
-        {
-            SetDragRectangles();
-        }*/
-    }
 
     void FilePropertiesWindow::InitWindow()
     {
@@ -84,106 +78,127 @@ namespace winrt::Winnerino::implementation
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
-        appWindowChangedEventToken = appWindow.Changed({ this, &FilePropertiesWindow::OnWindowChanged });
-        appWindow.Title(L"Properties");
-        if (appWindow != nullptr)
+        // I18N: Window name -> File properties
+        appWindow.Title(L"File properties");
+
+        RectInt32 rect
         {
-            RectInt32 rect{};
-            rect.Height = 400;
-            rect.Width = 1200;
-            rect.X = 100;
-            rect.Y = 100;
-            appWindow.MoveAndResize(rect);
+            100,
+            100,
+            350,
+            500
+        };
+        appWindow.MoveAndResize(rect);
 
-            if (AppWindowTitleBar::IsCustomizationSupported())
+        appWindowClosingToken = appWindow.Closing({ this, &FilePropertiesWindow::AppWindow_Closing });
+
+        if (AppWindowTitleBar::IsCustomizationSupported())
+        {
+            appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
+
+            appWindow.TitleBar().ButtonBackgroundColor(Colors::Transparent());
+            appWindow.TitleBar().ButtonForegroundColor(Colors::White());
+            appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
+            appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
+
+            appWindow.TitleBar().ButtonHoverBackgroundColor(
+                Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
+
+            appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
+            appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
+            appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
+        }
+        else // hide title bar
+        {
+            /*uint32_t index = 0;
+            if (contentGrid().Children().IndexOf(titleBarGrid(), index))
             {
-                appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
-
-                appWindow.TitleBar().ButtonBackgroundColor(
-                    Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                appWindow.TitleBar().ButtonForegroundColor(Colors::White());
-                appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
-                appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
-
-                appWindow.TitleBar().ButtonHoverBackgroundColor(
-                    Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
-
-                appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
-                appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
-                appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
-
-                appWindow.TitleBar().PreferredHeightOption(TitleBarHeightOption::Tall);
+                contentGrid().Children().RemoveAt(index);
             }
-            else // hide title bar
+            contentGrid().RowDefinitions().RemoveAt(0);*/
+        }
+
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FilePropertiesWindow");
+        if (!settings)
+        {
+            settings = ApplicationData::Current().LocalSettings().CreateContainer(L"FilePropertiesWindow", ApplicationDataCreateDisposition::Always);
+        }
+
+        if (unbox_value_or<bool>(settings.Values().TryLookup(L"UsesAcrylic"), true))
+        {
+            SetBackground();
+        }
+        
+        auto&& presenter = appWindow.Presenter().as<OverlappedPresenter>();
+        presenter.IsMaximizable(false);
+        presenter.IsMinimizable(false);
+
+        bool shown = unbox_value_or<bool>(settings.Values().TryLookup(L"ShowInSwitchers"), false);
+        appWindow.IsShownInSwitchers(shown);
+        presenter.IsAlwaysOnTop(!shown);
+    }
+
+    void FilePropertiesWindow::SetBackground()
+    {
+        if (DesktopAcrylicController::IsSupported())
+        {
+            auto&& supportsBackdrop = try_as<ICompositionSupportsSystemBackdrop>();
+            if (supportsBackdrop)
             {
-                /*uint32_t index = 0;
-                if (contentGrid().Children().IndexOf(titleBarGrid(), index))
+                if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
                 {
-                    contentGrid().Children().RemoveAt(index);
+                    DispatcherQueueOptions options
+                    {
+                        sizeof(DispatcherQueueOptions),
+                        DQTYPE_THREAD_CURRENT,
+                        DQTAT_COM_NONE
+                    };
+
+                    ABI::Windows::System::IDispatcherQueueController* ptr{ nullptr };
+                    check_hresult(CreateDispatcherQueueController(options, &ptr));
+                    dispatcherQueueController = { ptr, take_ownership_from_abi };
                 }
-                contentGrid().RowDefinitions().RemoveAt(0);*/
+
+                systemBackdropConfiguration = SystemBackdropConfiguration();
+                systemBackdropConfiguration.IsInputActive(true);
+                systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+
+                activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
+                {
+                    systemBackdropConfiguration.IsInputActive(WindowActivationState::Deactivated != args.WindowActivationState());
+                });
+
+                themeChangedRevoker = RootGrid().ActualThemeChanged(auto_revoke, [this](FrameworkElement const&, IInspectable const&)
+                {
+                    systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+                });
+
+
+                backdropController = DesktopAcrylicController();
+                //backdropController.TintColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                backdropController.FallbackColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                backdropController.TintOpacity(0.3f);
+                backdropController.LuminosityOpacity(0.001f);
+                backdropController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+                backdropController.AddSystemBackdropTarget(supportsBackdrop);
             }
         }
     }
 
-    void FilePropertiesWindow::SetDragRectangles()
+    void FilePropertiesWindow::MainWindow_Closed(IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&)
     {
-#if RESET_TITLE_BAR
-        appWindow.TitleBar().ResetToDefault();
-        appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
-#endif // DEBUG
+        Close();
+    }
 
-        HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
-        UINT windowDpi = GetDpiForWindow(windowHandle);
-
-        double dpi = (windowDpi * static_cast<double>(100) + (static_cast<double>(96) / 2)) / 96;
-        double scale = dpi / static_cast<double>(100);
-
-        int32_t appTitleBarHeight = static_cast<int32_t>(48 * scale);
-
-        double leftPadding = appWindow.TitleBar().LeftInset() / scale;
-        double rightPadding = appWindow.TitleBar().RightInset() / scale;
-
-        RightPaddingColumn().Width(GridLength{ rightPadding });
-        LeftPaddingColumn().Width(GridLength{ leftPadding });
-
-        RectInt32 dragRectangleRight{};
-        dragRectangleRight.X = static_cast<int32_t>((appWindow.ClientSize().Width - RightDragColumn().ActualWidth() - RightPaddingColumn().ActualWidth()) * scale);
-        dragRectangleRight.Y = 0;
-        dragRectangleRight.Height = appTitleBarHeight;
-        dragRectangleRight.Width = static_cast<int32_t>(RightDragColumn().ActualWidth() * scale);
-
-        RectInt32 dragRectangleLeft{};
-        dragRectangleLeft.X = static_cast<int32_t>(LeftPaddingColumn().ActualWidth() * scale);
-        dragRectangleLeft.Y = 0;
-        dragRectangleLeft.Height = appTitleBarHeight;
-        dragRectangleLeft.Width = static_cast<int32_t>(LeftDragColumn().ActualWidth() * scale);
-
-        if (dragRectangleLeft.Width < 0)
+    void FilePropertiesWindow::AppWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
+    {
+        if (backdropController)
         {
-            dragRectangleLeft.Width = 0;
+            backdropController.Close();
         }
-        if (dragRectangleRight.Width < 0)
+        if (dispatcherQueueController)
         {
-            dragRectangleRight.Width = 0;
+            dispatcherQueueController.ShutdownQueueAsync();
         }
-
-        RectInt32 dragRectangles[2]{ dragRectangleRight, dragRectangleLeft };
-        appWindow.TitleBar().SetDragRectangles(dragRectangles);
-
-#if INVALIDATE_VIEW
-        TitleBarGrid().InvalidateMeasure();
-        TitleBarGrid().InvalidateArrange();
-        LocalTabView().IsHitTestVisible(true);
-        //LocalTabView().InvalidateViewport();  
-#endif // INVALIDATE_VIEW
-
-        OutputDebugString((L"X = " + to_hstring(dragRectangleRight.X) + L", Y = " + to_hstring(dragRectangleRight.Y) + L" | "
-                          + L"Width = " + to_hstring(dragRectangleRight.Width) + L", Height = " + to_hstring(dragRectangleRight.Height) + L"\n").c_str());
-
-        FooterWidth().Text(to_hstring(dragRectangleRight.Width));
-        FooterX().Text(to_hstring(dragRectangleRight.X));
-        WindowWidthTextBlock().Text(to_hstring(appWindow.ClientSize().Width));
-        RightPaddingTextBlock().Text(to_hstring(RightPaddingColumn().ActualWidth()));
     }
 }
