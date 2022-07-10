@@ -23,6 +23,11 @@
             <ListView.Header>
                 <TextBlock Text="Additional settings" Style="{ThemeResource SubheaderTextBlockStyle}" Margin="20,0,0,20"/>
             </ListView.Header>
+            <ListView.Resources>
+                <Style TargetType="ListViewHeaderItem">
+                    <Setter Property="Margin" Value="0,0,0,-2"/>
+                </Style>
+            </ListView.Resources>
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
@@ -30,13 +35,25 @@
                 </Expander.Header>
 
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch
-                        Header="Auto-load setting page"
-                        IsOn="False"
+                    <CheckBox
+                        Content="Auto-load setting page"
+                        IsChecked="False"
                         ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-                    <ToggleSwitch x:Name="LoadLastPageToggleSwitch" Header="Save last page" Toggled="LoadLastPageToggleSwitch_Toggled"/>
+                    <CheckBox x:Name="LoadLastPageToggleSwitch" Content="Save last page" Click="LoadLastPageToggleSwitch_Toggled"/>
                 </StackPanel>
             </Expander>
+
+            <Grid Style="{StaticResource GridExpanderStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <local:AppExpanderHeader Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
+                <ToggleSwitch x:Name="NotificationsSwitch" Toggled="NotificationsSwitch_Toggled" Margin="0,0,-70,0" Grid.Column="1"/>
+            </Grid>
+
+            <ListViewHeaderItem/>
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
@@ -50,53 +67,92 @@
                 </StackPanel>
             </Expander>
 
-            <Expander Style="{StaticResource ExpanderSettingStyle}">
-                <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
-                </Expander.Header>
-
-                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <Button Click="OpenSettingsFile_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                            <FontIcon Glyph="&#xE8A7;" FontSize="{StaticResource IconButtonFontSize}"/>
-                            <TextBlock Text="Export settings"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Click="ResetSettingsFile_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
-                            <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
-                            <TextBlock Text="Reset settings"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
-
-                    <HyperlinkButton Content="Open application folder (File explorer)" Click="AppDataFolderHyperlink_Click"/>
-                    <HyperlinkButton Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
-                    <HyperlinkButton Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
-                </StackPanel>
-            </Expander>
-
-            <Expander Style="{StaticResource ExpanderSettingStyle}">
+            <Expander Style="{StaticResource ExpanderSettingStyle}" IsEnabled="False">
                 <Expander.Header>
                     <local:AppExpanderHeader Glyph="&#xe799;" Title="View" Subtitle="Enable Picture-in-picture, title bar options"/>
                 </Expander.Header>
 
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <ToggleSwitch Header="Compact mode" Toggled="CompactOverlayToggleSwitch_Toggled"/>
-                    <ToggleSwitch Header="Animated icon" Toggled="AnimatedIconToggleSwitch_Toggled"/>
+                    <CheckBox Content="Compact mode" Click="CompactOverlayToggleSwitch_Toggled"/>
+                    <CheckBox Content="Animated icon" Click="AnimatedIconToggleSwitch_Toggled"/>
                 </StackPanel>
             </Expander>
 
-            <Grid Style="{StaticResource GridExpanderStyle}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe737;" Title="Search window" Subtitle="Search window appearance"/>
+                </Expander.Header>
 
-                <local:AppExpanderHeader Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
-                <ToggleSwitch x:Name="NotificationsSwitch" Toggled="NotificationsSwitch_Toggled" Margin="0,0,-70,0" Grid.Column="1"/>
-            </Grid>
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <CheckBox
+                        x:Name="SearchWindowUsesAcrylic"
+                        Content="Use transparency effects"
+                        Click="SearchWindowUsesAcrylic_Toggled" 
+                        Grid.Column="1"/>
+                    <CheckBox
+                        x:Name="ShowSearchWindowInSwitchers"
+                        Content="Show window in switchers (Alt + Tab)"
+                        Click="ShowSearchWindowInSwitchers_Toggled" 
+                        Grid.Column="1"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xe737;" Title="File properties window" Subtitle="File properties window appearance"/>
+                </Expander.Header>
+
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                    <CheckBox
+                        x:Name="FilePropertiesWindowUsesAcrylic"
+                        Content="Use transparency effects"
+                        Click="FilePropertiesWindowUsesAcrylic_Toggled" 
+                        Grid.Column="1"/>
+                    <CheckBox
+                        x:Name="FilePropertiesWindowInSwitchers"
+                        Content="Show window in switchers (Alt + Tab)"
+                        Click="ShowFilePropertiesWindowInSwitchers_Toggled" 
+                        Grid.Column="1"/>
+                </StackPanel>
+            </Expander>
+
+            <ListViewHeaderItem/>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
+                </Expander.Header>
+
+                <Grid Margin="{StaticResource StackPanelSettingMargin}" RowSpacing="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <HyperlinkButton Grid.Column="0" Grid.Row="0" Content="Open application folder (File explorer)" Click="AppDataFolderHyperlink_Click"/>
+                    <HyperlinkButton Grid.Column="0" Grid.Row="1" Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
+                    <HyperlinkButton Grid.Column="0" Grid.Row="2" Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
+                    
+                    <Button Grid.Column="1" Grid.Row="0" Click="OpenSettingsFile_Click" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xE8A7;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            <TextBlock Text="Export settings"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="1" Grid.Row="1" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
+                            <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            <TextBlock Text="Reset settings"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="1" Grid.Row="2" Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
+                </Grid>
+            </Expander>
         </ListView>
     </Grid>
 </Page>

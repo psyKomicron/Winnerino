@@ -92,7 +92,7 @@ namespace winrt::Winnerino::implementation
     void AdditionalSettingsPage::LoadLastPageToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
         auto values = ApplicationData::Current().LocalSettings().Values();
-        values.Insert(L"LoadLastPage", box_value(LoadLastPageToggleSwitch().IsOn()));
+        values.Insert(L"LoadLastPage", box_value(LoadLastPageToggleSwitch().IsChecked()));
     }
 
     IAsyncAction AdditionalSettingsPage::OpenSettingsFile_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -162,6 +162,18 @@ namespace winrt::Winnerino::implementation
         ApplicationData::Current().LocalSettings().Values().Insert(L"NotificationsEnabled", box_value(NotificationsSwitch().IsOn()));
     }
 
+    void AdditionalSettingsPage::ShowSearchWindowInSwitchers_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
+        settings.Values().Insert(L"ShowInSwitchers", box_value(ShowSearchWindowInSwitchers().IsChecked()));
+    }
+
+    void AdditionalSettingsPage::SearchWindowUsesAcrylic_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
+        settings.Values().Insert(L"UsesAcrylic", box_value(SearchWindowUsesAcrylic().IsChecked()));
+    }
+
 
     void AdditionalSettingsPage::SwitchTheme(winrt::Microsoft::UI::Xaml::ElementTheme const& requestedTheme)
     {
@@ -170,10 +182,9 @@ namespace winrt::Winnerino::implementation
 
     void AdditionalSettingsPage::InitSettings()
     {
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
+        const ApplicationDataContainer& settings = ApplicationData::Current().LocalSettings();
 
-        LoadLastPageToggleSwitch().IsOn(unbox_value_or<bool>(settings.Values().TryLookup(L"LoadLastPage"), true));
-
+        LoadLastPageToggleSwitch().IsChecked(unbox_value_or<bool>(settings.Values().TryLookup(L"LoadLastPage"), true));
         NotificationsSwitch().IsOn(unbox_value_or<bool>(settings.Values().TryLookup(L"NotificationsEnabled"), true));
 
         IInspectable inspectable = settings.Values().TryLookup(L"AppTheme");
@@ -181,5 +192,28 @@ namespace winrt::Winnerino::implementation
         DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
         LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
         DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
+
+        ApplicationDataContainer searchWindowSettings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
+        if (!searchWindowSettings)
+        {
+            searchWindowSettings = ApplicationData::Current().LocalSettings().CreateContainer(L"FileSearchWindow", ApplicationDataCreateDisposition::Always);
+        }
+        
+        SearchWindowUsesAcrylic().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
+        ShowSearchWindowInSwitchers().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"ShowInSwitchers")), false));
+
+        // TODO: Implement settings for the file properties window
     }
+}
+
+
+void winrt::Winnerino::implementation::AdditionalSettingsPage::FilePropertiesWindowUsesAcrylic_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+{
+
+}
+
+
+void winrt::Winnerino::implementation::AdditionalSettingsPage::ShowFilePropertiesWindowInSwitchers_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+{
+
 }
