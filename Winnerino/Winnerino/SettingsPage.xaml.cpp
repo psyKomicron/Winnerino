@@ -66,7 +66,7 @@ namespace winrt::Winnerino::implementation
         {
             container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
-        container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsOn()));
+        container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsChecked()));
     }
 
     void SettingsPage::CalculateDirectorySizeToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
@@ -76,7 +76,7 @@ namespace winrt::Winnerino::implementation
         {
             container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
-        container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsOn()));
+        container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsChecked()));
     }
 
     void SettingsPage::UseThumbnailsToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
@@ -113,14 +113,14 @@ namespace winrt::Winnerino::implementation
         if (specificSettings)
         {
             IInspectable inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
-            ShowSpecialsFolderToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, false));
+            ShowSpecialsFolderToggleSwitch().IsChecked(unbox_value_or<bool>(inspectable, false));
             inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
-            CalculateDirectorySizeToggleSwitch().IsOn(unbox_value_or(inspectable, true));
+            CalculateDirectorySizeToggleSwitch().IsChecked(unbox_value_or(inspectable, true));
         }
         else
         {
-            ShowSpecialsFolderToggleSwitch().IsOn(false);
-            CalculateDirectorySizeToggleSwitch().IsOn(true);
+            ShowSpecialsFolderToggleSwitch().IsChecked(false);
+            CalculateDirectorySizeToggleSwitch().IsChecked(true);
         }
     }
 

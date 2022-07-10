@@ -47,9 +47,14 @@
                         </Expander.Header>
 
                         <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                            <ToggleSwitch x:Name="ShowSpecialsFolderToggleSwitch" Header="Show special folders" Toggled="ShowSpecialsFolderToggleSwitch_Toggled"/>
-                            <ToggleSwitch x:Name="CalculateDirectorySizeToggleSwitch" Header="Calculate directory size" Toggled="CalculateDirectorySizeToggleSwitch_Toggled"/>
-                            <ToggleSwitch x:Name="UseThumbnailsToggleSwitch" Header="Use thumbnails" Toggled="UseThumbnailsToggleSwitch_Toggled"/>
+                            <CheckBox 
+                                x:Name="ShowSpecialsFolderToggleSwitch" Content="Show special folders" Click="ShowSpecialsFolderToggleSwitch_Toggled"/>
+                            <CheckBox 
+                                x:Name="CalculateDirectorySizeToggleSwitch" Content="Calculate directory size" Click="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                            <CheckBox 
+                                x:Name="UseThumbnailsToggleSwitch" Content="Use thumbnails" Click="UseThumbnailsToggleSwitch_Toggled"/>
+                            <CheckBox 
+                                x:Name="ShowPathToggleSwitch" Content="Show file path" Click="ShowPathToggleSwitch_Toggled"/>
                         </StackPanel>
                     </Expander>
 
