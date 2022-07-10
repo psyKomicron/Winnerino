@@ -45,6 +45,7 @@
     <Page Include="DriveHealthView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FileSearchWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -74,6 +75,12 @@
     <ClCompile Include="FileSearcher.cpp">
       <Filter>Common\Storage</Filter>
     </ClCompile>
+    <ClCompile Include="FileInfo.cpp">
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSearcher2.cpp">
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -99,6 +106,12 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="FileSearcher.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="FileInfo.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSearcher2.h">
       <Filter>Common\Storage</Filter>
     </ClInclude>
   </ItemGroup>
@@ -132,8 +145,5 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Resources.resw" />
   </ItemGroup>
 </Project>
