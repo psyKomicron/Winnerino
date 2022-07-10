@@ -30,6 +30,12 @@ namespace winrt::Winnerino::implementation
         windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::mainWindow_Closed });
         InitializeComponent();
 
+        TabViewItem tab{};
+        tab.IsClosable(false);
+        tab.Header(box_value(L"System health"));
+        tab.Content(SystemHealthView{});
+        Pages().TabItems().Append(tab);
+
         // get last path
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
@@ -55,7 +61,7 @@ namespace winrt::Winnerino::implementation
             ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
 
-        if (Pages().TabItems().Size() == 0)
+        if (Pages().TabItems().Size() == 1)
         {
             AddTab(L"Empty", L"");
         }
@@ -90,6 +96,7 @@ namespace winrt::Winnerino::implementation
 
     void ExplorerPage::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
+        
     }
 
     void ExplorerPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
