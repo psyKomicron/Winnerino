@@ -11,14 +11,14 @@
     <Grid SizeChanged="Grid_SizeChanged" ColumnSpacing="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="37"/>
         </Grid.ColumnDefinitions>
 
         <Border x:Name="BackgroundBorder" HorizontalAlignment="Stretch" Background="{ThemeResource ControlSolidFillColorDefaultBrush}" Height="{StaticResource ProgressBarHeight}" CornerRadius="{StaticResource OverlayCornerRadius}"/>
         <Border x:Name="ProgressBorder" HorizontalAlignment="Left" Background="{ThemeResource AccentFillColorDefaultBrush}" Height="{StaticResource ProgressBarHeight}" CornerRadius="{StaticResource OverlayCornerRadius}"/>
 
-        <StackPanel Orientation="Horizontal" Spacing="5" Grid.Column="1">
-            <TextBlock Text="{x:Bind Percentage}" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.6"/>
+        <StackPanel Orientation="Horizontal" Spacing="3" Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Text="{x:Bind Percentage, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.6"/>
             <TextBlock Text="%" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.6"/>
         </StackPanel>
     </Grid>

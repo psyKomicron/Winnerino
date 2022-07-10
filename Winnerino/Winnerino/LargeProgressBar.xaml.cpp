@@ -48,10 +48,10 @@ namespace winrt::Winnerino::implementation
 
     double LargeProgressBar::Percentage() const
     {
-        return round((_value / _maximum) * 100);
+        return _maximum == 0 ? 0 : round((_value / _maximum) * 100.0);
     }
 
-    void LargeProgressBar::UserControl_Loaded(IInspectable const&, RoutedEventArgs const& e)
+    void LargeProgressBar::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         SetWidth();
     }
@@ -63,6 +63,14 @@ namespace winrt::Winnerino::implementation
 
     void LargeProgressBar::SetWidth()
     {
-        ProgressBorder().Width((_value / _maximum) * BackgroundBorder().ActualWidth());
+        if (_maximum == 0)
+        {
+            ProgressBorder().Width(0);
+        }
+        else
+        {
+            double barWidth = (_value / _maximum) * BackgroundBorder().ActualWidth();
+            ProgressBorder().Width(barWidth);
+        }
     }
 }
