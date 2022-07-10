@@ -21,17 +21,28 @@ namespace winrt::Winnerino::implementation
             e_propertyChanged.remove(token);
         };
 
-        void SystemGeneralHealth(double value)
-        { 
-            _value = value;
+        double SystemGeneralHealth() { return _systemGeneralHealth; };
+        void SystemGeneralHealth(double const& value)
+        {
+            _systemGeneralHealth = value;
             e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{ L"SystemGeneralHealth" });
+            e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{ L"SystemGeneralForeground" });
         };
-        double SystemGeneralHealth() { return _value; };
+        double TotalUsedSpace() { return _totalUsedSpace; };
+        void TotalUsedSpace(double const& value)
+        {
+            _totalUsedSpace = value;
+            e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{ L"TotalUsedSpace" });
+            e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{ L"TotalUsedForeground" });
+        };
+        winrt::Microsoft::UI::Xaml::Media::Brush TotalUsedForeground();
+        winrt::Microsoft::UI::Xaml::Media::Brush SystemGeneralForeground();
 
         void DeviceNameBox_QuerySubmitted(winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBox const& sender, winrt::Microsoft::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs const& args);
 
     private:
-        double _value = 0;
+        double _systemGeneralHealth = 0;
+        double _totalUsedSpace = 0;
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 

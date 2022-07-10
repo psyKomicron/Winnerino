@@ -7,36 +7,79 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid ColumnSpacing="20" Padding="5" Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}">
+    <Grid ColumnSpacing="20" Padding="5" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="Result"/>
-        <AutoSuggestBox x:Name="DeviceNameBox" Text="\\.\PhysicalDrive0" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" MinWidth="300" QuerySubmitted="DeviceNameBox_QuerySubmitted"/>
-
-        <Grid Grid.Column="0" Grid.Row="1" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Grid.Row="1" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" x:DefaultBindMode="OneWay">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <ProgressRing Grid.Row="0" Grid.ColumnSpan="2" Height="170" Width="170" IsIndeterminate="False" Foreground="{ThemeResource SystemFillColorSuccess}"/>
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource DisplayTextBlockStyle}" />
+            <Grid Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressRing 
+                    Height="250" Width="250" Value="{x:Bind SystemGeneralHealth}" IsIndeterminate="False" Foreground="{x:Bind SystemGeneralForeground}"/>
+                <TextBlock 
+                    Text="{x:Bind SystemGeneralHealth}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource DisplayTextBlockStyle}"/>
+                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="?"/>
+            </Grid>
 
-            <ProgressRing Grid.Row="1" Height="170" Width="170" IsIndeterminate="False" Value="10" Foreground="{ThemeResource SystemFillColorSuccess}"/>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ProgressRing 
+                    Value="{x:Bind TotalUsedSpace}" 
+                    Height="250" 
+                    Width="250"
+                    IsIndeterminate="False" 
+                    Foreground="{x:Bind TotalUsedForeground}"/>
+                
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Background="Transparent" Padding="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Margin="26,0,0,0">
+                        <TextBlock 
+                            Text="{x:Bind TotalUsedSpace}" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Style="{StaticResource DisplayTextBlockStyle}"/>
+                        <TextBlock Text="%" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource DisplayTextBlockStyle}" FontSize="27"/>
+                    </StackPanel>
+
+                    <TextBlock 
+                        Text="Used space" 
+                        Style="{StaticResource CaptionTextBlockStyle}" 
+                        Opacity="{StaticResource CaptionTextBlockOpacity}"
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center"/>
+
+                    <TextBlock 
+                        x:Name="TotalUsedSize" 
+                        Grid.Row="2" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center"
+                        Style="{StaticResource CaptionTextBlockStyle}" 
+                        Opacity="{StaticResource CaptionTextBlockOpacity}"/>
+                </Grid>
+            </Grid> 
         </Grid>
 
-        <Grid Grid.Column="1" Grid.Row="1" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+        <Grid 
+            Grid.Column="1" Grid.RowSpan="2" CornerRadius="{StaticResource OverlayCornerRadius}" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
             <ListView x:Name="Drives" SelectionMode="None"/>
         </Grid>
     </Grid>

@@ -6,5 +6,8 @@ namespace Winnerino
         SystemHealthView();
         
         Double SystemGeneralHealth{ get; set; };
+        Microsoft.UI.Xaml.Media.Brush SystemGeneralForeground{ get; };
+        Double TotalUsedSpace{ get; set; };
+        Microsoft.UI.Xaml.Media.Brush TotalUsedForeground{ get; };
     }
 }
