@@ -44,10 +44,12 @@
                         <TextBlock Text="What's new" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
                     </ListView.Header>
 
-                    <x:String>Added file actions (cut, copy, delete, rename) for multiple files with right click.</x:String>
-                    <x:String>Updated settings to be easier to navigate</x:String>
-                    <x:String>Side navigation view for libraries (in construction)</x:String>
-                    <x:String>Now saving application theme (dark, light, system setting/default)</x:String>
+                    <x:String>Added new search feature using regular expressions (system wide, multithreaded).</x:String>
+                    <x:String>Added system health view.</x:String>
+                    <x:String>Added file actions (cut, copy, delete, rename) for multiple items with right click.</x:String>
+                    <x:String>Updated settings to be easier to navigate.</x:String>
+                    <x:String>Side navigation view for libraries (work in progress).</x:String>
+                    <x:String>Now saving application theme (dark, light, system setting/default).</x:String>
                 </ListView>
 
                 <ListView
@@ -62,6 +64,7 @@
                     </ListView.Header>
 
                     <x:String>Fixed application crash when open a directory before all current directory size have been calculated.</x:String>
+                    <x:String>Fixed application rendering/appearing outside of the display bounds.</x:String>
                 </ListView>
 
                 <ListView 
@@ -78,7 +81,6 @@
                     <x:String>Scrolling through a long list may cause the application to crash.</x:String>
                     <x:String>Application becomes unresponsive when loading a directory with a lot of files.</x:String>
                     <x:String>Application may crash after sorting if the number of files is large (> 5000).</x:String>
-                    <x:String>Application may move outside of screen bounds, it will be fixed in future versions.</x:String>
                 </ListView>
             </Grid>
         </Grid>
