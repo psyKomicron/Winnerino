@@ -1,7 +1,8 @@
 #pragma once
 #include <regex>
-#include <queue>
 #include <concurrent_queue.h>
+#include "DirectoryEnumerator.h"
+#include "FileInfo.h"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ namespace Winnerino::Storage
     {
     public:
         FileSearcher();
-        FileSearcher(winrt::hstring const& root, uint16_t const& threads = 3);
+        FileSearcher(winrt::hstring const& root);
         ~FileSearcher();
 
         winrt::event_token MatchFound(winrt::Windows::Foundation::TypedEventHandler<winrt::Windows::Foundation::IInspectable, winrt::hstring> const& handler)
@@ -23,10 +24,19 @@ namespace Winnerino::Storage
             e_matchFound.remove(token);
         };
 
-        void Search(wregex const& query, vector<winrt::hstring>* results);
+        void Root(winrt::hstring const& value)
+        {
+            root = value;
+        };
+        winrt::hstring Root()
+        {
+            return root;
+        };
+
+        void Search(wregex query, vector<winrt::hstring>* results);
 
     private:
-        int16_t maxThreads = 2;
+        winrt::hstring root;
         vector<thread> threads{};
         concurrency::concurrent_queue<winrt::hstring> pathQueue{};
         mutex queueMutex{};
@@ -36,7 +46,7 @@ namespace Winnerino::Storage
 
         void WorkerFunction(wregex query, vector<winrt::hstring>* files);
         void GetFiles(wregex const& query, winrt::hstring path, vector<winrt::hstring>* files);
-        void QueuePathes(winrt::hstring const& root);
+        void QueuePathes(winrt::hstring const& root, wregex const& query, DirectoryEnumerator* enumerator, vector<winrt::hstring>* validFiles);
     };
 }
 

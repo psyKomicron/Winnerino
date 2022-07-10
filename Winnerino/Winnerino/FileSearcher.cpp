@@ -2,7 +2,7 @@
 #include "FileSearcher.h"
 
 #include <math.h>
-#include "DirectoryEnumerator.h"
+#include <Shlwapi.h>
 
 using namespace std;
 using namespace winrt;
@@ -14,9 +14,12 @@ namespace Winnerino::Storage
         threadFlag.test_and_set(memory_order_relaxed);
     }
 
-    FileSearcher::FileSearcher(winrt::hstring const& root, uint16_t const& threads)
+    FileSearcher::FileSearcher(winrt::hstring const& _root) : FileSearcher()
     {
-        maxThreads = threads;
+        if (PathFileExists(_root.c_str()))
+        {
+            root = _root;
+        }
     }
 
     FileSearcher::~FileSearcher()
@@ -24,38 +27,22 @@ namespace Winnerino::Storage
         threadFlag.clear();
     }
 
-    void FileSearcher::Search(wregex const& query, vector<hstring>* validFiles)
+    void FileSearcher::Search(wregex query, vector<hstring>* validFiles)
     {
         DirectoryEnumerator enumerator{};
-        vector<hstring>* pathes = enumerator.EnumerateDrives();
-        for (hstring drive : *pathes)
-        {
-            vector<hstring>* files = enumerator.EnumerateFiles(drive);
-            for (size_t i = 0; i < files->size(); i++)
-            {
-                hstring file = files->operator[](i);
-                if (regex_search(file.c_str(), query))
-                {
-                    validFiles->push_back(file);
-                }
-            }
-            delete files;
 
-            vector<hstring>* dirs = enumerator.EnumerateDirectories(drive);
-            for (size_t i = 0; i < dirs->size(); i++)
+        if (root.empty())
+        {
+            unique_ptr<vector<hstring>> pathes{ enumerator.EnumerateDrives() };
+            for (hstring drive : *pathes)
             {
-                unique_ptr<vector<hstring>> subDirs{ enumerator.EnumerateDirectories(dirs->at(i)) };
-                if (subDirs)
-                {
-                    for (size_t j = 0; j < subDirs->size(); j++)
-                    {
-                        pathQueue.push(subDirs->at(j));
-                    }
-                }
+                QueuePathes(drive, query, &enumerator, validFiles);
             }
-            delete dirs;
         }
-        delete pathes;
+        else
+        {
+            QueuePathes(root, query, &enumerator, validFiles);
+        }
 
         /*for (uint16_t i = 0; i < maxThreads; i++)
         {
@@ -77,19 +64,22 @@ namespace Winnerino::Storage
         {
             if (pathQueue.try_pop(path))
             {  
+#ifdef _DEBUG
                 auto&& id = this_thread::get_id();
-                stringstream strStream{};
-                strStream << id;
+                stringstream strStream{ "" };
+                strStream << "0x" << hex << id;
 
                 OutputDebugString((to_hstring(strStream.str()) + L" : Working on \"" + path + L"\"\n").c_str());
+#endif // _DEBUG
+
                 vector<hstring> temp{};
                 GetFiles(query, path, &temp);
 
-                // use block to destroy lock if i put more instructions below
+                if (temp.size() > 0)
                 {
                     lock_guard<mutex> lock{ queueMutex };
 
-                    size_t reserve = static_cast<size_t>(abs(static_cast<int>(files->size()) - static_cast<int>(temp.size())));
+                    size_t reserve = static_cast<size_t>(abs(static_cast<int>(files->size()) + static_cast<int>(temp.size())));
                     files->reserve(reserve);
                     for (size_t i = 0; i < temp.size(); i++)
                     {
@@ -130,7 +120,50 @@ namespace Winnerino::Storage
         }
     }
 
-    void FileSearcher::QueuePathes(hstring const& root)
+    void FileSearcher::QueuePathes(hstring const& root, wregex const& query, DirectoryEnumerator* enumerator, vector<hstring>* validFiles)
     {
+        vector<hstring>* files = enumerator->EnumerateFiles(root);
+        if (files)
+        {
+            for (size_t i = 0; i < files->size(); i++)
+            {
+                hstring file = files->at(i);
+                if (regex_search(file.c_str(), query))
+                {
+                    validFiles->push_back(file);
+                }
+            }
+            delete files;
+        }
+
+        unique_ptr<vector<hstring>> dirs{ enumerator->EnumerateDirectories(root) };
+        if (dirs)
+        {
+            for (size_t i = 0; i < dirs->size(); i++)
+            {
+                hstring subPath = std::move(dirs->at(i));
+                unique_ptr<vector<hstring>> subDirs{ enumerator->EnumerateDirectories(subPath) };
+                if (subDirs)
+                {
+                    for (size_t j = 0; j < subDirs->size(); j++)
+                    {
+                        pathQueue.push(subDirs->at(j));
+                    }
+                }
+
+                unique_ptr<vector<hstring>> subFiles{ enumerator->EnumerateFiles(subPath) };
+                if (subFiles)
+                {
+                    for (size_t j = 0; j < subFiles->size(); j++)
+                    {
+                        hstring file = std::move(subFiles->at(j));
+                        if (regex_search(file.c_str(), query))
+                        {
+                            validFiles->push_back(file);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
