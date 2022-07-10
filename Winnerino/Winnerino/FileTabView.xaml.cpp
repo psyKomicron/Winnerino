@@ -11,13 +11,17 @@
 #include "DirectorySizeCalculator.h"
 #include "QuickSort.h"
 #include "Helpers.h"
-#include <FileSearcher.h>
+#include "FilePropertiesWindow.xaml.h"
+#include "FileSearchWindow.xaml.h"
+
+using namespace std;
 
 using namespace ::Winnerino;
 using namespace ::Winnerino::Storage;
-using namespace std;
+
 using namespace winrt;
 using namespace winrt::Microsoft::UI;
+using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Input;
@@ -34,6 +38,7 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::UI::Notifications;
+using namespace winrt::Windows::Graphics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,8 +50,6 @@ namespace winrt::Winnerino::implementation
         InitializeComponent();
 
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        std::optional<bool> isChecked = settings.Values().Lookup(L"UseSearchRegex").try_as<bool>();
-        UseRegexButton().IsChecked(isChecked.value_or(false));
         ContentNavigationView().IsPaneOpen(unbox_value_or<bool>(settings.Values().TryLookup(L"IsPaneOpen"), true));
 
         ApplicationDataContainer recents = settings.Containers().TryLookup(L"ExplorerRecents");
@@ -131,14 +134,7 @@ namespace winrt::Winnerino::implementation
     {
         AutoSuggestBox box = sender.as<AutoSuggestBox>();
         IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
-        if (InputModeButton().IsChecked())
-        {
-            Search(box.Text(), suggestions);
-        }
-        else
-        {
-            CompletePath(box.Text(), suggestions);
-        }
+        CompletePath(box.Text(), suggestions);
         box.ItemsSource(suggestions);
     }
 
@@ -147,71 +143,18 @@ namespace winrt::Winnerino::implementation
         if (args.Reason() == AutoSuggestionBoxTextChangeReason::UserInput)
         {
             IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
-            if (InputModeButton().IsChecked())
-            {
-                Search(sender.Text(), suggestions);
-            }
-            else
-            {
-                CompletePath(sender.Text(), suggestions);
-            }
+            CompletePath(sender.Text(), suggestions);
             sender.ItemsSource(suggestions);
         }
     }
 
     void FileTabView::PathInputBox_QuerySubmitted(AutoSuggestBox const& sender, AutoSuggestBoxQuerySubmittedEventArgs const& args)
     {
-        if (InputModeButton().IsChecked())
+        if (!previousPath.empty())
         {
-            _files.Clear();
-            ProgressRing().Visibility(Visibility::Visible);
-
-            concurrency::create_task([this, path = args.QueryText().c_str()]()
-            {
-                FileSearcher searcher{};
-                vector<hstring> results{};
-                searcher.MatchFound({ [this](IInspectable const& sender, winrt::hstring const& match)
-                {
-                    DispatcherQueue().TryEnqueue([this, filePath = match]()
-                    {
-                        TextBlock text{};
-                        text.Text(filePath);
-                        text.TextWrapping(TextWrapping::Wrap);
-                        _files.Append(text);
-                    });
-                } });
-
-                searcher.Search(wregex{ path }, &results);
-                DispatcherQueue().TryEnqueue([this]()
-                {
-                    _files.Clear();
-                });
-                IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
-                for (auto&& path : results)
-                {
-                    DispatcherQueue().TryEnqueue([this, filePath = path]()
-                    {
-                        TextBlock text{};
-                        text.Text(filePath);
-                        text.TextWrapping(TextWrapping::Wrap);
-                        _files.Append(text);
-                    });
-                }
-
-                DispatcherQueue().TryEnqueue([this]()
-                {
-                    ProgressRing().Visibility(Visibility::Collapsed);
-                });
-            });
+            backStack.push(previousPath);
         }
-        else
-        {
-            if (!previousPath.empty())
-            {
-                backStack.push(previousPath);
-            }
-            LoadPath(args.QueryText());
-        }
+        LoadPath(args.QueryText());
     }
 
     IAsyncAction FileTabView::ListView_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
@@ -249,7 +192,7 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::FileListView_SelectionChanged(IInspectable const&, SelectionChangedEventArgs const&)
     {
-        m_propertyChanged(*this, PropertyChangedEventArgs{ L"SelectedItemsCount" });
+        e_propertyChanged(*this, PropertyChangedEventArgs{ L"SelectedItemsCount" });
 
         if (FileListView().SelectedItems().Size() == 1)
         {
@@ -356,17 +299,23 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::InputModeButton_Click(SplitButton const&, SplitButtonClickEventArgs const&)
     {
-        if (InputModeButton().IsChecked())
-        {
-            previousInput = PathInputBox().Text();
-            PathInputBox().Text(L"");
-            PathInputBox().PlaceholderText(L"Search");
-        }
-        else
-        {
-            PathInputBox().Text(previousInput);
-            PathInputBox().PlaceholderText(L"Path");
-        }
+        
+    }
+
+    void FileTabView::SearchButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto&& w = make<FileSearchWindow>();
+        
+        Rect windowBounds = MainWindow::Current().Bounds();
+        windowBounds.X = MainWindow::Current().Position().X;
+        windowBounds.Y = MainWindow::Current().Position().Y;
+
+        w.SetPosition(PointInt32
+                      {
+                          static_cast<int32_t>(windowBounds.X + (windowBounds.Width / 2.0f) - (w.Bounds().Width / 2.0f)),
+                          static_cast<int32_t>(windowBounds.Y + (windowBounds.Height / 2.0f) - (w.Bounds().Height / 2.0f))
+                      });
+        w.Activate();
     }
 
     void FileTabView::AlphabeticalSortButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -454,8 +403,6 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::CutFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        // I18N
-
         DataPackage data{};
         data.RequestedOperation(DataPackageOperation::Move);
         IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
@@ -480,6 +427,7 @@ namespace winrt::Winnerino::implementation
         hstring message{};
         if (items.Size() > 0)
         {
+            // I18N: Clipboard actions -> "Moved" singular and plural "No files selected to move"
             data.SetStorageItems(items);
             Clipboard::SetContent(data);
             if (items.Size() == 1)
@@ -521,7 +469,6 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        // I18N
 
         DataPackage data{};
         data.RequestedOperation(DataPackageOperation::Copy);
@@ -544,6 +491,7 @@ namespace winrt::Winnerino::implementation
             }
         }
 
+        // I18N: Clipboard actions -> "Copied" singular and plural "No files selected to copy"
         hstring message{};
         if (items.Size() > 0)
         {
@@ -673,8 +621,10 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void FileTabView::FileSizeFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    void FileTabView::ShowPropertiesFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
+        Window window = make<FilePropertiesWindow>();
+        window.Activate();
     }
 
 
@@ -859,8 +809,6 @@ namespace winrt::Winnerino::implementation
                 return;
             }
 
-            InputModeButton().IsChecked(false);
-            //FileListView().Items().Clear();
             _files.Clear();
             ProgressRing().Visibility(Visibility::Visible);
 
@@ -881,7 +829,7 @@ namespace winrt::Winnerino::implementation
                             PathCombine(combinedPath, _path.c_str(), fileName.c_str());
                             hstring filePath = to_hstring(combinedPath);
 
-                            int64_t size = (static_cast<int64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
+                            uint64_t size = (static_cast<uint64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
                             DateTime modifiedDate = clock::from_FILETIME(data.ftLastWriteTime);
 
 #define STA 1
@@ -893,10 +841,7 @@ namespace winrt::Winnerino::implementation
                                 view.Background(FileListView().Background());
                                 _files.Append(view);
                             });
-#endif // MTA
-
-
-#if !STA
+#else
                             FileEntryView view{ fileName, filePath, size, data.dwFileAttributes };
                             view.LastWrite(modifiedDate);
                             _files.Append(view);
@@ -922,7 +867,7 @@ namespace winrt::Winnerino::implementation
                 DispatcherQueue().TryEnqueue([this, _path]()
                 {
                     PathInputBox().Text(_path);
-                    m_propertyChanged(*this, PropertyChangedEventArgs{ L"ItemCount" });
+                    e_propertyChanged(*this, PropertyChangedEventArgs{ L"ItemCount" });
                     ProgressRing().Visibility(Visibility::Collapsed);
                 });
             });
@@ -936,7 +881,6 @@ namespace winrt::Winnerino::implementation
     void FileTabView::SavePage()
     {
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        settings.Values().Insert(L"UseSearchRegex", box_value(UseRegexButton().IsChecked()));
         settings.Values().Insert(L"IsPaneOpen", box_value(ContentNavigationView().IsPaneOpen()));
     }
 

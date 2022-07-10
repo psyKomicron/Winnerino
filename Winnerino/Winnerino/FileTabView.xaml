@@ -17,7 +17,7 @@
         SelectionFollowsFocus="Disabled"
         IsSettingsVisible="False"
         IsBackButtonVisible="Collapsed"
-        Background="{ThemeResource SolidBackgroundFillColorBase}"
+        Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"
         ItemInvoked="ContentNavigationView_ItemInvoked"
         PaneClosed="ContentNavigationView_PaneChanged"
         PaneOpened="ContentNavigationView_PaneChanged">
@@ -53,7 +53,7 @@
             </NavigationViewItem>
         </NavigationView.MenuItems>
 
-        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Opacity="1">
+        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -63,7 +63,12 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid VerticalAlignment="Stretch" Grid.Column="1" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,0,0,2">
+            <Grid 
+                VerticalAlignment="Stretch" 
+                Grid.Column="1" 
+                BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" 
+                BorderThickness="0,0,0,3"
+                Background="{ThemeResource SolidBackgroundFillColorSecondary}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition x:Name="InputModeButtonColumn" Width="Auto"/>
@@ -120,30 +125,9 @@
                         QuerySubmitted="PathInputBox_QuerySubmitted"/>
                 </Grid>
 
-                <ToggleSplitButton
-                    x:Name="InputModeButton"
-                    ToolTipService.ToolTip="Switch between path input and search input" 
-                    ToolTipService.Placement="Bottom"
-                    VerticalAlignment="Stretch"
-                    MaxHeight="35" 
-                    Grid.Column="1"
-                    Click="InputModeButton_Click">
-                    <ToggleSplitButton.Content>
-                        <FontIcon Glyph="&#xe71e;" FontSize="13"/>
-                    </ToggleSplitButton.Content>
-
-                    <ToggleSplitButton.Flyout>
-                        <MenuFlyout>
-                            <ToggleMenuFlyoutItem 
-                                x:Name="UseRegexButton"
-                                Text="Re" 
-                                FontFamily="Cascadia Code" 
-                                FontSize="14" 
-                                ToolTipService.ToolTip="Use regular expression to search for files" 
-                                ToolTipService.Placement="Bottom"/>
-                        </MenuFlyout>
-                    </ToggleSplitButton.Flyout>
-                </ToggleSplitButton>
+                <Button VerticalAlignment="Stretch" MaxHeight="35" Grid.Column="1" Click="SearchButton_Click">
+                    <FontIcon Glyph="&#xe71e;"/>
+                </Button>
 
                 <CommandBar x:Name="FileCommandBar" HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Column="2">
                     <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
@@ -224,83 +208,51 @@
                 </ListView.ItemsPanel>
 
                 <ListView.ContextFlyout>
-                    <Flyout>
-                        <Grid RowSpacing="7" Padding="5" Margin="-15,-16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="{StaticResource ControlCornerRadius}">
-                            <Grid.Background>
-                                <AcrylicBrush TintColor="{ThemeResource LayerOnAcrylicFillColorDefault}" TintLuminosityOpacity="0.016" TintOpacity="0.501" Opacity="0.91"/>
-                            </Grid.Background>
-                            
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+                    <MenuFlyout>
+                        <MenuFlyoutSubItem IsEnabled="False" Text="Open with"/>
 
-                            <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="CutFlyoutItem_Click">
-                                    <FontIcon Glyph="&#xe8c6;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                </Button>
+                        <MenuFlyoutItem Text="Copy as path" Click="CopyPathFlyoutItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe756;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
 
-                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="CopyFlyoutItem_Click">
-                                    <FontIcon Glyph="&#xe8c8;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                </Button>
+                        <MenuFlyoutItem Text="Open containing folder" Click="OpenInExplorerFlyoutItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xec50;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
 
-                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="RenameFlyoutItem_Click">
-                                    <FontIcon Glyph="&#xe8ac;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                </Button>
-
-                                <Button Style="{StaticResource FlyoutButtonStyle}" Padding="12" Click="DeleteFlyoutItem_Click">
-                                    <FontIcon Glyph="&#xe74d;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                </Button>
-                            </StackPanel>
-
-                            <Border Grid.Row="1" Style="{StaticResource FlyoutSeparatorStyle}" HorizontalAlignment="Stretch" Margin="-9,0"/>
-
-                            <Button Grid.Row="2" Style="{StaticResource FlyoutButtonStyle}" HorizontalContentAlignment="Stretch">
-                                <Grid ColumnSpacing="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <FontIcon Glyph="&#xe71b;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                    <TextBlock Text="Open with" Grid.Column="1"/>
-                                    <FontIcon Glyph="&#xe76c;" FontSize="{StaticResource IconButtonFontSize}" Grid.Column="2"/>
-                                </Grid>
-
-                                <Button.Flyout>
-                                    <MenuFlyout Placement="Right" ShowMode="Transient">
-                                        <MenuFlyoutItem Text="Bite"/>
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                            
-                            <Button Grid.Row="3" Style="{StaticResource FlyoutButtonStyle}" Click="OpenInExplorerFlyoutItem_Click">
-                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
-                                    <FontIcon Glyph="&#xec50;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                    <TextBlock Text="Open containing folder"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Grid.Row="4" Style="{StaticResource FlyoutButtonStyle}" Click="CopyPathFlyoutItem_Click">
-                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
-                                    <FontIcon Glyph="&#xe756;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                    <TextBlock Text="Copy as path"/>
-                                </StackPanel>
-                            </Button>
-                            
-                            <Button Grid.Row="5" Style="{StaticResource FlyoutButtonStyle}">
-                                <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
-                                    <FontIcon Glyph="&#xea40;" FontSize="{StaticResource IconButtonFontSize}"/>
-                                    <TextBlock Text="Properties"/>
-                                </StackPanel>
-                            </Button>
-                        </Grid>
-                    </Flyout>
+                        <MenuFlyoutItem Text="Properties" Click="ShowPropertiesFlyoutItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe90f;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        
+                        <!--#region File actions -->
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Cut">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe8c6;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Text="Copy">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe8c8;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Text="Rename">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe8ac;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Text="Delete">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xe74d;" FontSize="{StaticResource IconButtonFontSize}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <!--#endregion-->
+                    </MenuFlyout>
                 </ListView.ContextFlyout>
             </ListView>
             
