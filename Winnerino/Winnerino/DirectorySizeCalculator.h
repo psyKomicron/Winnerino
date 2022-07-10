@@ -19,13 +19,12 @@ namespace Winnerino::Storage
             m_event.remove(token);
         };
 
-        uint_fast64_t getSize(hstring const& path, bool parallelize = false);
+        uint_fast64_t GetSize(hstring const& path, bool parallelize = false);
 
     private:
         winrt::event<Windows::Foundation::TypedEventHandler<Windows::Foundation::IInspectable, Windows::Foundation::IReference<uint_fast64_t>>> m_event;
 
-        inline uint_fast64_t convertSize(DWORD const& high, DWORD const& low);
-        inline void raiseProgress(uint_fast64_t newSize);
+        inline void RaiseProgress(uint_fast64_t newSize);
     };
 }
 

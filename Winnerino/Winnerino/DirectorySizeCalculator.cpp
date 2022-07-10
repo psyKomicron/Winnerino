@@ -4,9 +4,10 @@
 #include <vector>
 #include <array>
 #include <atomic>
-#include "fileapi.h"
-#include "ppl.h"
-#include "shlwapi.h"
+#include <fileapi.h>
+#include <ppl.h>
+#include <Shlwapi.h>
+#include "Helpers.h"
 
 using namespace std;
 using namespace concurrency;
@@ -14,7 +15,7 @@ using namespace winrt::Windows::Foundation;
 
 namespace Winnerino::Storage
 {
-    uint_fast64_t DirectorySizeCalculator::getSize(hstring const& path, bool parallelize)
+    uint_fast64_t DirectorySizeCalculator::GetSize(hstring const& path, bool parallelize)
     {
         if (path.starts_with(L"\\")) // Prevents infinite looping when the directory name is invalid (often buffer too small)
         {
@@ -32,13 +33,13 @@ namespace Winnerino::Storage
             {
                 if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 {
-                    uint_fast64_t fileSize = convertSize(findData.nFileSizeHigh, findData.nFileSizeLow);
+                    uint_fast64_t fileSize = convert_large_uint(findData.nFileSizeHigh, findData.nFileSizeLow);
                     dirSize += fileSize;
-                    raiseProgress(fileSize);
+                    RaiseProgress(fileSize);
                 }
                 else
                 {
-                    hstring filePath = hstring(findData.cFileName);
+                    hstring filePath = hstring(std::move(findData.cFileName));
                     if (filePath != L"." && filePath != L"..")
                     {
                         pathes.push_back(filePath);
@@ -56,7 +57,7 @@ namespace Winnerino::Storage
                     PathCombine(combinedPath, wstr.c_str(), dir.c_str());
                     hstring deepPath = to_hstring(combinedPath) + L"\\";
 
-                    uint_fast64_t size = getSize(deepPath, parallelize);
+                    uint_fast64_t size = GetSize(deepPath, parallelize);
                     atomicDirSize.fetch_add(size);
                 });
                 dirSize += atomicDirSize.load();
@@ -70,7 +71,7 @@ namespace Winnerino::Storage
                     PathCombine(combinedPath, path.c_str(), pathes[i].c_str());
                     hstring deepPath = to_hstring(combinedPath) + L"\\";
 
-                    uint_fast64_t size = getSize(deepPath, parallelize);
+                    uint_fast64_t size = GetSize(deepPath, parallelize);
                     dirSize += size;
                 }
             }
@@ -79,12 +80,7 @@ namespace Winnerino::Storage
         return dirSize;
     }
 
-    inline uint_fast64_t DirectorySizeCalculator::convertSize(DWORD const& high, DWORD const& low)
-    {
-        return (static_cast<uint_fast64_t>(high) << 32) | low;
-    }
-
-    inline void DirectorySizeCalculator::raiseProgress(uint_fast64_t newSize)
+    inline void DirectorySizeCalculator::RaiseProgress(uint_fast64_t newSize)
     {
         m_event(nullptr, IReference{ newSize });
     }
