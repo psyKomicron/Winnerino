@@ -12,7 +12,11 @@
 // conflict with Storyboard::GetCurrentTime
 #undef GetCurrentTime
 
+#include <dispatcherqueue.h>
+#include <microsoft.ui.xaml.window.h>
+
 #include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Documents.h>
@@ -30,8 +34,6 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
-
-#include <microsoft.ui.xaml.window.h>
 
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
@@ -55,5 +57,6 @@
 #pragma comment(lib, "Dxva2.lib")
 #pragma comment(lib, "Kernel32.lib")
 #pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Shell32.lib")
 
-constexpr int16_t ALTERNATE_MAX_PATH = 1024;
+constexpr int16_t ALTERNATE_MAX_PATH = 2048;
