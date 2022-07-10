@@ -4,105 +4,85 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    MinHeight="200"
+    MinWidth="200"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <ScrollViewer>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <VariableSizedWrapGrid ItemWidth="250" ItemHeight="180" Orientation="Horizontal" Margin="20,30,10,10">
-                <Button Style="{StaticResource HomeButtonStyle}" ToolTipService.ToolTip="See full change log">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Version:" Grid.Row="0"/>
-                        <TextBlock x:Name="versionTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                    </Grid>
-                </Button>
+            <Button Style="{StaticResource NavigationBackButtonStyle}" Click="Button_Click"/>
 
-                <Button Style="{StaticResource HomeButtonStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Release type:" Grid.Row="0"/>
-                        <TextBlock x:Name="buildTypeTextBlock" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                    </Grid>
-                </Button>
+            <Grid RowSpacing="20" Margin="30,0,30,10" Grid.Column="1" Grid.Row="1">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="IsTextSelectionEnabled" Value="True"/>
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                    </Style>
+                </Grid.Resources>
 
-                <Button Style="{StaticResource HomeButtonStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="#README" Grid.Row="0"/>
-                        <TextBlock Text="GitHub" Grid.Row="1" Style="{StaticResource HomeTitleTextBlockStyle}"/>
-                    </Grid>
-                </Button>
-            </VariableSizedWrapGrid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <ListView x:Name="updateNotesListView" SelectionMode="None" Grid.Row="1" Margin="10,50,0,20" ScrollViewer.CanContentRenderOutsideBounds="False">
-                <ListView.Header>
-                    <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="What's new" Margin="10,0,0,10"/>
-                </ListView.Header>
+                <ListView
+                    Background="{ThemeResource ExpanderBackground}" 
+                    SelectionMode="None"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Grid.Row="0"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
+                    <ListView.Header>
+                        <TextBlock Text="What's new" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
+                    </ListView.Header>
 
-                <ListViewHeaderItem/>
-                <TextBlock Margin="0,0,0,20" Text="General" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                <TextBlock Text="- Notifications displayed in the window are now queued, so that they don't overlap themselves."/>
-                <TextBlock Text="- A new page is available ! The drive page allows you to see info about your drives."/>
-                <TextBlock Text="- App title now changes with the currently loaded page."/>
-                <TextBlock Text="- Added option (in settings) to load or not the last used page."/>
-                <TextBlock Text="- Added custom title bar, if the system supports it."/>
-                <TextBlock Text="- Added update notes !"/>
+                    <x:String>Added new search feature using regular expressions (system wide, multithreaded).</x:String>
+                    <x:String>Added system health view.</x:String>
+                    <x:String>Added file actions (cut, copy, delete, rename) for multiple items with right click.</x:String>
+                    <x:String>Updated settings to be easier to navigate.</x:String>
+                    <x:String>Side navigation view for libraries (work in progress).</x:String>
+                    <x:String>Now saving application theme (dark, light, system setting/default).</x:String>
+                </ListView>
 
+                <ListView
+                    Background="{ThemeResource ExpanderBackground}" 
+                    SelectionMode="None"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Grid.Row="1"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
+                    <ListView.Header>
+                        <TextBlock Text="Fixes" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
+                    </ListView.Header>
 
-                <ListViewHeaderItem/>
-                <TextBlock Margin="0,0,0,20" Text="Explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                <TextBlock Text="- Updated path completion to include drives."/>
-                <TextBlock Text="- Fixed completion from selecting items in the drop down (not for drives using arrow keys)."/>
-                <TextBlock Text="- Added directory size display (and directory size calculation progress)."/>
-                <TextBlock Text="- Added tab support (saved from session to session)."/>
-                <TextBlock Text="- Added possibility to pin directories."/>
-                <TextBlock Text="- Added back and forth navigation."/>
-                
+                    <x:String>Fixed application crash when open a directory before all current directory size have been calculated.</x:String>
+                    <x:String>Fixed application rendering/appearing outside of the display bounds.</x:String>
+                </ListView>
 
-                <ListViewHeaderItem/>
-                <TextBlock Margin="0,0,0,20" Text="Twitch chat" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                <TextBlock Text="- Fixed tab view."/>
-                <TextBlock Text="- Added tab persistency between sessions."/>
+                <ListView 
+                    SelectionMode="None" 
+                    Grid.Row="2"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Background="{ThemeResource ExpanderBackground}"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
+                    <ListView.Header>
+                        <TextBlock Text="Known issues" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
+                    </ListView.Header>
 
-
-                <ListViewHeaderItem/>
-                <TextBlock Margin="0,0,0,20" Text="Drives explorer" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                <TextBlock Text="- Smart health: temperature, power on hours."/>
-                <TextBlock Text="- Drive size, name, free space, type, filesystem type (NTFS, FAT...), serial number."/>
-                <TextBlock Text="For NVMe drives." Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                <TextBlock Text="- Controller informations: PCI vendor ID, PCI subsystem vendor ID, serial number, model number/name, firmware revision, RAB, resume and entry latency."/>
-
-
-                <ListViewHeaderItem/>
-                <TextBlock Margin="0,0,0,20" Text="Power plans" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                <TextBlock Text="- Power plans can be changed."/>
-            </ListView>
-
-            <ListView SelectionMode="None" Grid.Row="2" Margin="10,50,0,20" ScrollViewer.CanContentRenderOutsideBounds="True">
-                <ListView.Header>
-                    <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Known issues" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                </ListView.Header>
-
-                <ListViewHeaderItem/>
-                <TextBlock Text="- Application may crash on window close when using Twich page (some settings of this page may be lost when this happens)."/>
-                <TextBlock Text="- Scrolling through a long list may cause the application to crash."/>
-                <TextBlock Text="- Application becomes unresponsive when loading directory with a lot of files (Explorer page)."/>
-            </ListView>
+                    <x:String>Scrolling through a long list may cause the application to crash.</x:String>
+                    <x:String>Application becomes unresponsive when loading a directory with a lot of files.</x:String>
+                    <x:String>Application may crash after sorting if the number of files is large (> 5000).</x:String>
+                </ListView>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </Page>

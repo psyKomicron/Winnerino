@@ -5,29 +5,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml" />
-    <Page Include="TwitchPage2.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerControllerView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
-    <Page Include="WidgetsPage.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="LuminosityControllerView.xaml">
-      <Filter>Controls</Filter>
-    </Page>
     <Page Include="SettingsPage.xaml">
       <Filter>Pages</Filter>
     </Page>
     <Page Include="MainPage.xaml">
       <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerModePage.xaml">
-      <Filter>Pages</Filter>
-    </Page>
-    <Page Include="PowerPlanViewModel2.xaml">
-      <Filter>Controls</Filter>
     </Page>
     <Page Include="ExplorerPage.xaml">
       <Filter>Pages</Filter>
@@ -41,18 +23,29 @@
     <Page Include="LibraryTabView.xaml">
       <Filter>Controls</Filter>
     </Page>
-    <Page Include="DrivesPage.xaml">
+    <Page Include="FilePropertiesWindow.xaml" />
+    <Page Include="TabViewItemHeader.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="AppExpanderHeader.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="FileLargeView.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="AdditionalSettingsPage.xaml">
       <Filter>Pages</Filter>
     </Page>
-    <Page Include="DriveView.xaml">
+    <Page Include="SystemHealthView.xaml">
       <Filter>Controls</Filter>
     </Page>
-    <Page Include="WebTab.xaml">
+    <Page Include="LargeProgressBar.xaml">
       <Filter>Controls</Filter>
     </Page>
-    <Page Include="ChatView.xaml">
+    <Page Include="DriveHealthView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="FileSearchWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -64,32 +57,62 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="LuminosityController.cpp">
-      <Filter>Common\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="PowerController.cpp">
-      <Filter>Common\Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="MessageData.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="DirectoryEnumerator.cpp">
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
     <ClCompile Include="DirectorySizeCalculator.cpp">
-      <Filter>Common</Filter>
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartInfo.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartDevice.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSearcher.cpp">
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="FileInfo.cpp">
+      <Filter>Common\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSearcher2.cpp">
+      <Filter>Common\Storage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="LuminosityController.h">
-      <Filter>Common\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="PowerController.h">
-      <Filter>Common\Controllers</Filter>
-    </ClInclude>
     <ClInclude Include="MessageData.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="DirectorySizeCalculator.h">
+    <ClInclude Include="QuickSort.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectoryEnumerator.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectorySizeCalculator.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartInfo.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartDevice.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSearcher.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="FileInfo.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSearcher2.h">
+      <Filter>Common\Storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,8 +128,11 @@
     <Filter Include="Common">
       <UniqueIdentifier>{9dea2b9b-e44c-44d0-908b-3bcbcca314c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Controllers">
-      <UniqueIdentifier>{5913282b-63a2-4812-b8cf-aaa562a06d50}</UniqueIdentifier>
+    <Filter Include="Common\Devices">
+      <UniqueIdentifier>{8293f02c-c3e7-4775-9901-f3ca1ace72ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Storage">
+      <UniqueIdentifier>{173094b5-b6cf-4000-9c38-a81c2a75cea6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,8 +145,5 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Resources.resw" />
   </ItemGroup>
 </Project>

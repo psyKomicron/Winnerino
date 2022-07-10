@@ -1,9 +1,0 @@
-namespace Winnerino
-{
-    [default_interface]
-    runtimeclass WebTab : Microsoft.UI.Xaml.Controls.UserControl
-    {
-        WebTab();
-        WebTab(String path, Microsoft.UI.Xaml.Controls.TabViewItem tab);
-    }
-}

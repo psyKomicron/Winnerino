@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props')" />
-  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props')" />
-  <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props')" />
+  <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.props')" />
+  <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.props')" />
+  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.props')" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
@@ -116,27 +116,30 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <UACExecutionLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">RequireAdministrator</UACExecutionLevel>
+      <EnableUAC Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChatView.xaml.h">
-      <DependentUpon>ChatView.xaml</DependentUpon>
+    <ClInclude Include="AdditionalSettingsPage.xaml.h">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="AppExpanderHeader.xaml.h">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="DirectoryEnumerator.h" />
     <ClInclude Include="DirectorySizeCalculator.h" />
+    <ClInclude Include="DriveHealthView.xaml.h">
+      <DependentUpon>DriveHealthView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="DriveSearchModel.h">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="DrivesPage.xaml.h">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="DriveView.xaml.h">
-      <DependentUpon>DriveView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ExplorerPage.xaml.h">
@@ -147,17 +150,32 @@
       <DependentUpon>FileEntryView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="FileInfo.h" />
+    <ClInclude Include="FileLargeView.xaml.h">
+      <DependentUpon>FileLargeView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="FilePropertiesWindow.xaml.h">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="FileSearcher.h" />
+    <ClInclude Include="FileSearcher2.h" />
+    <ClInclude Include="FileSearchWindow.xaml.h">
+      <DependentUpon>FileSearchWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="FileTabView.xaml.h">
       <DependentUpon>FileTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="LibraryTabView.xaml.h">
-      <DependentUpon>LibraryTabView.xaml</DependentUpon>
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="LargeProgressBar.xaml.h">
+      <DependentUpon>LargeProgressBar.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="LuminosityController.h" />
-    <ClInclude Include="LuminosityControllerView.xaml.h">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
+    <ClInclude Include="LibraryTabView.xaml.h">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="MainPage.xaml.h">
@@ -172,45 +190,31 @@
     <ClInclude Include="MainWindow.xaml.h">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="PowerController.h" />
-    <ClInclude Include="PowerControllerView.xaml.h">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="PowerModePage.xaml.h">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="PowerPlanViewModel2.xaml.h">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
+    <ClInclude Include="QuickSort.h" />
     <ClInclude Include="SettingsPage.xaml.h">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="TwitchPage2.xaml.h">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
+    <ClInclude Include="SmartDevice.h" />
+    <ClInclude Include="SmartInfo.h" />
+    <ClInclude Include="SystemHealthView.xaml.h">
+      <DependentUpon>SystemHealthView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="WebTab.xaml.h">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="WidgetsPage.xaml.h">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
+    <ClInclude Include="TabViewItemHeader.xaml.h">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
-    <Page Include="ChatView.xaml">
+    <Page Include="AdditionalSettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DrivesPage.xaml">
+    <Page Include="AppExpanderHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DriveView.xaml">
+    <Page Include="DriveHealthView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ExplorerPage.xaml">
@@ -219,57 +223,55 @@
     <Page Include="FileEntryView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="FileLargeView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FilePropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FileSearchWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="FileTabView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="LibraryTabView.xaml">
+    <Page Include="LargeProgressBar.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="LuminosityControllerView.xaml">
+    <Page Include="LibraryTabView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml" />
-    <Page Include="PowerControllerView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PowerModePage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PowerPlanViewModel2.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TwitchPage2.xaml">
+    <Page Include="SystemHealthView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="WebTab.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WidgetsPage.xaml">
+    <Page Include="TabViewItemHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChatView.xaml.cpp">
-      <DependentUpon>ChatView.xaml</DependentUpon>
+    <ClCompile Include="AdditionalSettingsPage.xaml.cpp">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="AppExpanderHeader.xaml.cpp">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="DirectoryEnumerator.cpp" />
     <ClCompile Include="DirectorySizeCalculator.cpp" />
+    <ClCompile Include="DriveHealthView.xaml.cpp">
+      <DependentUpon>DriveHealthView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="DriveSearchModel.cpp">
       <DependentUpon>DriveSearchModel.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="DrivesPage.xaml.cpp">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="DriveView.xaml.cpp">
-      <DependentUpon>DriveView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ExplorerPage.xaml.cpp">
@@ -280,17 +282,31 @@
       <DependentUpon>FileEntryView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="FileInfo.cpp" />
+    <ClCompile Include="FileLargeView.xaml.cpp">
+      <DependentUpon>FileLargeView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="FilePropertiesWindow.xaml.cpp">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="FileSearcher.cpp" />
+    <ClCompile Include="FileSearcher2.cpp" />
+    <ClCompile Include="FileSearchWindow.xaml.cpp">
+      <DependentUpon>FileSearchWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="FileTabView.xaml.cpp">
       <DependentUpon>FileTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="LibraryTabView.xaml.cpp">
-      <DependentUpon>LibraryTabView.xaml</DependentUpon>
+    <ClCompile Include="LargeProgressBar.xaml.cpp">
+      <DependentUpon>LargeProgressBar.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="LuminosityController.cpp" />
-    <ClCompile Include="LuminosityControllerView.xaml.cpp">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
+    <ClCompile Include="LibraryTabView.xaml.cpp">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="MainPage.xaml.cpp">
@@ -308,55 +324,40 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="PowerController.cpp" />
-    <ClCompile Include="PowerControllerView.xaml.cpp">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="PowerModePage.xaml.cpp">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="PowerPlanViewModel2.xaml.cpp">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="SettingsPage.xaml.cpp">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="TwitchPage2.xaml.cpp">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
+    <ClCompile Include="SmartDevice.cpp" />
+    <ClCompile Include="SmartInfo.cpp" />
+    <ClCompile Include="SystemHealthView.xaml.cpp">
+      <DependentUpon>SystemHealthView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="WebTab.xaml.cpp">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="WidgetsPage.xaml.cpp">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
+    <ClCompile Include="TabViewItemHeader.xaml.cpp">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="AdditionalSettingsPage.idl">
+      <DependentUpon>AdditionalSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="App.idl">
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
-    <Midl Include="ChatView.idl">
-      <DependentUpon>ChatView.xaml</DependentUpon>
+    <Midl Include="AppExpanderHeader.idl">
+      <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="DriveHealthView.idl">
+      <DependentUpon>DriveHealthView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="DriveSearchModel.idl">
       <SubType>Designer</SubType>
-    </Midl>
-    <Midl Include="DrivesPage.idl">
-      <DependentUpon>DrivesPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="DriveView.idl">
-      <DependentUpon>DriveView.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Midl>
     <Midl Include="ExplorerPage.idl">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
@@ -366,16 +367,28 @@
       <DependentUpon>FileEntryView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
+    <Midl Include="FileLargeView.idl">
+      <DependentUpon>FileLargeView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="FilePropertiesWindow.idl">
+      <DependentUpon>FilePropertiesWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="FileSearchWindow.idl">
+      <DependentUpon>FileSearchWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="FileTabView.idl">
       <DependentUpon>FileTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="LibraryTabView.idl">
-      <DependentUpon>LibraryTabView.xaml</DependentUpon>
+    <Midl Include="LargeProgressBar.idl">
+      <DependentUpon>LargeProgressBar.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="LuminosityControllerView.idl">
-      <DependentUpon>LuminosityControllerView.xaml</DependentUpon>
+    <Midl Include="LibraryTabView.idl">
+      <DependentUpon>LibraryTabView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="MainPage.idl">
@@ -386,32 +399,16 @@
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Midl>
-    <Midl Include="PowerControllerView.idl">
-      <DependentUpon>PowerControllerView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="PowerModePage.idl">
-      <DependentUpon>PowerModePage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="PowerPlanViewModel2.idl">
-      <DependentUpon>PowerPlanViewModel2.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="TwitchPage2.idl">
-      <DependentUpon>TwitchPage2.xaml</DependentUpon>
+    <Midl Include="SystemHealthView.idl">
+      <DependentUpon>SystemHealthView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="WebTab.idl">
-      <DependentUpon>WebTab.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="WidgetsPage.idl">
-      <DependentUpon>WidgetsPage.xaml</DependentUpon>
+    <Midl Include="TabViewItemHeader.idl">
+      <DependentUpon>TabViewItemHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>
@@ -423,26 +420,25 @@
       <DeploymentContent>false</DeploymentContent>
     </Text>
   </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Resources.resw" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" />
-    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.25131-preview\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.25131-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.targets')" />
+    <Import Project="..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22598-preview\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220418.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.0-preview2\build\native\Microsoft.WindowsAppSDK.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.25131-preview\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.25131-preview\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220608.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.SDK.BuildTools.10.0.22621.1\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.1.2\build\native\Microsoft.WindowsAppSDK.targets'))" />
   </Target>
 </Project>

@@ -1,15 +1,17 @@
 ﻿#include "pch.h"
-#include "App.xaml.h"
 #include "SettingsPage.xaml.h"
-#include "MainWindow.xaml.h"
 #if __has_include("SettingsPage.g.cpp")
 #include "SettingsPage.g.cpp"
 #endif
-using namespace winrt::Windows::Data::Xml::Dom;
+
+#include "App.xaml.h"
+#include "MainWindow.xaml.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
@@ -24,12 +26,15 @@ namespace winrt::Winnerino::implementation
     SettingsPage::SettingsPage()
     {
         InitializeComponent();
-        InitSettings();
-    }
+        PackageVersion version = Package::Current().Id().Version();
+        AppVersionTextBlock().Text(L"Version " + to_hstring(version.Major) + L"." + to_hstring(version.Minor) + L"." + to_hstring(version.Build));
+        hstring github = L"https://github.com/psykomicron/Winnerino";
+        GithubHyperlinkButton().NavigateUri(Uri{ github });
 
-    Uri SettingsPage::GithubUri()
-    {
-        return Windows::Foundation::Uri{ L"https://github.com/psykomicron/" };
+        SetLayout(MainWindow::Current().Size().Width);
+        mainWindowSizeChanged = MainWindow::Current().SizeChanged({ this, &SettingsPage::Window_SizeChanged });
+
+        InitSettings();
     }
 
     hstring SettingsPage::getCompactModeTooltip()
@@ -40,205 +45,129 @@ namespace winrt::Winnerino::implementation
 #pragma region Event handlers
     void SettingsPage::settingSearch_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_SuggestionChosen(AutoSuggestBox const&, AutoSuggestBoxSuggestionChosenEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_TextChanged(AutoSuggestBox const&, AutoSuggestBoxTextChangedEventArgs const&)
     {
-
     }
 
     void SettingsPage::settingSearch_GotFocus(IInspectable const&, RoutedEventArgs const&)
     {
-
-    }
-
-    IAsyncAction SettingsPage::openSettingsFile_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        auto result = co_await contentDialog().ShowAsync();
-        if (result == ContentDialogResult::Primary)
-        {
-            MainWindow::Current().NotifyUser(L"Exporting settings...", InfoBarSeverity::Informational);
-
-            IMapView<hstring, ApplicationDataContainer> containersMap = ApplicationData::Current().LocalSettings().Containers();
-            size_t max = containersMap.Size();
-            if (max > 0)
-            {
-                XmlDocument doc{};
-                for (auto pair : containersMap)
-                {
-                    XmlElement element = doc.CreateElement(pair.Key());
-                    IPropertySet values = pair.Value().Values();
-                    for (IKeyValuePair<hstring, IInspectable> propSet : values)
-                    {
-                        ApplicationDataCompositeValue composite = propSet.Value().try_as<ApplicationDataCompositeValue>();
-                        if (composite)
-                        {
-                            XmlElement compositeValue = doc.CreateElement(propSet.Key());
-                            element.AppendChild(compositeValue);
-                            for (IKeyValuePair<hstring, IInspectable> compositePair : composite)
-                            {
-
-                            }
-                        }
-                    }
-
-                    //element.NodeValue()
-                }
-
-                // creating file
-                StorageFolder documents = KnownFolders::DocumentsLibrary();
-                StorageFile file = co_await documents.CreateFileAsync(L"Exported settings", CreationCollisionOption::GenerateUniqueName);
-                IRandomAccessStream stream = co_await file.OpenAsync(FileAccessMode::ReadWrite);
-                DataWriter writer{ stream.GetOutputStreamAt(0) };
-
-                co_await writer.StoreAsync();
-                if (!co_await writer.FlushAsync())
-                {
-                    MainWindow::Current().NotifyUser(L"Failed to export settings", InfoBarSeverity::Error);
-                }
-            }
-        }
-    }
-
-    void SettingsPage::darkThemeButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        SwitchTheme(ElementTheme::Dark);
-    }
-
-    void SettingsPage::lightThemeButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        SwitchTheme(ElementTheme::Light);
-    }
-
-    void SettingsPage::defaultThemeButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        SwitchTheme(ElementTheme::Default);
-    }
-
-    IAsyncAction SettingsPage::appDataFolderHyperlink_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        try
-        {
-            co_await Launcher::LaunchFolderAsync(ApplicationData::Current().LocalFolder());
-        }
-        catch (hresult_error const& ex)
-        {
-            MainWindow::Current().NotifyUser(L"Failed to open appdata folder.", InfoBarSeverity::Warning);
-        }
-    }
-
-    void SettingsPage::appSettingsFolderHyperlink_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        // Serialize all settings into a data type file and open it for the user ?
-
-    }
-
-    IAsyncAction SettingsPage::tempDataFolderHyperlink_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        try
-        {
-            co_await Launcher::LaunchFolderAsync(ApplicationData::Current().TemporaryFolder());
-        }
-        catch (hresult_error const& ex)
-        {
-            MainWindow::Current().NotifyUser(L"Failed to open app temp folder.", InfoBarSeverity::Warning);
-        }
-    }
-
-    void SettingsPage::clearTempFolderButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-
-    }
-
-    void SettingsPage::clearSecureSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-
-    }
-
-    void SettingsPage::resetSettingsFile_Click(IInspectable const& sender, RoutedEventArgs const&)
-    {
-        ApplicationData::Current().LocalSettings().Values().Clear();
-    }
-
-    void SettingsPage::compactOverlayToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
-    {
-        Winnerino::MainWindow window = Winnerino::MainWindow::Current();
-        window.NotifyUser(L"Compact mode switched on", InfoBarSeverity::Informational);
-    }
-
-    void SettingsPage::UseSpecificLayoutToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
-        container.Values().Insert(L"UseSpecificLayout", box_value(UseSpecificLayoutToggleSwitch().IsOn()));
-    }
-
-    void SettingsPage::UseAnimatedEmotesToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"TwitchSettings");
-        container.Values().Insert(L"UseAnimatedEmotes", box_value(UseAnimatedEmotesToggleSwitch().IsOn()));
     }
 
     void SettingsPage::ShowSpecialsFolderToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsOn()));
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
+        container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsChecked()));
     }
 
     void SettingsPage::CalculateDirectorySizeToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsOn()));
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
+        container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsChecked()));
     }
 
-    void SettingsPage::loadLastPageToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
+    void SettingsPage::UseThumbnailsToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        auto values = ApplicationData::Current().LocalSettings().Values();
-        values.Insert(L"LoadLastPage", box_value(LoadLastPageToggleSwitch().IsOn()));
+    }
+
+    void winrt::Winnerino::implementation::SettingsPage::GoBackButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
+    {
+        MainWindow::Current().GoBack();
+    }
+
+    void SettingsPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        MainWindow::Current().SizeChanged(mainWindowSizeChanged);
+    }
+
+    void SettingsPage::AdditionalSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        MainWindow::Current().NavigateTo(xaml_typename<AdditionalSettingsPage>());
+    }
+
+    void SettingsPage::NewContentButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        MainWindow::Current().NavigateTo(xaml_typename<MainPage>());
     }
 #pragma endregion
 
-    void SettingsPage::SwitchTheme(winrt::Microsoft::UI::Xaml::ElementTheme const& requestedTheme)
-    {
-        darkThemeButton().IsChecked(requestedTheme == ElementTheme::Dark);
-        lightThemeButton().IsChecked(requestedTheme == ElementTheme::Light);
-        defaultThemeButton().IsChecked(requestedTheme == ElementTheme::Default);
-
-        MainWindow::Current().ChangeTheme(requestedTheme);
-    }
 
     void SettingsPage::InitSettings()
     {
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
-
-        IInspectable inspectable = settings.Values().TryLookup(L"LoadLastPage");
-        LoadLastPageToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, true));
-        inspectable = settings.Values().TryLookup(L"AppTheme");
-        SwitchTheme(unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default));
-
-        // Twitch
-        ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"TwitchSettings");
-        inspectable = specificSettings.Values().TryLookup(L"UseSpecificLayout");
-        UseSpecificLayoutToggleSwitch().IsOn(unbox_value_or(inspectable, false));
-        inspectable = specificSettings.Values().TryLookup(L"UseAnimatedEmotes");
-        UseAnimatedEmotesToggleSwitch().IsOn(unbox_value_or(inspectable, true));
-        inspectable = specificSettings.Values().TryLookup(L"ChatMention");
-        ChatMentionTextBlock().Text(unbox_value_or<hstring>(inspectable, L""));
-        inspectable = specificSettings.Values().TryLookup(L"EmoteSize");
-        EmoteSizeSlider().Value(unbox_value_or<uint8_t>(inspectable, 0));
-        inspectable = specificSettings.Values().TryLookup(L"ChatLength");
-        ChatLengthSlider().Value(unbox_value_or<uint16_t>(inspectable, 500));
-
         // Explorer
-        specificSettings = settings.Containers().TryLookup(L"Explorer");
-        inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
-        ShowSpecialsFolderToggleSwitch().IsOn(unbox_value_or<bool>(inspectable, false));
-        inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
-        CalculateDirectorySizeToggleSwitch().IsOn(unbox_value_or(inspectable, true));
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
+        ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
+        if (specificSettings)
+        {
+            IInspectable inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
+            ShowSpecialsFolderToggleSwitch().IsChecked(unbox_value_or<bool>(inspectable, false));
+            inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
+            CalculateDirectorySizeToggleSwitch().IsChecked(unbox_value_or(inspectable, true));
+        }
+        else
+        {
+            ShowSpecialsFolderToggleSwitch().IsChecked(false);
+            CalculateDirectorySizeToggleSwitch().IsChecked(true);
+        }
+    }
+
+    void SettingsPage::SetLayout(float const& width)
+    {
+        if (width < 800)
+        {
+            if (Grid::GetRow(AboutGrid()) != 2)
+            {
+                Grid::SetRow(AboutGrid(), 2);
+            }
+
+            if (Grid::GetColumn(AboutGrid()) != 0)
+            {
+                Grid::SetColumn(AboutGrid(), 0);
+                Grid::SetColumnSpan(AboutGrid(), 2);
+            }
+
+            if (Grid::GetColumnSpan(SettingsGrid()) != 2)
+            {
+                Grid::SetColumnSpan(SettingsGrid(), 2);
+                Grid::SetRowSpan(SettingsGrid(), 1);
+            }
+        }
+        else
+        {
+            if (Grid::GetRow(AboutGrid()) != 0)
+            {
+                Grid::SetRow(AboutGrid(), 0);
+            }
+
+            if (Grid::GetColumn(AboutGrid()) != 1)
+            {
+                Grid::SetColumn(AboutGrid(), 1);
+                Grid::SetColumnSpan(AboutGrid(), 1);
+            }
+
+            if (Grid::GetColumnSpan(SettingsGrid()) != 1)
+            {
+                Grid::SetColumnSpan(SettingsGrid(), 1);
+                Grid::SetRowSpan(SettingsGrid(), 2);
+            }
+        }
+    }
+
+    void SettingsPage::Window_SizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args)
+    {
+        SetLayout(args.Size().Width);
     }
 }

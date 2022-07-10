@@ -1,0 +1,48 @@
+﻿<UserControl
+    x:Class="Winnerino.FileLargeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Winnerino"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Margin="5"
+    PointerPressed="UserControl_PointerPressed">
+
+    <Grid PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <AddDeleteThemeTransition/>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid Background="{x:Bind Background, Mode=OneWay}" Padding="15" CornerRadius="{StaticResource ControlCornerRadius}" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Image x:Name="Thumbnail" Stretch="Uniform" Height="120" VerticalAlignment="Stretch"/>
+            <ProgressRing x:Name="ImageProgressRing" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <TextBlock x:Name="FileName" MaxHeight="20" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom" Grid.Row="1"/>
+        </Grid>
+
+        <Grid x:Name="OverlayGrid" Grid.Row="0" Padding="15" CornerRadius="{StaticResource ControlCornerRadius}" Visibility="Collapsed" Opacity="0">
+            <Grid.OpacityTransition>
+                <ScalarTransition Duration="00:00:00.16"/>
+            </Grid.OpacityTransition>
+            <Grid.Background>
+                <AcrylicBrush TintColor="{ThemeResource SurfaceStrokeColorFlyout}" TintLuminosityOpacity="0.16" Opacity="0.970"/>
+            </Grid.Background>
+
+            <ListView x:Name="AttributesListView" SelectionMode="None"/>
+        </Grid>
+    </Grid>
+</UserControl>

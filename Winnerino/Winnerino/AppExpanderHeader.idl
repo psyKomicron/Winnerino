@@ -1,0 +1,11 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass AppExpanderHeader : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        AppExpanderHeader();
+        String Glyph;
+        String Title;
+        String Subtitle;
+    }
+}

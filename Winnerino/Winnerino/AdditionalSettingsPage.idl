@@ -1,0 +1,8 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass AdditionalSettingsPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        AdditionalSettingsPage();
+    }
+}

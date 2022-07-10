@@ -1,0 +1,8 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass FilePropertiesWindow : Microsoft.UI.Xaml.Window
+    {
+        FilePropertiesWindow();
+    }
+}

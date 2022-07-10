@@ -1,9 +1,13 @@
 namespace Winnerino
 {
     [default_interface]
-    runtimeclass FileTabView : Microsoft.UI.Xaml.Controls.UserControl
+    runtimeclass FileTabView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         FileTabView();
-    FileTabView(String path);
+        FileTabView(String path);
+
+        String ItemCount{ get; };
+        String SelectedItemsCount{ get; };
+        Windows.Foundation.Collections.IObservableVector<Microsoft.UI.Xaml.FrameworkElement> Files{ get; };
     }
 }

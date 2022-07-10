@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "MessageData.h"
+#include "QuickSort.h"
 
 namespace winrt::Winnerino
 {

@@ -4,11 +4,22 @@ namespace Winnerino
     runtimeclass FileEntryView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         FileEntryView();
-    FileEntryView(String cFileName, String path, Int64 fileSize, Int64 attributes);
+        FileEntryView(String cFileName, String path, UInt64 fileSize, Int64 attributes);
+        FileEntryView(String path);
 
-    String FileName{ get; };
-    String FilePath{ get; };
-    String FileIcon{ get; };
-    Boolean IsDirectory{ get; };
+        String FileName{ get; };
+        String FilePath{ get; };
+        String FileIcon{ get; };
+        String FileSize{ get; };
+        Boolean IsDirectory{ get; };
+        String OpensWith{ get; };
+        UInt64 FileBytes{ get; };
+        String PerceivedType{ get; };
+        Windows.Foundation.DateTime LastWrite{ get; set; };
+        Boolean IsFileDangerous{ get; };
+        Boolean ShowFilePath{ get; set; };
+
+        void Delete();
+        Windows.Foundation.IAsyncAction Rename(String newName, Boolean generateUniqueName);
     }
 }

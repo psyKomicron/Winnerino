@@ -1,17 +1,22 @@
 ﻿#pragma once
-#include <windows.h>
-#include <unknwn.h>
-#include <restrictederrorinfo.h>
-#include <system_error>
 #include <hstring.h>
 #include <memory>
 #include <ppltasks.h>
+#include <restrictederrorinfo.h>
+#include <string>
+#include <system_error>
+#include <unknwn.h>
+#include <windows.h>
 
 // Undefine GetCurrentTime macro to prevent
 // conflict with Storyboard::GetCurrentTime
 #undef GetCurrentTime
 
+#include <dispatcherqueue.h>
+#include <microsoft.ui.xaml.window.h>
+
 #include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Documents.h>
@@ -28,18 +33,20 @@
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
 
-#include <microsoft.ui.xaml.window.h>
-
-#include "winrt/Windows.ApplicationModel.DataTransfer.h"
+#include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Globalization.DateTimeFormatting.h>
+#include <winrt/Windows.UI.Notifications.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
-#include "winrt/Windows.Security.Cryptography.h"
-#include "winrt/Windows.Security.Cryptography.Core.h"
+#include <winrt/Windows.UI.Xaml.Media.Animation.h>
+#include <winrt/Windows.Security.Cryptography.h>
+#include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
@@ -50,3 +57,6 @@
 #pragma comment(lib, "Dxva2.lib")
 #pragma comment(lib, "Kernel32.lib")
 #pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Shell32.lib")
+
+constexpr int16_t ALTERNATE_MAX_PATH = 2048;

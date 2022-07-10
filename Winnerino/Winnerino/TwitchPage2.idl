@@ -1,9 +1,0 @@
-namespace Winnerino
-{
-    [default_interface]
-    runtimeclass TwitchPage2 : Microsoft.UI.Xaml.Controls.Page
-    {
-        TwitchPage2();
-        
-    }
-}

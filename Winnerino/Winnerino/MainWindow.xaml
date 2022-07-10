@@ -9,12 +9,13 @@
 
     <Grid x:Name="contentGrid" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32" MinHeight="32"/>
+            <RowDefinition Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="titleBarGrid" Grid.Row="0">
+        <Grid x:Name="titleBarGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="34"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -27,12 +28,20 @@
                 Grid.Column="0"/>
             <TextBlock
                 x:Name="loadedPageText"
+                Text="Winnerino"
                 Style="{StaticResource CaptionTextBlockStyle}"
                 VerticalAlignment="Center"
                 Grid.Column="1"/>
+            <TextBlock 
+                x:Name="VersionTextBlock" 
+                Style="{StaticResource CaptionTextBlockStyle}" 
+                Margin="7,0"
+                VerticalAlignment="Center"
+                Opacity="0.6"
+                Grid.Column="2"/>
         </Grid>
-        
-        <Grid Background="{ThemeResource PageBackgroundBrush}" Grid.Row="1">
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -45,73 +54,9 @@
                 </TransitionCollection>
             </Grid.Transitions>
 
-            <InfoBar x:Name="infoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="infoBar_Closed"/>
+            <InfoBar x:Name="NotifInfoBar" IsClosable="True" Grid.Row="0" Padding="0" Closed="InfoBar_Closed"/>
 
-            <NavigationView
-                x:Name="navigationView"
-                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-                IsPaneOpen="False"
-                PaneDisplayMode="LeftCompact"
-                Grid.Row="1"
-                Loaded="navigationView_Loaded"
-                ItemInvoked="navigationView_ItemInvoked">
-                <NavigationView.MenuItems>
-                    <NavigationViewItem Tag="Home" Icon="Home" Content="Home"/>
-
-                    <NavigationViewItem Tag="Widgets" Content="Widgets">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE74C;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <NavigationViewItem Tag="Power" Content="Power modes">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE7E8;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <!--#region Twitch -->
-                    <NavigationViewItemHeader Content="Twitch"/>
-                    <NavigationViewItem Tag="Twitch" Content="Twitch">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE8AA;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                    <NavigationViewItem Tag="Chat" Content="Chat">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xE8F2;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <!--#endregion-->
-
-                    <NavigationViewItemHeader Content="Explorer"/>
-                    <NavigationViewItem Tag="Explorer" Content="Explorer Page">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xEC50;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Tag="Drives" Content="Drives explorer">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xeda2;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-                </NavigationView.MenuItems>
-
-                <Frame x:Name="contentFrame"></Frame>
-            </NavigationView>
+            <Frame x:Name="ContentFrame" Grid.Row="1" Loaded="View_Loaded" NavigationFailed="ContentFrame_NavigationFailed"></Frame>
         </Grid>
-
-        <TextBlock
-            Text="Developper build" 
-            Opacity="0.2" 
-            FontStretch="Expanded" 
-            FontWeight="Light" 
-            FontSize="12" 
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Margin="0,0,5,5"
-            Grid.Row="1"/>
     </Grid>
 </Window>

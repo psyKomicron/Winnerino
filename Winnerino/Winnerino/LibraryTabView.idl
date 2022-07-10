@@ -4,6 +4,6 @@ namespace Winnerino
     runtimeclass LibraryTabView : Microsoft.UI.Xaml.Controls.UserControl
     {
         LibraryTabView();
-        Int32 MyProperty;
+        LibraryTabView(String tag);
     }
 }

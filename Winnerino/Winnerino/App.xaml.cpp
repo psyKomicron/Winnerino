@@ -2,14 +2,15 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include "DirectorySizeCalculator.h"
+#include "FilePropertiesWindow.xaml.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::UI::Xaml::Navigation;
-using namespace Winnerino;
-using namespace Winnerino::implementation;
+using namespace winrt::Winnerino::implementation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -20,6 +21,7 @@ using namespace Winnerino::implementation;
 /// </summary>
 App::App()
 {
+    
     InitializeComponent();
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
@@ -43,6 +45,15 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
+#if TRUE
     window = make<MainWindow>();
     window.Activate();
+#endif // !_DEBUG
+
+
+#if _DEBUG && FALSE
+    Window testWindow = make<FilePropertiesWindow>();
+    testWindow.Activate();
+#endif // _DEBUG
+
 }

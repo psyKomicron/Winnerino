@@ -1,13 +1,12 @@
 #pragma once
 #include <string>
 
-namespace winrt::Winnerino
+using namespace winrt;
+
+namespace Winnerino::Storage
 {
     class DirectorySizeCalculator
     {
-    private:
-        event<Windows::Foundation::TypedEventHandler<Windows::Foundation::IInspectable, Windows::Foundation::IReference<uint_fast64_t>>> m_event;
-
     public:
         DirectorySizeCalculator() = default;
 
@@ -20,11 +19,12 @@ namespace winrt::Winnerino
             m_event.remove(token);
         };
 
-        uint_fast64_t getSize(hstring const& path, bool parallelize = false);
+        uint_fast64_t GetSize(hstring const& path, bool parallelize = false);
 
     private:
-        inline uint_fast64_t convertSize(DWORD const& high, DWORD const& low);
-        inline void raiseProgress(uint_fast64_t newSize);
+        winrt::event<Windows::Foundation::TypedEventHandler<Windows::Foundation::IInspectable, Windows::Foundation::IReference<uint_fast64_t>>> m_event;
+
+        inline void RaiseProgress(uint_fast64_t newSize);
     };
 }
 
