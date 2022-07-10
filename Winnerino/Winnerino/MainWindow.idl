@@ -7,6 +7,8 @@ namespace Winnerino
 
         static Winnerino.MainWindow Current{ get; };
         Windows.Foundation.Size Size{ get; };
+        Windows.Graphics.PointInt32 Position{ get; };
+        Microsoft.UI.WindowId Id{ get; };
 
         void NotifyUser(String message, Microsoft.UI.Xaml.Controls.InfoBarSeverity severity);
         void NotifyError(Int32 code);
@@ -15,5 +17,7 @@ namespace Winnerino
         Boolean NavigateTo(Windows.UI.Xaml.Interop.TypeName typeName);
         Boolean NavigateTo(Windows.UI.Xaml.Interop.TypeName typeName, IInspectable parameter);
         void GoBack();
+
+        event Windows.Foundation.TypedEventHandler<Microsoft.UI.Xaml.Window, Microsoft.UI.Xaml.ElementTheme> ThemeChanged;
     }
 }

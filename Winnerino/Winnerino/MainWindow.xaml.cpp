@@ -5,10 +5,12 @@
 #endif
 
 using namespace winrt;
+
 using namespace Microsoft::UI;
 using namespace Microsoft::UI::Windowing;
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
+
 using namespace winrt::Windows::UI::Xaml::Interop;
 using namespace Windows::Graphics;
 using namespace Windows::Storage;
@@ -40,10 +42,7 @@ namespace winrt::Winnerino::implementation
 
     Windows::Foundation::Size MainWindow::Size() const
     {
-        Windows::Foundation::Size size{};
-        size.Width = static_cast<float>(appWindow.Size().Width);
-        size.Height = static_cast<float>(appWindow.Size().Height);
-        return size;
+        return Windows::Foundation::Size(static_cast<float>(appWindow.Size().Width), static_cast<float>(appWindow.Size().Height));
     }
 
     void MainWindow::NotifyUser(hstring const& message, InfoBarSeverity const& severity)
@@ -101,6 +100,7 @@ namespace winrt::Winnerino::implementation
     void MainWindow::ChangeTheme(ElementTheme const& theme)
     {
         contentGrid().RequestedTheme(theme);
+        e_themeChanged(*this, theme);
         ApplicationData::Current().LocalSettings().Values().Insert(L"AppTheme", box_value(static_cast<int32_t>(theme)));
     }
 
@@ -152,6 +152,14 @@ namespace winrt::Winnerino::implementation
         }
     }
 
+    void MainWindow::ContentFrame_NavigationFailed(IInspectable const&, winrt::Microsoft::UI::Xaml::Navigation::NavigationFailedEventArgs const& e)
+    {
+        /*auto&& pageType = e.SourcePageType();
+        auto&& ex = e.Exception();
+        auto&& handled = e.Handled();*/
+        e.Handled(true);
+    }
+
     void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
     {
         SaveWindowState();
@@ -190,24 +198,6 @@ namespace winrt::Winnerino::implementation
 #endif // USING_TIMER
     }
 
-#if USING_TIMER
-    void MainWindow::dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const&, Windows::Foundation::IInspectable const&)
-    {
-        if (!messagesStack.empty())
-        {
-            MessageData message = messagesStack.front();
-            messagesStack.pop();
-
-            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
-        }
-        else
-        {
-            busy = false;
-            dispatcherQueueTimer.Stop();
-        }
-    }
-#endif // USING_TIMER
-
     void MainWindow::UpdateInforBar(hstring const& message, InfoBarSeverity const& severity)
     {
         NotifInfoBar().Severity(severity);
@@ -244,8 +234,8 @@ namespace winrt::Winnerino::implementation
         if (windowSize != nullptr)
         {
             ApplicationDataCompositeValue composite = windowSize.as<ApplicationDataCompositeValue>();
-            IInspectable widthBoxed = composite.Lookup(L"Width");
-            IInspectable heightBoxed = composite.Lookup(L"Height");
+            IInspectable widthBoxed = composite.TryLookup(L"Width");
+            IInspectable heightBoxed = composite.TryLookup(L"Height");
             if (widthBoxed)
             {
                 width = unbox_value<int>(widthBoxed);
@@ -260,8 +250,8 @@ namespace winrt::Winnerino::implementation
         {
             ApplicationDataCompositeValue composite = windowPosition.as<ApplicationDataCompositeValue>();
             IInspectable posX = composite.TryLookup(L"PositionX");
-            IInspectable posY = composite.Lookup(L"PositionY");
-            if (posX)
+            IInspectable posY = composite.TryLookup(L"PositionY");
+            if (posX && posY)
             {
                 x = unbox_value<int>(posX);
             }
@@ -288,17 +278,25 @@ namespace winrt::Winnerino::implementation
         appWindow = AppWindow::GetFromWindowId(windowID);
         if (appWindow != nullptr)
         {
-            appWindow.SetIcon(L"Images/multitool.ico");
-            appWindow.Title(L"Multitool");
-
             RectInt32 rect{};
             rect.Height = height;
             rect.Width = width;
             rect.X = x;
             rect.Y = y;
+
+            DisplayArea area = DisplayArea::GetFromPoint(PointInt32(x, y), DisplayAreaFallback::None);
+            RectInt32 bounds = area.OuterBounds();
+            if (bounds.Width == 0 && bounds.Height == 0) // DisplayArea::GetFromPoint should return nullptr when no display if found
+            {
+                rect.X = 50;
+                rect.Y = 50;
+            }
             appWindow.MoveAndResize(rect);
-            appWindow.Closing({ get_weak(), &MainWindow::appWindow_Closing });
-            appWindow.Changed({ get_weak(), &MainWindow::appWindow_Changed });
+
+            appWindow.SetIcon(L"Images/multitool.ico");
+            appWindow.Title(L"Multitool");
+            appWindow.Closing({ this, &MainWindow::appWindow_Closing });
+            appWindow.Changed({ this, &MainWindow::appWindow_Changed });
 
             if (AppWindowTitleBar::IsCustomizationSupported())
             {
@@ -324,8 +322,7 @@ namespace winrt::Winnerino::implementation
 
 #ifdef _DEBUG
         VersionTextBlock().Text(L"PREVIEW");
-#endif // 
-
+#endif
     }
 
     void MainWindow::SaveWindowState()
@@ -424,4 +421,22 @@ namespace winrt::Winnerino::implementation
             appWindow.TitleBar().SetDragRectangles(vect);
         }*/
     }
+
+#if USING_TIMER
+    void MainWindow::dispatcherQueueTimer_Tick(Microsoft::UI::Dispatching::DispatcherQueueTimer const&, Windows::Foundation::IInspectable const&)
+    {
+        if (!messagesStack.empty())
+        {
+            MessageData message = messagesStack.front();
+            messagesStack.pop();
+
+            UpdateInforBar(message.GetDataMessage(), message.GetSeverity());
+        }
+        else
+        {
+            busy = false;
+            dispatcherQueueTimer.Stop();
+        }
+    }
+#endif // USING_TIMER
 }
