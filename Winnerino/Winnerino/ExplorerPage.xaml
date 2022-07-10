@@ -9,13 +9,11 @@
     Unloaded="Page_Unloaded"
     NavigationCacheMode="Required">
 
-    <Grid>
-        <TabView
-            x:Name="Pages" 
-            VerticalAlignment="Stretch"
-            CornerRadius="5"
-            CanReorderTabs="True"
-            AddTabButtonClick="TabView_AddTabButtonClick"
-            TabCloseRequested="TabView_TabCloseRequested"/>
-    </Grid>
+    <TabView
+        x:Name="Pages" 
+        VerticalAlignment="Stretch"
+        CornerRadius="5"
+        CanReorderTabs="True"
+        AddTabButtonClick="TabView_AddTabButtonClick"
+        TabCloseRequested="TabView_TabCloseRequested"/>
 </Page>
