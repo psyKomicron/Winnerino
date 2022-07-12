@@ -70,26 +70,12 @@ namespace winrt::Winnerino::implementation
         winrt::check_bool(nativeWindow);
         HWND handle{ nullptr };
         nativeWindow->get_WindowHandle(&handle);
-        if (nativeWindow == nullptr)
-        {
-            OutputDebugString(L"Failed to get window handle.");
-            return;
-        }
 
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
         // I18N: Window name -> File properties
         appWindow.Title(L"File properties");
-
-        RectInt32 rect
-        {
-            100,
-            100,
-            350,
-            500
-        };
-        appWindow.MoveAndResize(rect);
-
+        appWindow.MoveAndResize(RectInt32(100, 100, 350, 500));
         appWindowClosingToken = appWindow.Closing({ this, &FilePropertiesWindow::AppWindow_Closing });
 
         if (AppWindowTitleBar::IsCustomizationSupported())
@@ -110,12 +96,9 @@ namespace winrt::Winnerino::implementation
         }
         else // hide title bar
         {
-            /*uint32_t index = 0;
-            if (contentGrid().Children().IndexOf(titleBarGrid(), index))
-            {
-                contentGrid().Children().RemoveAt(index);
-            }
-            contentGrid().RowDefinitions().RemoveAt(0);*/
+            TitleBarGrid().Visibility(Visibility::Collapsed);
+            UnloadObject(TitleBarGrid());
+            RootGrid().RowDefinitions().RemoveAt(0);
         }
 
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FilePropertiesWindow");
