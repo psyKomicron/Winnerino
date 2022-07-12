@@ -9,11 +9,16 @@
 
     <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged" Loaded="Control_Loaded">
         <Grid.RowDefinitions>
-            <RowDefinition Height="34"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="IsTextSelectionEnabled" Value="True"/>
+            </Style>
+        </Grid.Resources>
 
-        <Grid x:Name="TitleGrid" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,0,0,2">
+        <Grid x:Name="TitleBarGrid" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" Height="32" BorderThickness="0,0,0,2">
             <Grid.Background>
                 <AcrylicBrush 
                     FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
@@ -38,16 +43,26 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" ColumnSpacing="10" Margin="0,10">
+            <Grid Grid.Row="0" ColumnSpacing="10" RowSpacing="5" Margin="0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-                <Viewbox  x:Name="ImageViewBox" Grid.Column="0">
+                <Viewbox  x:Name="ImageViewBox" Grid.Column="0" Grid.RowSpan="2">
                     <SymbolIcon Symbol="AllApps"/>
                 </Viewbox>
                 <TextBox Text="veibae gachimuchi" Grid.Column="1" Height="30"/>
+                <TextBlock 
+                    Text="C:\Users\julie\Videos\veibae gachimuchi" 
+                    Grid.Column="1" 
+                    Grid.Row="1"
+                    TextWrapping="Wrap"
+                    FontSize="14"/>
             </Grid>
 
             <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.Row="1"/>
@@ -62,7 +77,6 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition Height="2"/>
-                    <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition Height="2"/>
                     <RowDefinition/>
@@ -80,26 +94,22 @@
 
                 <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="2"/>
 
-                <!--Full path-->
-                <TextBlock Text="Location" Grid.Row="3"/>
-                <TextBlock Text="C:\Users\julie\Videos" Grid.Column="1" Grid.Row="3"/>
-
                 <!--Size (bytes)-->
                 <!--Size compressed-->
-                <TextBlock Text="Size" Grid.Row="4"/>
-                <TextBlock Text="200 Mb" Grid.Row="4" Grid.Column="1"/>
+                <TextBlock Text="Size on disk" Grid.Row="3"/>
+                <TextBlock Text="200 Mb" Grid.Row="3" Grid.Column="1"/>
 
-                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="5"/>
+                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="4"/>
 
                 <!--Created-->
-                <TextBlock Text="Created" Grid.Row="6"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="6"/>
+                <TextBlock Text="Created" Grid.Row="5"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="5"/>
                 <!--Modified-->
-                <TextBlock Text="Modified" Grid.Row="7"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="7"/>
+                <TextBlock Text="Modified" Grid.Row="6"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="6"/>
                 <!--Accessed-->
-                <TextBlock Text="Accessed" Grid.Row="8"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="8"/>
+                <TextBlock Text="Accessed" Grid.Row="7"/>
+                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="7"/>
                 
             </Grid>
         </Grid>
