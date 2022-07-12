@@ -51,7 +51,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 #endif // !_DEBUG
 
 
-#if _DEBUG && FALSE
+#ifdef _DEBUG
     Window testWindow = make<FilePropertiesWindow>();
     testWindow.Activate();
 #endif // _DEBUG
