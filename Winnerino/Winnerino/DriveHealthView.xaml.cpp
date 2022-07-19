@@ -15,7 +15,7 @@
 #include "SmartDevice.h"
 #include "DirectorySizeCalculator.h"
 #include "DirectoryEnumerator.h"
-#include "Helpers.h"
+#include "Helper.h"
 #include "FileSearcher2.h"
 
 using namespace std;
@@ -154,7 +154,7 @@ namespace winrt::Winnerino::implementation
                         sysFilesTotalSize += validFiles->at(i).Size();
 
                         TextBlock textBlock{};
-                        textBlock.Text(validFiles->at(i).FilePath());
+                        textBlock.Text(validFiles->at(i).Path());
                         SystemFilesListView().Items().Append(textBlock);
                     }
                     delete validFiles;

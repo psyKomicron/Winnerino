@@ -7,7 +7,7 @@
 #include "FileSearcher.h"
 #include "FileInfo.h"
 #include "FileSearcher2.h"
-#include "Helpers.h"
+#include "Helper.h"
 
 #define INVALIDATE_VIEW 0
 #define RESET_TITLE_BAR 0

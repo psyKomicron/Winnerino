@@ -14,7 +14,7 @@
 #include <shellapi.h>
 #include <math.h>
 #include "SmartDevice.h"
-#include "Helpers.h"
+#include "Helper.h"
 #include "DirectorySizeCalculator.h"
 #include "DirectoryEnumerator.h"
 #include <FileSearcher.h>

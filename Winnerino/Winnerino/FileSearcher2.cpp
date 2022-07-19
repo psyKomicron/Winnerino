@@ -87,7 +87,7 @@ namespace Winnerino::Storage
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 {
                     FileInfo fileInfo = FileInfo(&findData, path);
-                    if (regex_search(fileInfo.FileName().data(), query))
+                    if (regex_search(fileInfo.Name().data(), query))
                     {
                         files->push_back(std::move(fileInfo));
                         //e_matchFound(Windows::Foundation::IInspectable{}, filePath);
@@ -128,7 +128,7 @@ namespace Winnerino::Storage
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 {
                     FileInfo fileInfo = FileInfo(&findData, rootPath);
-                    if (regex_search(fileInfo.FileName().data(), query))
+                    if (regex_search(fileInfo.Name().data(), query))
                     {
                         validFiles->push_back(std::move(fileInfo));
                         //e_matchFound(Windows::Foundation::IInspectable{}, filePath);
@@ -167,7 +167,7 @@ namespace Winnerino::Storage
                 {
                     for (size_t j = 0; j < subFiles->size(); j++)
                     {
-                        if (regex_search(subFiles->at(j).FileName().c_str(), query))
+                        if (regex_search(subFiles->at(j).Name().c_str(), query))
                         {
                             validFiles->push_back(subFiles->at(j));
                         }

@@ -7,7 +7,7 @@
 #include <fileapi.h>
 #include <ppl.h>
 #include <Shlwapi.h>
-#include "Helpers.h"
+#include "Helper.h"
 
 using namespace std;
 using namespace concurrency;

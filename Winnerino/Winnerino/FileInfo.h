@@ -19,7 +19,7 @@ namespace Winnerino::Storage
         /// File name.
         /// </summary>
         /// <returns>Name of the file</returns>
-        winrt::hstring FileName()
+        winrt::hstring Name()
         {
             return fileName;
         };
@@ -27,7 +27,7 @@ namespace Winnerino::Storage
         /// File path.
         /// </summary>
         /// <returns>Path of this life</returns>
-        winrt::hstring FilePath()
+        winrt::hstring Path()
         {
             return filePath;
         };

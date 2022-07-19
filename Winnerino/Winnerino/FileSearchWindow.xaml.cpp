@@ -7,7 +7,7 @@
 #include "FileSearcher.h"
 #include "FileInfo.h"
 #include "FileSearcher2.h"
-#include "Helpers.h"
+#include "Helper.h"
 
 #define INVALIDATE_VIEW 0
 #define RESET_TITLE_BAR 0
@@ -110,7 +110,7 @@ namespace winrt::Winnerino::implementation
                     for (size_t i = 0; i < results->size(); i++)
                     {
                         FileInfo file = results->at(i);
-                        FileEntryView view = FileEntryView{ file.FileName(), file.FilePath(), file.Size(), file.Attributes() };
+                        FileEntryView view = FileEntryView{ file.Name(), file.Path(), file.Size(), file.Attributes() };
                         view.ShowFilePath(true);
                         SearchResults().Items().Append(view);
                     }
