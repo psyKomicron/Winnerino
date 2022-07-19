@@ -32,11 +32,30 @@
             Style="{StaticResource FileAttributeFontIconStyle}" 
             Foreground="{ThemeResource SystemAccentColor}"/>
         
-        <ProgressRing x:Name="FileSizeProgressRing" Grid.RowSpan="2" HorizontalAlignment="Center" IsIndeterminate="True" Width="22" Height="22"/>
+        <ProgressRing 
+            x:Name="FileSizeProgressRing" 
+            Grid.RowSpan="2" 
+            HorizontalAlignment="Center" 
+            IsIndeterminate="True" 
+            Width="22" 
+            Height="22"/>
 
-        <TextBlock x:Name="FileNameTextBlock" Text="{x:Bind FileName}" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Grid.Column="1"/>
+        <TextBlock 
+            x:Name="FileNameTextBlock" 
+            Text="{x:Bind FileName}" 
+            HorizontalAlignment="Stretch" 
+            TextWrapping="Wrap" 
+            TextTrimming="CharacterEllipsis" 
+            Grid.Column="1"/>
 
-        <TextBlock x:Name="FileTypeName" Text="File type" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Grid.Column="2" Grid.RowSpan="2"/>
+        <TextBlock 
+            x:Name="FileTypeName" 
+            Text="File type" 
+            TextTrimming="CharacterEllipsis" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Right" 
+            Grid.Column="2" 
+            Grid.RowSpan="2"/>
 
         <StackPanel
             x:Name="attributesStackPanel" 
