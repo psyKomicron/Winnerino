@@ -1,0 +1,10 @@
+namespace Winnerino
+{
+    [default_interface]
+    runtimeclass SpotlightImporter : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        SpotlightImporter();
+
+        Boolean ButtonsEnabled{ get; };
+    }
+}
