@@ -45,13 +45,10 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
-#if TRUE
     window = make<MainWindow>();
     window.Activate();
-#endif // !_DEBUG
 
-
-#ifdef _DEBUG
+#ifdef SPAWN_TEST_WINDOW
     Window testWindow = make<FilePropertiesWindow>();
     testWindow.Activate();
 #endif // _DEBUG
