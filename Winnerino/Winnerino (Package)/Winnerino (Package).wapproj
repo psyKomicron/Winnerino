@@ -42,7 +42,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\Winnerino\Winnerino.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>4BB058AAF34602C0D47A247C40F3EC3C95E68EA8</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2039C8524416F47C52CB0B1D2253E8DD738ABF70</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
@@ -140,6 +140,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CppWinRT" Version="2.0.220608.4" />
     <PackageReference Include="Microsoft.Windows.ImplementationLibrary" Version="1.0.220201.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25131-preview" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.2" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
