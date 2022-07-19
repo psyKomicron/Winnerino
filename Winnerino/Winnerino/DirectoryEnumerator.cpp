@@ -123,8 +123,7 @@ namespace Winnerino::Storage
                 // is file
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 {
-                    FileInfo fileInfo = FileInfo(&findData, toEnumerate);
-                    
+                    files->push_back(FileInfo(&findData, toEnumerate));
                 }
             } while (FindNextFile(findHandle, &findData));
 

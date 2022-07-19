@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "FileInfo.h"
 
 namespace Winnerino::Storage
