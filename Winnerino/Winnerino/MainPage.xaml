@@ -7,7 +7,8 @@
     mc:Ignorable="d"
     MinHeight="200"
     MinWidth="200"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="OnLoaded">
 
     <ScrollViewer>
         <Grid>
@@ -44,12 +45,7 @@
                         <TextBlock Text="What's new" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
                     </ListView.Header>
 
-                    <x:String>Added new search feature using regular expressions (system wide, multithreaded).</x:String>
-                    <x:String>Added system health view.</x:String>
-                    <x:String>Added file actions (cut, copy, delete, rename) for multiple items with right click.</x:String>
-                    <x:String>Updated settings to be easier to navigate.</x:String>
-                    <x:String>Side navigation view for libraries (work in progress).</x:String>
-                    <x:String>Now saving application theme (dark, light, system setting/default).</x:String>
+                    <x:String>Improved search window results display.</x:String>
                 </ListView>
 
                 <ListView
@@ -65,6 +61,7 @@
 
                     <x:String>Fixed application crash when open a directory before all current directory size have been calculated.</x:String>
                     <x:String>Fixed application rendering/appearing outside of the display bounds.</x:String>
+                    <x:String>Fixed application crashes when using the search window.</x:String>
                 </ListView>
 
                 <ListView 

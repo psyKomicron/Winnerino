@@ -5,8 +5,8 @@
 #endif
 
 using namespace winrt;
-using namespace Microsoft::UI::Xaml;
-using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Windows::Foundation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -18,8 +18,14 @@ namespace winrt::Winnerino::implementation
         InitializeComponent();
     }
 
-    void MainPage::Button_Click(winrt::Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
+    void MainPage::OnLoaded(IInspectable const&, RoutedEventArgs const&)
+    {
+    }
+
+    void MainPage::Button_Click(IInspectable const&, RoutedEventArgs const&)
     {
         MainWindow::Current().GoBack();
     }
 }
+
+
