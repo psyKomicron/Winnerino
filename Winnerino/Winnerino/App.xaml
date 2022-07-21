@@ -19,13 +19,15 @@
             <x:Double x:Key="NavigationBackButtonIconSize">14</x:Double>
             <x:Double x:Key="ProgressBarHeight">14</x:Double>
             <x:Double x:Key="CaptionTextBlockOpacity">0.6</x:Double>
+            <x:Double x:Key="SettingHostControlMinHeight">68</x:Double>
 
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
 
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
 
-            <Thickness x:Key="StackPanelSettingMargin">30,0,0,0</Thickness>
-            
+            <Thickness x:Key="ExpanderContentMargin">35,0,0,0</Thickness>
+            <Thickness x:Key="ToggleSwitchCenterMargin">0,0,-70,0</Thickness>
+
             <!--#region Font icons -->
             <x:String x:Key="DirectoryFontIconGlyph">&#xe8d5;</x:String>
             <x:String x:Key="FileFontIconGlyph">&#xE8A5;</x:String>
@@ -225,6 +227,7 @@
                 <Setter Property="Margin" Value="0,0,0,10"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="MinHeight" Value="{StaticResource SettingHostControlMinHeight}"/>
             </Style>
 
             <Style x:Key="PathNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
@@ -261,7 +264,7 @@
                 <Setter Property="BorderBrush" Value="{ThemeResource ExpanderHeaderBorderBrush}"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="MinHeight" Value="{StaticResource ExpanderMinHeight}"/>
+                <Setter Property="MinHeight" Value="{StaticResource SettingHostControlMinHeight}"/>
             </Style>
 
             <Style x:Key="GridExpanderStyle" TargetType="Grid">
@@ -271,7 +274,7 @@
                 <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
                 <Setter Property="BorderThickness" Value="{StaticResource ExpanderBorderThickness}"/>
                 <Setter Property="BorderBrush" Value="{ThemeResource ExpanderHeaderBorderBrush}"/>
-                <Setter Property="MinHeight" Value="{StaticResource ExpanderMinHeight}"/>
+                <Setter Property="MinHeight" Value="{StaticResource SettingHostControlMinHeight}"/>
             </Style>
             
             <Style x:Key="NavigationBackButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
@@ -282,6 +285,14 @@
                 <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
                 <Setter Property="FontSize" Value="{StaticResource NavigationBackButtonIconSize}"/>
                 <Setter Property="Content" Value="&#xe72b;"/>
+            </Style>
+
+            <Style x:Key="ExpanderSeparatorStyle" TargetType="Rectangle">
+                <Setter Property="Fill" Value="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Height" Value="1"/>
+                <Setter Property="Margin" Value="-16,5"/>
             </Style>
             <!--#endregion-->
 

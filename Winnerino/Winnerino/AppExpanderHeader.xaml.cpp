@@ -51,6 +51,16 @@ namespace winrt::Winnerino::implementation
         m_propertyChanged(*this, PropertyChangedEventArgs{ L"Subtitle" });
     }
 
+    Windows::Foundation::IInspectable AppExpanderHeader::RightContent()
+    {
+        return _rightContent;
+    }
+
+    void AppExpanderHeader::RightContent(Windows::Foundation::IInspectable const& value)
+    {
+        _rightContent = value;
+    }
+
     event_token AppExpanderHeader::PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
     {
         return m_propertyChanged.add(value);

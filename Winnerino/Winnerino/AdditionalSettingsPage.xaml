@@ -5,7 +5,8 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="OnPageLoaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
@@ -31,15 +32,20 @@
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General"/>
+                    <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General" Subtitle="Navigation, history, startup"/>
                 </Expander.Header>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
+
                     <CheckBox
                         Content="Auto-load setting page"
                         IsChecked="False"
                         ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-                    <CheckBox x:Name="LoadLastPageToggleSwitch" Content="Save last page" Click="LoadLastPageToggleSwitch_Toggled"/>
+
+                    <CheckBox 
+                        x:Name="LoadLastPageToggleSwitch"
+                        Content="Save and restore last page" 
+                        Click="LoadLastPageToggleSwitch_Toggled"/>
                 </StackPanel>
             </Expander>
 
@@ -49,8 +55,13 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <local:AppExpanderHeader Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
-                <ToggleSwitch x:Name="NotificationsSwitch" Toggled="NotificationsSwitch_Toggled" Margin="0,0,-70,0" Grid.Column="1"/>
+                <local:AppExpanderHeader VerticalAlignment="Center" Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
+                <ToggleSwitch
+                    x:Name="NotificationsSwitch" 
+                    Grid.Column="1" 
+                    Margin="{StaticResource ToggleSwitchCenterMargin}"
+                    VerticalAlignment="Center" 
+                    Toggled="NotificationsSwitch_Toggled"/>
             </Grid>
 
             <ListViewHeaderItem/>
@@ -60,60 +71,102 @@
                     <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
                 </Expander.Header>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
                     <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="DarkThemeButton_Click"/>
                     <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="LightThemeButton_Click"/>
                     <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="DefaultThemeButton_Click"/>
                 </StackPanel>
             </Expander>
 
-            <Expander Style="{StaticResource ExpanderSettingStyle}" IsEnabled="False">
+            <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe799;" Title="View" Subtitle="Enable Picture-in-picture, title bar options"/>
+                    <local:AppExpanderHeader Glyph="&#xe799;" Title="Appearance" Subtitle="Title bar, secondary windows appearance"/>
                 </Expander.Header>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <CheckBox Content="Compact mode" Click="CompactOverlayToggleSwitch_Toggled"/>
-                    <CheckBox Content="Animated icon" Click="AnimatedIconToggleSwitch_Toggled"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox
+                        Content="Title bar animated icon"
+                        IsChecked="True"
+                        Margin="{StaticResource ExpanderContentMargin}"
+                        VerticalAlignment="Center"
+                        Click="AnimatedIconToggleSwitch_Toggled"/>
+
+                    <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="1"/>
+
+                    <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="3"/>
+
+                    <StackPanel Grid.Row="4" Spacing="3" Margin="{StaticResource ExpanderContentMargin}">
+
+                        <CheckBox
+                            x:Name="ShowSearchWindowInSwitchers"
+                            Content="Show window in switchers (Alt + Tab)"
+                            Click="ShowSearchWindowInSwitchers_Toggled" 
+                            Grid.Column="1"/>
+                        <CheckBox
+                            x:Name="FilePropertiesWindowInSwitchers"
+                            Content="Show window in switchers (Alt + Tab)"
+                            Click="ShowFilePropertiesWindowInSwitchers_Toggled" 
+                            Grid.Column="1"/>
+                    </StackPanel>
+                </Grid>
             </Expander>
 
-            <Expander Style="{StaticResource ExpanderSettingStyle}">
+            <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe737;" Title="Search window" Subtitle="Search window appearance"/>
+                    <local:AppExpanderHeader Glyph="&#xe799;" Title="Tranparency effects" Subtitle="Use tranparency effects, control transparency type">
+                        <local:AppExpanderHeader.RightContent>
+
+                            <ToggleSwitch 
+                                x:Name="UseAcrylicToggleSwitch"
+                                Margin="{StaticResource ToggleSwitchCenterMargin}" 
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Right"
+                                Toggled="UseAcrylicCheckBox_Click"/>
+                        </local:AppExpanderHeader.RightContent>
+                    </local:AppExpanderHeader>
                 </Expander.Header>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <CheckBox
-                        x:Name="SearchWindowUsesAcrylic"
-                        Content="Use transparency effects"
-                        Click="SearchWindowUsesAcrylic_Toggled" 
-                        Grid.Column="1"/>
-                    <CheckBox
-                        x:Name="ShowSearchWindowInSwitchers"
-                        Content="Show window in switchers (Alt + Tab)"
-                        Click="ShowSearchWindowInSwitchers_Toggled" 
-                        Grid.Column="1"/>
-                </StackPanel>
-            </Expander>
+                <Grid Margin="{StaticResource ExpanderContentMargin}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <Expander Style="{StaticResource ExpanderSettingStyle}">
-                <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe737;" Title="File properties window" Subtitle="File properties window appearance"/>
-                </Expander.Header>
+                    <TextBlock Text="Control individual window transparency settings"/>
+                    <StackPanel Grid.Row="1" Spacing="3" Margin="5">
+                        <CheckBox
+                            x:Name="SearchWindowUsesAcrylic"
+                            Content="In file search window"
+                            IsEnabled="{x:Bind TransparencyControlsEnabled}"
+                            Grid.Column="1"
+                            Click="SearchWindowUsesAcrylic_Toggled"/>
+                        <CheckBox
+                            x:Name="FilePropertiesWindowUsesAcrylic"
+                            Content="In file properties window"
+                            IsEnabled="{x:Bind TransparencyControlsEnabled}"
+                            Grid.Column="1"
+                            Click="FilePropertiesWindowUsesAcrylic_Toggled"/>
+                    </StackPanel>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
-                    <CheckBox
-                        x:Name="FilePropertiesWindowUsesAcrylic"
-                        Content="Use transparency effects"
-                        Click="FilePropertiesWindowUsesAcrylic_Toggled" 
-                        Grid.Column="1"/>
-                    <CheckBox
-                        x:Name="FilePropertiesWindowInSwitchers"
-                        Content="Show window in switchers (Alt + Tab)"
-                        Click="ShowFilePropertiesWindowInSwitchers_Toggled" 
-                        Grid.Column="1"/>
-                </StackPanel>
+                    <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Margin="-51,8,-16,15" Grid.Row="2"/>
+
+                    <TextBlock Text="Choose transparency effect type" Grid.Row="3"/>
+                    <StackPanel Grid.Row="4" Spacing="3" Margin="5">
+                        <RadioButton x:Name="AcrylicRadioButton" Content="Acrylic"/>
+                        <RadioButton x:Name="MicaRadioButton" Content="Mica"/>
+                    </StackPanel>
+                </Grid>
             </Expander>
 
             <ListViewHeaderItem/>
@@ -123,7 +176,7 @@
                     <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
                 </Expander.Header>
 
-                <Grid Margin="{StaticResource StackPanelSettingMargin}" RowSpacing="15">
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>

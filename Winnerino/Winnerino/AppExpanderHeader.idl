@@ -7,5 +7,6 @@ namespace Winnerino
         String Glyph;
         String Title;
         String Subtitle;
+        IInspectable RightContent;
     }
 }

@@ -30,10 +30,10 @@
                 </Grid.RowDefinitions>
 
                 <ListView
-                    x:Name="settingsListView"
+                    x:Name="SettingsListView"
                     IsItemClickEnabled="False"
                     SelectionMode="None"
-                    Margin="20,0"
+                    Margin="20,0,0,0"
                     Grid.ColumnSpan="2"
                     Grid.Row="1"
                     Grid.RowSpan="2">
@@ -46,11 +46,21 @@
                             <local:AppExpanderHeader Glyph="&#xec50;" Title="Files &amp; folders" Subtitle="File explorer options"/>
                         </Expander.Header>
 
-                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
                             <CheckBox 
                                 x:Name="ShowSpecialsFolderToggleSwitch" Content="Show special folders" Click="ShowSpecialsFolderToggleSwitch_Toggled"/>
                             <CheckBox 
                                 x:Name="CalculateDirectorySizeToggleSwitch" Content="Calculate directory size" Click="CalculateDirectorySizeToggleSwitch_Toggled"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderSettingStyle}">
+                        <Expander.Header>
+                            <local:AppExpanderHeader Title="Display" Subtitle="Thumbnails, attributes..."/>
+                        </Expander.Header>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
+
                             <CheckBox 
                                 x:Name="UseThumbnailsToggleSwitch" Content="Use thumbnails" Click="UseThumbnailsToggleSwitch_Toggled"/>
                             <CheckBox 
@@ -58,12 +68,13 @@
                         </StackPanel>
                     </Expander>
 
+                    <ListViewHeaderItem Margin="-10,0,0,0"/>
                     <Expander Style="{StaticResource ExpanderSettingStyle}">
                         <Expander.Header>
                             <local:AppExpanderHeader Glyph="&#xe8f1;" Title="Libraries" Subtitle="Documents, downloads, music, pictures, videos"/>
                         </Expander.Header>
 
-                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource StackPanelSettingMargin}">
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
                         </StackPanel>
                     </Expander>
 
@@ -104,7 +115,7 @@
                     GotFocus="settingSearch_GotFocus"/>
             </Grid>
 
-            <Grid x:Name="AboutGrid" RowSpacing="10" Margin="20,0,0,0">
+            <Grid x:Name="AboutGrid" RowSpacing="10" Margin="10,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>

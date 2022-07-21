@@ -26,6 +26,15 @@ namespace winrt::Winnerino::implementation
         InitSettings();
     }
 
+
+    void AdditionalSettingsPage::OnPageLoaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        bool isOn = UseAcrylicToggleSwitch().IsOn();
+        SearchWindowUsesAcrylic().IsEnabled(isOn);
+        FilePropertiesWindowUsesAcrylic().IsEnabled(isOn);
+    }
+
+
     void AdditionalSettingsPage::ClearSecureSettingsButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
 
@@ -38,7 +47,7 @@ namespace winrt::Winnerino::implementation
 
     void AdditionalSettingsPage::CompactOverlayToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        Winnerino::MainWindow window = Winnerino::MainWindow::Current();
+        //Winnerino::MainWindow window = Winnerino::MainWindow::Current();
     }
 
     IAsyncAction AdditionalSettingsPage::AppDataFolderHyperlink_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -174,6 +183,24 @@ namespace winrt::Winnerino::implementation
         settings.Values().Insert(L"UsesAcrylic", box_value(SearchWindowUsesAcrylic().IsChecked()));
     }
 
+    void AdditionalSettingsPage::FilePropertiesWindowUsesAcrylic_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+
+    }
+
+    void AdditionalSettingsPage::ShowFilePropertiesWindowInSwitchers_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+
+    }
+
+    void AdditionalSettingsPage::UseAcrylicCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        bool isOn = UseAcrylicToggleSwitch().IsOn();
+        ApplicationData::Current().LocalSettings().Values().Insert(L"WindowsCanUseTransparencyEffects", IReference(isOn));
+        SearchWindowUsesAcrylic().IsEnabled(isOn);
+        FilePropertiesWindowUsesAcrylic().IsEnabled(isOn);
+    }
+
 
     void AdditionalSettingsPage::SwitchTheme(winrt::Microsoft::UI::Xaml::ElementTheme const& requestedTheme)
     {
@@ -184,36 +211,44 @@ namespace winrt::Winnerino::implementation
     {
         const ApplicationDataContainer& settings = ApplicationData::Current().LocalSettings();
 
+        {
+            IInspectable inspectable = settings.Values().TryLookup(L"AppTheme");
+            ElementTheme requestedTheme = unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default);
+            DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
+            LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
+            DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
+        }
+
         LoadLastPageToggleSwitch().IsChecked(unbox_value_or<bool>(settings.Values().TryLookup(L"LoadLastPage"), true));
         NotificationsSwitch().IsOn(unbox_value_or<bool>(settings.Values().TryLookup(L"NotificationsEnabled"), true));
+        UseAcrylicToggleSwitch().IsOn(unbox_value_or(settings.Values().TryLookup(L"WindowsCanUseTransparencyEffects"), true));
 
-        IInspectable inspectable = settings.Values().TryLookup(L"AppTheme");
-        ElementTheme requestedTheme = unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default);
-        DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
-        LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
-        DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
-
-        ApplicationDataContainer searchWindowSettings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
-        if (!searchWindowSettings)
+        // Search window settings
         {
-            searchWindowSettings = ApplicationData::Current().LocalSettings().CreateContainer(L"FileSearchWindow", ApplicationDataCreateDisposition::Always);
+            ApplicationDataContainer searchWindowSettings = settings.Containers().TryLookup(L"FileSearchWindow");
+            if (!searchWindowSettings)
+            {
+                searchWindowSettings = settings.CreateContainer(L"FileSearchWindow", ApplicationDataCreateDisposition::Always);
+            }
+            SearchWindowUsesAcrylic().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
+            ShowSearchWindowInSwitchers().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"ShowInSwitchers")), true));
         }
-        
-        SearchWindowUsesAcrylic().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
-        ShowSearchWindowInSwitchers().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"ShowInSwitchers")), false));
 
-        // TODO: Implement settings for the file properties window
+        // File properties window settings
+        {
+            ApplicationDataContainer filePropsWindow = settings.Containers().TryLookup(L"FilePropertiesWindow");
+            if (!filePropsWindow)
+            {
+                filePropsWindow = settings.CreateContainer(L"FilePropertiesWindow", ApplicationDataCreateDisposition::Always);
+            }
+            FilePropertiesWindowUsesAcrylic().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"UsesAcrylic"), true));
+            FilePropertiesWindowInSwitchers().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"ShowInSwitcher"), true));
+        }
     }
-}
 
-
-void winrt::Winnerino::implementation::AdditionalSettingsPage::FilePropertiesWindowUsesAcrylic_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-
-}
-
-
-void winrt::Winnerino::implementation::AdditionalSettingsPage::ShowFilePropertiesWindowInSwitchers_Toggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-
+    void AdditionalSettingsPage::TransparencyControlsEnabled(bool const& value)
+    {
+        _transparencyControlsEnabled = value;
+        e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(L"TransparencyControlsEnabled"));
+    }
 }

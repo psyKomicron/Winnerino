@@ -7,18 +7,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid ColumnSpacing="15" Padding="0,10">
+    <Grid Padding="0,10,0,10" Margin="0,0,-25,0" VerticalAlignment="Center">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="25"/>
             <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <FontIcon Glyph="{x:Bind Glyph, Mode=OneWay}" Grid.RowSpan="2" VerticalAlignment="Center" Grid.Column="0"/>
-        <TextBlock Text="{x:Bind Title, Mode=OneWay}" Grid.Column="1" Grid.Row="0"/>
-        <TextBlock Text="{x:Bind Subtitle, Mode=OneWay}" Grid.Column="1" Grid.Row="1" FontSize="12" Opacity="0.7"/>
+        <Viewbox Height="20" Width="20" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0">
+            <FontIcon Glyph="{x:Bind Glyph, Mode=OneWay}"/>
+        </Viewbox>
+
+        <TextBlock Text="{x:Bind Title, Mode=OneWay}" Margin="15,0,0,0" Grid.Column="1" Grid.Row="0"/>
+
+        <TextBlock Text="{x:Bind Subtitle, Mode=OneWay}" Margin="15,0,0,0" Grid.Column="1" Grid.Row="1" FontSize="12" Opacity="0.7"/>
+
+        <ContentPresenter Content="{x:Bind RightContent, Mode=OneWay}" Grid.Column="2" Grid.RowSpan="2"/>
     </Grid>
 </UserControl>

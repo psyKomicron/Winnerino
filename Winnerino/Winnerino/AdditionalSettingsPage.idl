@@ -4,5 +4,7 @@ namespace Winnerino
     runtimeclass AdditionalSettingsPage : Microsoft.UI.Xaml.Controls.Page
     {
         AdditionalSettingsPage();
+
+        Boolean TransparencyControlsEnabled{ get; };
     }
 }

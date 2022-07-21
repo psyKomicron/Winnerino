@@ -17,6 +17,8 @@ namespace winrt::Winnerino::implementation
         void Title(hstring const& title);
         hstring Subtitle();
         void Subtitle(hstring const& subtitle);
+        Windows::Foundation::IInspectable RightContent();
+        void RightContent(Windows::Foundation::IInspectable const& value);
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value);
         void PropertyChanged(event_token const& token);
@@ -25,6 +27,8 @@ namespace winrt::Winnerino::implementation
         hstring _glyph;
         hstring _title;
         hstring _subtitle;
+        Windows::Foundation::IInspectable _rightContent = nullptr;
+
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     };
 }
