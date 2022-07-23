@@ -171,3 +171,8 @@ namespace winrt::Winnerino::implementation
         SetLayout(args.Size().Width);
     }
 }
+
+void winrt::Winnerino::implementation::SettingsPage::HideSystemFilesCheckBox_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+{
+
+}

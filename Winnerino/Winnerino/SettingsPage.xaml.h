@@ -30,6 +30,8 @@ namespace winrt::Winnerino::implementation
         void InitSettings();
         void SetLayout(float const& width);
         void Window_SizeChanged(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowSizeChangedEventArgs const& args);
+    public:
+        void HideSystemFilesCheckBox_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 
