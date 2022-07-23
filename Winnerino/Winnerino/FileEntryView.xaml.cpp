@@ -50,7 +50,7 @@ namespace winrt::Winnerino::implementation
             _icon = unbox_value_or(dirIcon, L"\uF142");
 
             InitializeComponent();
-            FileTypeName().Text(L"Directory");
+            //FileTypeName().Text(L"Directory");
         }
         else
         {
@@ -100,7 +100,7 @@ namespace winrt::Winnerino::implementation
         else
         {
             FileNameTextBlock().Opacity(0.5);
-            // raise deleted event or make the FileTabView handle directory changes ?
+            // TODO: raise deleted event or make the FileTabView handle directory changes ?
         }
     }
 
@@ -166,11 +166,11 @@ namespace winrt::Winnerino::implementation
         {
             if (_fileName != L"." && _fileName != L"..")
             {
+                sizeProgressToken = calculator.Progress({ get_weak(), &FileEntryView::ProgressHandler });
                 concurrency::create_task([this]()
                 {
                     try
                     {
-                        sizeProgressToken = calculator.Progress({ get_weak(), &FileEntryView::ProgressHandler });
                         int_fast64_t dirSize = calculator.GetSize(_filePath + L"\\", true);
                         calculator.Progress(sizeProgressToken);
                         UpdateSize(dirSize);

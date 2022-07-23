@@ -25,13 +25,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <FontIcon 
-            Grid.RowSpan="2" 
-            Glyph="{x:Bind FileIcon}" 
-            HorizontalAlignment="Center" 
-            Style="{StaticResource FileAttributeFontIconStyle}" 
-            Foreground="{ThemeResource SystemAccentColor}"/>
-        
+        <Viewbox Grid.RowSpan="2" Height="20" Width="20">
+            <FontIcon 
+                Glyph="{x:Bind FileIcon}"
+                HorizontalAlignment="Center"
+                Style="{StaticResource FileAttributeFontIconStyle}"/>
+        </Viewbox>
+
         <ProgressRing 
             x:Name="FileSizeProgressRing" 
             Grid.RowSpan="2" 
@@ -68,7 +68,9 @@
             Grid.Column="3"
             Grid.RowSpan="2">
             <StackPanel.Resources>
-                <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}"/>
+                <Style TargetType="FontIcon" BasedOn="{StaticResource FileAttributeFontIconStyle}">
+                    <Setter Property="FontSize" Value="14"/>
+                </Style>
             </StackPanel.Resources>
         </StackPanel>
 
