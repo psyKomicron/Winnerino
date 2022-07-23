@@ -107,63 +107,93 @@ namespace winrt::Winnerino::implementation
             settings = ApplicationData::Current().LocalSettings().CreateContainer(L"FilePropertiesWindow", ApplicationDataCreateDisposition::Always);
         }
 
-        if (unbox_value_or<bool>(settings.Values().TryLookup(L"UsesAcrylic"), true))
+        if (unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"WindowsCanUseTransparencyEffects"), true) && 
+            unbox_value_or(settings.Values().TryLookup(L"UsesAcrylic"), true))
         {
-            SetBackground();
+            SetBackground((::Winnerino::DesktopTransparencyControllerType)unbox_value_or<uint8_t>(
+                ApplicationData::Current().LocalSettings().Values().TryLookup(L"TransparencyEffectController"),
+                ::Winnerino::DesktopTransparencyControllerType::Acrylic)
+            );
         }
         
         auto&& presenter = appWindow.Presenter().as<OverlappedPresenter>();
         presenter.IsMaximizable(false);
         presenter.IsMinimizable(false);
 
-        bool shown = unbox_value_or<bool>(settings.Values().TryLookup(L"ShowInSwitchers"), false);
-        appWindow.IsShownInSwitchers(shown);
-        presenter.IsAlwaysOnTop(!shown);
+        presenter.IsAlwaysOnTop(unbox_value_or(settings.Values().TryLookup(L"KeepOnTop"), false));
     }
 
-    void FilePropertiesWindow::SetBackground()
+    void FilePropertiesWindow::SetBackground(::Winnerino::DesktopTransparencyControllerType const& transparencyControllerType)
     {
-        if (DesktopAcrylicController::IsSupported())
+        if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Acrylic && !DesktopAcrylicController::IsSupported())
         {
-            auto&& supportsBackdrop = try_as<ICompositionSupportsSystemBackdrop>();
-            if (supportsBackdrop)
+            // TODO: Trace "Desktop Acrylic Controller not supported on this platform"
+            return;
+        }
+        else if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Mica && !MicaController::IsSupported())
+        {
+            // TODO: Trace "Mica Controller not supported on this platform"
+            return;
+        }
+
+        auto&& supportsBackdrop = try_as<ICompositionSupportsSystemBackdrop>();
+        if (supportsBackdrop)
+        {
+            if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
             {
-                if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
+                DispatcherQueueOptions options
                 {
-                    DispatcherQueueOptions options
-                    {
-                        sizeof(DispatcherQueueOptions),
-                        DQTYPE_THREAD_CURRENT,
-                        DQTAT_COM_NONE
-                    };
+                    sizeof(DispatcherQueueOptions),
+                    DQTYPE_THREAD_CURRENT,
+                    DQTAT_COM_NONE
+                };
 
-                    ABI::Windows::System::IDispatcherQueueController* ptr{ nullptr };
-                    check_hresult(CreateDispatcherQueueController(options, &ptr));
-                    dispatcherQueueController = { ptr, take_ownership_from_abi };
-                }
+                ABI::Windows::System::IDispatcherQueueController* ptr{ nullptr };
+                check_hresult(CreateDispatcherQueueController(options, &ptr));
+                dispatcherQueueController = { ptr, take_ownership_from_abi };
+            }
 
-                systemBackdropConfiguration = SystemBackdropConfiguration();
-                systemBackdropConfiguration.IsInputActive(true);
+            systemBackdropConfiguration = SystemBackdropConfiguration();
+            systemBackdropConfiguration.IsInputActive(true);
+            systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+
+            activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
+            {
+                systemBackdropConfiguration.IsInputActive(WindowActivationState::Deactivated != args.WindowActivationState());
+            });
+
+            themeChangedRevoker = RootGrid().ActualThemeChanged(auto_revoke, [this](FrameworkElement const&, IInspectable const&)
+            {
                 systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
-
-                activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
-                {
-                    systemBackdropConfiguration.IsInputActive(WindowActivationState::Deactivated != args.WindowActivationState());
-                });
-
-                themeChangedRevoker = RootGrid().ActualThemeChanged(auto_revoke, [this](FrameworkElement const&, IInspectable const&)
-                {
-                    systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
-                });
+            });
 
 
-                backdropController = DesktopAcrylicController();
-                //backdropController.TintColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                backdropController.FallbackColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                backdropController.TintOpacity(0.3f);
-                backdropController.LuminosityOpacity(0.001f);
-                backdropController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
-                backdropController.AddSystemBackdropTarget(supportsBackdrop);
+            ResourceDictionary resources = Application::Current().Resources();
+            if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Acrylic)
+            {
+                DesktopAcrylicController controller = DesktopAcrylicController();
+                
+                controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
+                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+                controller.AddSystemBackdropTarget(supportsBackdrop);
+
+                backdropController = std::move(controller);
+            }
+            else if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Mica)
+            {
+                MicaController controller = MicaController();
+
+                controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
+                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+                controller.AddSystemBackdropTarget(supportsBackdrop);
+
+                backdropController = std::move(controller);
             }
         }
     }

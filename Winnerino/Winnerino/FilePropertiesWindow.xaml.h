@@ -2,10 +2,10 @@
 
 #pragma push_macro("GetCurrentTime")
 #undef GetCurrentTime
-
 #include "FilePropertiesWindow.g.h"
-
 #pragma pop_macro("GetCurrentTime")
+
+#include "DesktopTransparencyControllerType.h"
 
 namespace winrt::Winnerino::implementation
 {
@@ -28,11 +28,11 @@ namespace winrt::Winnerino::implementation
         winrt::Microsoft::UI::Composition::SystemBackdrops::SystemBackdropConfiguration systemBackdropConfiguration = nullptr;
         winrt::Microsoft::UI::Xaml::Window::Activated_revoker activatedRevoker;
         winrt::Microsoft::UI::Xaml::FrameworkElement::ActualThemeChanged_revoker themeChangedRevoker;
-        winrt::Microsoft::UI::Composition::SystemBackdrops::DesktopAcrylicController backdropController = nullptr;
+        winrt::Microsoft::UI::Composition::SystemBackdrops::ISystemBackdropController backdropController = nullptr;
 
         void InitWindow();
         void MainWindow_Closed(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&);
-        void SetBackground();
+        void SetBackground(::Winnerino::DesktopTransparencyControllerType const& transparencyControllerType);
         void AppWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const&);
     };
 }
