@@ -2,12 +2,11 @@
 
 #pragma push_macro("GetCurrentTime")
 #undef GetCurrentTime
-
 #include "MainWindow.g.h"
+#pragma pop_macro("GetCurrentTime")
+
 #include <queue>
 #include "MessageData.h"
-
-#pragma pop_macro("GetCurrentTime")
 
 #define USING_TIMER 0
 

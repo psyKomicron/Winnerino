@@ -4,6 +4,8 @@
 #include "MainWindow.g.cpp"
 #endif
 
+#include <restrictederrorinfo.h>
+
 using namespace winrt;
 
 using namespace Microsoft::UI;
@@ -116,9 +118,16 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::GoBack()
     {
-        if (ContentFrame().IsLoaded() && ContentFrame().CanGoBack())
+        if (ContentFrame().IsLoaded())
         {
-            ContentFrame().GoBack();
+            if (ContentFrame().BackStackDepth() == 0)
+            {
+                NavigateTo(xaml_typename<ExplorerPage>());
+            }
+            else
+            {
+                ContentFrame().GoBack();
+            }
         }
     }
 
