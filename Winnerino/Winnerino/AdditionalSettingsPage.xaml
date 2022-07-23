@@ -83,7 +83,7 @@
                     <local:AppExpanderHeader Glyph="&#xe799;" Title="Appearance" Subtitle="Title bar, secondary windows appearance"/>
                 </Expander.Header>
 
-                <Grid>
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -95,27 +95,24 @@
                     <CheckBox
                         Content="Title bar animated icon"
                         IsChecked="True"
-                        Margin="{StaticResource ExpanderContentMargin}"
                         VerticalAlignment="Center"
                         Click="AnimatedIconToggleSwitch_Toggled"/>
 
                     <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="1"/>
 
+                    <CheckBox
+                        x:Name="KeepSearchWindowOnTop"
+                        Content="Keep search window on top"
+                        Click="KeepSearchWindowOnTop_Toggled" 
+                        Grid.Row="2"/>
+
                     <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="3"/>
 
-                    <StackPanel Grid.Row="4" Spacing="3" Margin="{StaticResource ExpanderContentMargin}">
-
-                        <CheckBox
-                            x:Name="ShowSearchWindowInSwitchers"
-                            Content="Show window in switchers (Alt + Tab)"
-                            Click="ShowSearchWindowInSwitchers_Toggled" 
-                            Grid.Column="1"/>
-                        <CheckBox
-                            x:Name="FilePropertiesWindowInSwitchers"
-                            Content="Show window in switchers (Alt + Tab)"
-                            Click="ShowFilePropertiesWindowInSwitchers_Toggled" 
-                            Grid.Column="1"/>
-                    </StackPanel>
+                    <CheckBox
+                        x:Name="KeepFilePropertiesWindowOnTop"
+                        Content="Keep file properties window on top"
+                        Click="KeepFilePropertiesWindowOnTop_Toggled" 
+                        Grid.Row="4"/>
                 </Grid>
             </Expander>
 
@@ -134,37 +131,61 @@
                     </local:AppExpanderHeader>
                 </Expander.Header>
 
-                <Grid Margin="{StaticResource ExpanderContentMargin}">
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="Rectangle" BasedOn="{StaticResource ExpanderSeparatorStyle}">
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
 
-                    <TextBlock Text="Control individual window transparency settings"/>
-                    <StackPanel Grid.Row="1" Spacing="3" Margin="5">
-                        <CheckBox
-                            x:Name="SearchWindowUsesAcrylic"
-                            Content="In file search window"
+                    <TextBlock Text="Transparency effects in file search window"/>
+                    <ToggleSwitch 
+                        x:Name="SearchWindowTransparencyEffects"
+                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
+                        VerticalAlignment="Center" 
+                        Grid.Column="1" 
+                        Toggled="SearchWindowUsesAcrylic_Toggled"/>
+
+                    <Rectangle Grid.Row="1"/>
+
+                    <TextBlock Text="Transparency effects in file properties window" Grid.Row="2"/>
+                    <ToggleSwitch 
+                        x:Name="FilePropsWindowTransparencyEffects"
+                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
+                        Grid.Column="1" 
+                        Grid.Row="2" 
+                        Toggled="FilePropertiesWindowUsesAcrylic_Toggled"/>
+
+                    <Rectangle Grid.Row="3"/>
+
+                    <TextBlock Text="Choose transparency effect type" Grid.Row="4"/>
+                    <StackPanel Grid.Row="5" Spacing="3" Margin="5">
+                        <RadioButton
+                            x:Name="AcrylicRadioButton" 
+                            Content="Acrylic" 
+                            IsEnabled="{x:Bind TransparencyControlsEnabled}" 
+                            Click="AcrylicRadioButton_Click"/>
+
+                        <RadioButton
+                            x:Name="MicaRadioButton"
+                            Content="Mica"
                             IsEnabled="{x:Bind TransparencyControlsEnabled}"
-                            Grid.Column="1"
-                            Click="SearchWindowUsesAcrylic_Toggled"/>
-                        <CheckBox
-                            x:Name="FilePropertiesWindowUsesAcrylic"
-                            Content="In file properties window"
-                            IsEnabled="{x:Bind TransparencyControlsEnabled}"
-                            Grid.Column="1"
-                            Click="FilePropertiesWindowUsesAcrylic_Toggled"/>
-                    </StackPanel>
-
-                    <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Margin="-51,8,-16,15" Grid.Row="2"/>
-
-                    <TextBlock Text="Choose transparency effect type" Grid.Row="3"/>
-                    <StackPanel Grid.Row="4" Spacing="3" Margin="5">
-                        <RadioButton x:Name="AcrylicRadioButton" Content="Acrylic"/>
-                        <RadioButton x:Name="MicaRadioButton" Content="Mica"/>
+                            Click="MicaRadioButton_Click"/>
                     </StackPanel>
                 </Grid>
             </Expander>
@@ -176,34 +197,46 @@
                     <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
                 </Expander.Header>
 
-                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="15">
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="Rectangle" BasedOn="{StaticResource ExpanderSeparatorStyle}">
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                    </Grid.Resources>
 
                     <HyperlinkButton Grid.Column="0" Grid.Row="0" Content="Open application folder (File explorer)" Click="AppDataFolderHyperlink_Click"/>
-                    <HyperlinkButton Grid.Column="0" Grid.Row="1" Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
-                    <HyperlinkButton Grid.Column="0" Grid.Row="2" Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
-                    
                     <Button Grid.Column="1" Grid.Row="0" Click="OpenSettingsFile_Click" HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xE8A7;" FontSize="{StaticResource IconButtonFontSize}"/>
                             <TextBlock Text="Export settings"/>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Column="1" Grid.Row="1" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
+
+                    <Rectangle Grid.Row="1"/>
+
+                    <HyperlinkButton Grid.Column="0" Grid.Row="2" Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
+                    <Button Grid.Column="1" Grid.Row="2" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
                             <TextBlock Text="Reset settings"/>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Column="1" Grid.Row="2" Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
+
+                    <Rectangle Grid.Row="3"/>
+
+                    <HyperlinkButton Grid.Column="0" Grid.Row="4" Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
+                    <Button Grid.Column="1" Grid.Row="4" Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
                 </Grid>
             </Expander>
         </ListView>

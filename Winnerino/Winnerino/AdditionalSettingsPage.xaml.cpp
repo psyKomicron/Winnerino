@@ -4,6 +4,9 @@
 #include "AdditionalSettingsPage.g.cpp"
 #endif
 
+#include "DesktopTransparencyControllerType.h"
+
+using namespace ::Winnerino;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
@@ -30,23 +33,24 @@ namespace winrt::Winnerino::implementation
     void AdditionalSettingsPage::OnPageLoaded(IInspectable const&, RoutedEventArgs const&)
     {
         bool isOn = UseAcrylicToggleSwitch().IsOn();
-        SearchWindowUsesAcrylic().IsEnabled(isOn);
-        FilePropertiesWindowUsesAcrylic().IsEnabled(isOn);
+        SearchWindowTransparencyEffects().IsEnabled(isOn);
+        FilePropsWindowTransparencyEffects().IsEnabled(isOn);
     }
 
 
     void AdditionalSettingsPage::ClearSecureSettingsButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-
+        // TODO: Allow user to clear secure settings (even if none right now v2.1.0).
     }
 
     void AdditionalSettingsPage::AnimatedIconToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-
+        // TODO: Implement animated window icon control (on/off).
     }
 
     void AdditionalSettingsPage::CompactOverlayToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
+        // TODO: Remove "compact overlay" feature if useless, implement before v.2-3.
         //Winnerino::MainWindow window = Winnerino::MainWindow::Current();
     }
 
@@ -81,6 +85,8 @@ namespace winrt::Winnerino::implementation
 
     void AdditionalSettingsPage::ClearTempFolderButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
+        // TODO: Allow user to clear temporary files (even if none right now v2.1.0)
+        //ApplicationData::Current().TemporaryFolder().GetParentAsync()
     }
 
     void AdditionalSettingsPage::DarkThemeButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -171,34 +177,46 @@ namespace winrt::Winnerino::implementation
         ApplicationData::Current().LocalSettings().Values().Insert(L"NotificationsEnabled", box_value(NotificationsSwitch().IsOn()));
     }
 
-    void AdditionalSettingsPage::ShowSearchWindowInSwitchers_Toggled(IInspectable const&, RoutedEventArgs const&)
+    void AdditionalSettingsPage::KeepSearchWindowOnTop_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
-        settings.Values().Insert(L"ShowInSwitchers", box_value(ShowSearchWindowInSwitchers().IsChecked()));
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().Lookup(L"FileSearchWindow");
+        settings.Values().Insert(L"KeepOnTop", box_value(KeepSearchWindowOnTop().IsChecked()));
     }
 
     void AdditionalSettingsPage::SearchWindowUsesAcrylic_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"FileSearchWindow");
-        settings.Values().Insert(L"UsesAcrylic", box_value(SearchWindowUsesAcrylic().IsChecked()));
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().Lookup(L"FileSearchWindow");
+        settings.Values().Insert(L"UsesAcrylic", box_value(SearchWindowTransparencyEffects().IsOn()));
     }
 
     void AdditionalSettingsPage::FilePropertiesWindowUsesAcrylic_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().Lookup(L"FilePropertiesWindow");
+        settings.Values().Insert(L"UsesAcrylic", box_value(SearchWindowTransparencyEffects().IsOn()));
     }
 
-    void AdditionalSettingsPage::ShowFilePropertiesWindowInSwitchers_Toggled(IInspectable const&, RoutedEventArgs const&)
+    void AdditionalSettingsPage::KeepFilePropertiesWindowOnTop_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().Lookup(L"FilePropertiesWindow");
+        settings.Values().Insert(L"KeepOnTop", box_value(KeepFilePropertiesWindowOnTop().IsChecked()));
     }
 
     void AdditionalSettingsPage::UseAcrylicCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
     {
         bool isOn = UseAcrylicToggleSwitch().IsOn();
         ApplicationData::Current().LocalSettings().Values().Insert(L"WindowsCanUseTransparencyEffects", IReference(isOn));
-        SearchWindowUsesAcrylic().IsEnabled(isOn);
-        FilePropertiesWindowUsesAcrylic().IsEnabled(isOn);
+        SearchWindowTransparencyEffects().IsEnabled(isOn);
+        FilePropsWindowTransparencyEffects().IsEnabled(isOn);
+    }
+
+    void AdditionalSettingsPage::MicaRadioButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationData::Current().LocalSettings().Values().Insert(L"TransparencyEffectController", box_value((uint8_t)DesktopTransparencyControllerType::Mica));
+    }
+
+    void AdditionalSettingsPage::AcrylicRadioButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationData::Current().LocalSettings().Values().Insert(L"TransparencyEffectController", box_value((uint8_t)DesktopTransparencyControllerType::Acrylic));
     }
 
 
@@ -217,6 +235,14 @@ namespace winrt::Winnerino::implementation
             DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
             LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
             DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
+
+            inspectable = settings.Values().TryLookup(L"TransparencyEffectController");
+            DesktopTransparencyControllerType transparencyController = (DesktopTransparencyControllerType)unbox_value_or<uint8_t>(
+                inspectable,
+                (uint8_t)DesktopTransparencyControllerType::Acrylic
+                );
+            AcrylicRadioButton().IsChecked(transparencyController == DesktopTransparencyControllerType::Acrylic);
+            MicaRadioButton().IsChecked(transparencyController == DesktopTransparencyControllerType::Mica);
         }
 
         LoadLastPageToggleSwitch().IsChecked(unbox_value_or<bool>(settings.Values().TryLookup(L"LoadLastPage"), true));
@@ -230,8 +256,8 @@ namespace winrt::Winnerino::implementation
             {
                 searchWindowSettings = settings.CreateContainer(L"FileSearchWindow", ApplicationDataCreateDisposition::Always);
             }
-            SearchWindowUsesAcrylic().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
-            ShowSearchWindowInSwitchers().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"ShowInSwitchers")), true));
+            SearchWindowTransparencyEffects().IsOn(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
+            KeepSearchWindowOnTop().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"KeepOnTop")), true));
         }
 
         // File properties window settings
@@ -241,8 +267,8 @@ namespace winrt::Winnerino::implementation
             {
                 filePropsWindow = settings.CreateContainer(L"FilePropertiesWindow", ApplicationDataCreateDisposition::Always);
             }
-            FilePropertiesWindowUsesAcrylic().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"UsesAcrylic"), true));
-            FilePropertiesWindowInSwitchers().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"ShowInSwitcher"), true));
+            FilePropsWindowTransparencyEffects().IsOn(unbox_value_or(filePropsWindow.Values().TryLookup(L"UsesAcrylic"), true));
+            KeepFilePropertiesWindowOnTop().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"KeepOnTop"), true));
         }
     }
 
