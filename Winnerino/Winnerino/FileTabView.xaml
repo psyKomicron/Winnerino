@@ -2,9 +2,9 @@
     x:Class="Winnerino.FileTabView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:w="using:Winnerino"
     mc:Ignorable="d"
     Loaded="UserControl_Loaded">
 
@@ -130,6 +130,7 @@
                 </Button>
 
                 <CommandBar x:Name="FileCommandBar" HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Column="2">
+                    
                     <AppBarElementContainer HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
                         <DropDownButton Height="37" Width="60" Background="Transparent" BorderThickness="0">
                             <DropDownButton.Content>
@@ -154,8 +155,8 @@
                             </DropDownButton.Flyout>
                         </DropDownButton>
                     </AppBarElementContainer>
-
                     <AppBarSeparator/>
+
                     <AppBarElementContainer HorizontalContentAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Stretch">
                         <DropDownButton Background="Transparent" BorderThickness="0" Height="37" IsEnabled="True">
                             <DropDownButton.Content>
@@ -181,6 +182,8 @@
                         <AppBarButton x:Name="RefreshButton" Label="Refresh" Icon="Refresh" Click="RefreshButton_Click"/>
                         <AppBarSeparator/>
                         <AppBarButton x:Name="SettingsButton" Label="Settings" Icon="Setting" Click="SettingsButton_Click"/>
+                        <AppBarSeparator/>
+                        <AppBarButton x:Name="SpotlightImporter" Label="Import Spotlight images" Icon="Import" Click="SpotlightImporter_Click"/>
                     </CommandBar.SecondaryCommands>
                 </CommandBar>
             </Grid>
@@ -336,6 +339,10 @@
                     <TextBox x:Name="RenameTextBox" PlaceholderText="New name" Grid.Row="0"/>
                     <CheckBox x:Name="GenerateUniqueNameCheckBox" Content="Generate unique name" Grid.Row="1"/>
                 </Grid>
+            </ContentDialog>
+
+            <ContentDialog x:Name="SpotlightImporterDialog" DefaultButton="Primary" PrimaryButtonText="Close">
+                <w:SpotlightImporter/>
             </ContentDialog>
         </Grid>
     </NavigationView>

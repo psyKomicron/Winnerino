@@ -10,7 +10,7 @@
 #include "fileapi.h"
 #include "DirectorySizeCalculator.h"
 #include "QuickSort.h"
-#include "Helpers.h"
+#include "Helper.h"
 #include "FilePropertiesWindow.xaml.h"
 #include "FileSearchWindow.xaml.h"
 
@@ -31,6 +31,7 @@ using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
+using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Security::Cryptography;
 using namespace winrt::Windows::Security::Cryptography::Core;
 using namespace winrt::Windows::Storage;
@@ -38,7 +39,6 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::UI::Notifications;
-using namespace winrt::Windows::Graphics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -625,6 +625,15 @@ namespace winrt::Winnerino::implementation
     {
         Window window = make<FilePropertiesWindow>();
         window.Activate();
+    }
+
+    IAsyncAction FileTabView::SpotlightImporter_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto&& dialogResult = co_await SpotlightImporterDialog().ShowAsync();
+        if (dialogResult == ContentDialogResult::Primary)
+        {
+            MainWindow::Current().NotifyUser(L"Biip boup", InfoBarSeverity::Informational);
+        }
     }
 
 
