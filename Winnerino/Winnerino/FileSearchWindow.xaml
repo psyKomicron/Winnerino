@@ -36,7 +36,11 @@
             </Grid>
         </Grid>
 
-        <ListView x:Name="SearchResults" Grid.Row="2" Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,3,0,0">
+        <ListView x:Name="SearchResults" Grid.Row="2" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" BorderThickness="0,3,0,0">
+            <ListView.Background>
+                <AcrylicBrush TintColor="{ThemeResource SolidBackgroundFillColorBase}" TintOpacity="0.7" TintLuminosityOpacity="0.6"/>
+            </ListView.Background>
+            
             <ListView.Resources>
                 <Style TargetType="local:FileEntryView">
                     <Setter Property="Margin" Value="0,7"/>
