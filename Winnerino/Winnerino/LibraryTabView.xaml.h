@@ -13,7 +13,10 @@ namespace winrt::Winnerino::implementation
         LibraryTabView();
         LibraryTabView(hstring const& tag);
 
-        winrt::Windows::Foundation::IAsyncAction LoadFiles(hstring const& tag);
+        winrt::Windows::Foundation::IAsyncAction Load(hstring const& tag);
+
+    private:
+        void GetFiles(hstring const& directory);
     };
 }
 

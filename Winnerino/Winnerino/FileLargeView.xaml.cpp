@@ -83,7 +83,8 @@ namespace winrt::Winnerino::implementation
                 mode = ThumbnailMode::PicturesView;
             }
 
-            co_await imageSource.SetSourceAsync(co_await file.GetThumbnailAsync(mode, 200));
+            StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(mode, 200);
+            co_await imageSource.SetSourceAsync(thumbnail);
 
             DispatcherQueue().TryEnqueue([this]()
             {

@@ -1,0 +1,36 @@
+{
+  "en-US": {
+    "fixes": [
+      "Fixed application crash when open a directory before all current directories sizes have been calculated.",
+      "Fixed application rendering/appearing on a disconnected screen."
+    ],
+    "issues": [
+      "Scrolling through a long list may cause the application to crash.",
+      "Application becomes unresponsive when loading a directory with a lot of files.",
+      "Application may crash after sorting if the number of files is large (> 5000)."
+    ],
+    "new": [
+      "Added system wide search. High performance regex based.",
+      "New feature: system health. Shows space usage.",
+      "File actions for multiple files (copy, cut, delete; rename in progress).",
+      "Updated settings."
+    ]
+  },
+  "fr-FR": {
+    "fixes": [
+      "Correction d'un plantage de l'application lors de l'ouverture d'un répertoire avant que toutes les tailles des répertoires actuels n'aient été calculées.",
+      "Correction d'un bug lors duquel l'application pouvait apparaître sur un écran ayant été déconnecté."
+    ],
+    "issues": [
+      "Faire defiler une longue liste peut provoquer un plantage de l'application'",
+      "L'application peut ne plus répondre lors de l'ouverture d'un répertoire contenant beaucoup de fichiers/dossiers",
+      "L'application planter lors d'un tri si le nombre de fichier affichés est supérieur à 5000 ."
+    ],
+    "new": [
+      "Ajout d'une recherche haute performance de fichiers multi-disques.",
+      "Ajout d'une nouvelle fonctionnalité : vue de la santé de l'ordinateur.",
+      "File actions for multiple files (copy, cut, delete; rename in progress.",
+      "Updated settings."
+    ]
+  }
+}

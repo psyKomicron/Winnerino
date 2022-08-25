@@ -61,6 +61,7 @@ namespace Winnerino::Storage
                 {
                     lock_guard<mutex> lock{ queueMutex };
 
+                    // TODO: abs() of addition of 2 positive integer ?????
                     size_t reserve = static_cast<size_t>(abs(static_cast<int>(files->size()) + static_cast<int>(temp.size())));
                     files->reserve(reserve);
                     for (size_t i = 0; i < temp.size(); i++)

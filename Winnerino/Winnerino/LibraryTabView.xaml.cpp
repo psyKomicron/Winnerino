@@ -4,7 +4,8 @@
 #include "LibraryTabView.g.cpp"
 #endif
 
-#include <DirectoryEnumerator.h>
+#include "DirectoryEnumerator.h"
+#include "FileInfo.h"
 
 using namespace std;
 using namespace ::Winnerino::Storage;
@@ -27,12 +28,11 @@ namespace winrt::Winnerino::implementation
 
     LibraryTabView::LibraryTabView(hstring const& tag) : LibraryTabView()
     {
-        LoadFiles(tag);
+        Load(tag);
     }
 
-    IAsyncAction LibraryTabView::LoadFiles(hstring const& tag)
+    IAsyncAction LibraryTabView::Load(hstring const& tag)
     {
-#ifdef _DEBUG
         StorageLibrary documents = nullptr;
         if (tag == L"Documents")
         {
@@ -55,55 +55,63 @@ namespace winrt::Winnerino::implementation
             co_return;
         }
 
-        DirectoryEnumerator enumerator{};
         auto&& folders = documents.Folders();
         for (auto&& folder : folders)
         {
             hstring path = folder.Path();
-            unique_ptr<vector<hstring>> vect{ enumerator.Enumerate(path) };
+            GetFiles(path);
+        }
 
-            for (size_t i = 0; i < vect->size(); i++)
+        DispatcherQueue().TryEnqueue([&]()
+        {
+            if (FilesList().Children().Size() == 0)
             {
-                DispatcherQueue().TryEnqueue([this, path = vect->at(i)]()
+                TextBlock textBlock{};
+                textBlock.Style(Application::Current().Resources().Lookup(box_value(L"DisplayTextBlockStyle")).as<::Style>());
+                textBlock.Opacity(Application::Current().Resources().Lookup(box_value(L"CaptionTextBlockOpacity")).as<double>());
+                textBlock.Text(L"No files found...");
+                textBlock.VerticalAlignment(VerticalAlignment::Center);
+                textBlock.Margin(Thickness(0, 20, 0, 0));
+                ControlScrollViewer().Content(textBlock);
+            }
+        });
+    }
+
+    void LibraryTabView::GetFiles(hstring const& directory)
+    {
+        DirectoryEnumerator enumerator{};
+        unique_ptr<vector<FileInfo>> vect{ enumerator.GetFiles(directory) };
+
+        if (vect)
+        {
+            if (DispatcherQueue().HasThreadAccess())
+            {
+                for (size_t i = 0; i < vect->size(); i++)
                 {
-                    FileLargeView view{ path };
+                    FileLargeView view{ vect->at(i).Path() };
                     FilesList().Children().Append(view);
-                });
+                }
+            }
+            else
+            {
+                for (size_t i = 0; i < vect->size(); i++)
+                {
+                    DispatcherQueue().TryEnqueue([this, i, _info = vect->at(i)]() mutable
+                    {
+                        FileLargeView view{ _info.Path() };
+                        FilesList().Children().Append(view);
+                    });
+                }
             }
         }
-#else
-        StorageFolder documents = nullptr;
 
-        if (tag == L"Documents")
+        unique_ptr<vector<hstring>> dirs{ enumerator.EnumerateDirectories(directory) };
+        if (dirs)
         {
-            documents = KnownFolders::DocumentsLibrary();
-        }
-        else if (tag == L"Music")
-        {
-            documents = KnownFolders::MusicLibrary();
-        }
-        else if (tag == L"Pictures")
-        {
-            documents = KnownFolders::PicturesLibrary();
-        }
-        else if (tag == L"Videos")
-        {
-            documents = KnownFolders::VideosLibrary();
-        }
-        else
-        {
-            co_return;
-        }
-
-        IVectorView<StorageFile> files = co_await documents.GetFilesAsync();
-        for (StorageFile file : files)
-        {
-            DispatcherQueue().TryEnqueue([this, path = file.Path()]()
+            for (size_t i = 0; i < dirs->size(); i++)
             {
-                FileLargeView view{ path };
-                FilesList().Children().Append(view);
-            });
+                GetFiles(dirs->at(i));
+            }
         }
-#endif
     }
 }

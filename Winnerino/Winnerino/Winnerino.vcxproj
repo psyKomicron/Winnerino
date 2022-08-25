@@ -139,6 +139,7 @@
       <DependentUpon>AppExpanderHeader.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="DesktopTransparencyControllerType.h" />
     <ClInclude Include="DirectoryEnumerator.h" />
     <ClInclude Include="DirectorySizeCalculator.h" />
     <ClInclude Include="DriveHealthView.xaml.h">
