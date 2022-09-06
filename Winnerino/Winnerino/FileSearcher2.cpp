@@ -32,9 +32,11 @@ namespace Winnerino::Storage
         thread localThread = thread{ &FileSearcher2::WorkerFunction, this, query, results };
         thread localThread2 = thread{ &FileSearcher2::WorkerFunction, this, query, results };
         thread localThread3 = thread{ &FileSearcher2::WorkerFunction, this, query, results };
+        thread localThread4 = thread{ &FileSearcher2::WorkerFunction, this, query, results };
         localThread.join();
         localThread2.join();
         localThread3.join();
+        localThread4.join();
     }
 
 
@@ -55,14 +57,18 @@ namespace Winnerino::Storage
 #endif // _DEBUG
 
                 vector<FileInfo> temp{};
-                GetFiles(query, path, &temp);
+                try
+                {
+                    GetFiles(query, path, &temp);
+                }
+                catch (hresult_error){}
+                catch (std::exception){}
 
                 if (temp.size() > 0)
                 {
                     lock_guard<mutex> lock{ queueMutex };
 
-                    // TODO: abs() of addition of 2 positive integer ?????
-                    size_t reserve = static_cast<size_t>(abs(static_cast<int>(files->size()) + static_cast<int>(temp.size())));
+                    size_t reserve = static_cast<size_t>(files->size() + temp.size());
                     files->reserve(reserve);
                     for (size_t i = 0; i < temp.size(); i++)
                     {
@@ -88,7 +94,7 @@ namespace Winnerino::Storage
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 {
                     FileInfo fileInfo = FileInfo(&findData, path);
-                    if (regex_search(fileInfo.Name().data(), query))
+                    if (regex_search(fileInfo.Name().c_str(), query))
                     {
                         files->push_back(std::move(fileInfo));
                         //e_matchFound(Windows::Foundation::IInspectable{}, filePath);
@@ -100,11 +106,16 @@ namespace Winnerino::Storage
                     hstring dirName = to_hstring(findData.cFileName);
                     if (dirName != L"." && dirName != L"..") // can be optimised
                     {
+                        if (regex_search(dirName.c_str(), query))
+                        {
+                            files->push_back(FileInfo(&findData, path));
+                        }
+
                         pathes->push_back(toEnumerate + dirName);
                     }
                 }
             } 
-            while (FindNextFile(findHandle, &findData));
+            while (FindNextFile(findHandle, &findData) && threadFlag.test());
 
             FindClose(findHandle);
         }
