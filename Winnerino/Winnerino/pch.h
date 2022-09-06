@@ -43,8 +43,13 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.FileProperties.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.Media.h>
+#include <winrt/Windows.Media.Core.h>
+#include <winrt/Windows.Media.Playback.h>
+
 
 #pragma comment(lib, "PowrProf.lib")
 #pragma comment(lib, "user32.lib")
@@ -53,7 +58,13 @@
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(lib, "Shell32.lib")
 
+
 // 32 768 bits
 constexpr int16_t ALTERNATE_MAX_PATH = 2048;
 
-//#define SPAWN_TEST_WINDOW
+
+#ifdef _DEBUG
+#define DEBUG
+#else
+#undef DEBUG
+#endif
