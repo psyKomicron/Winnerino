@@ -22,13 +22,40 @@
             </Grid.RowDefinitions>
 
             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Import Spotlight pictures"/>
-            <TextBlock 
-                x:Name="SpotlightPathTextBlock" 
-                TextWrapping="Wrap" 
-                TextTrimming="Clip" 
-                Opacity="{StaticResource CaptionTextBlockOpacity}" 
-                FontSize="12"
-                Grid.Row="1"/>
+
+            <Expander Grid.Row="1" Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <local:AppExpanderHeader Title="Options" Subtitle="File filter, folder creation"/>
+                </Expander.Header>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Auto create destination folder"/>
+                    <CheckBox x:Name="AutoCreateDestFolder" Grid.Column="1" HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="Format" Grid.Row="1"/>
+                    <ComboBox 
+                        x:Name="FormatComboBox" 
+                        SelectedIndex="0" 
+                        Grid.Row="1" 
+                        Grid.Column="1" 
+                        HorizontalAlignment="Stretch" 
+                        HorizontalContentAlignment="Center">
+                        <ComboBoxItem Content="16/9" Tag="16/9"/>
+                        <ComboBoxItem Content="9/16" Tag="9/16"/>
+                        <ComboBoxItem Content="4/3" Tag="4/3"/>
+                        <ComboBoxItem Content="1" Tag="1"/>
+                    </ComboBox>
+                </Grid>
+            </Expander>
         </Grid>
 
         <Grid Grid.Row="1" RowSpacing="15" ColumnSpacing="10">
@@ -37,6 +64,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -57,13 +86,27 @@
                 Click="ImportButton_Click"/>
 
             <TextBlock 
+                x:Name="SpotlightPathTextBlock" 
+                TextWrapping="Wrap" 
+                TextTrimming="Clip" 
+                Opacity="{StaticResource CaptionTextBlockOpacity}" 
+                HorizontalAlignment="Center"
+                FontSize="12"
+                Grid.ColumnSpan="2"
+                Grid.Row="1"/>
+            <FontIcon 
+                Glyph="&#xe74b;" 
+                Grid.ColumnSpan="2"
+                Grid.Row="2"/>
+            <TextBlock 
                 x:Name="ChosenFolderPath"
                 TextWrapping="Wrap" 
                 TextTrimming="Clip" 
                 Opacity="{StaticResource CaptionTextBlockOpacity}" 
                 FontSize="12" 
+                HorizontalAlignment="Center"
                 Grid.ColumnSpan="2" 
-                Grid.Row="1"/>
+                Grid.Row="3"/>
         </Grid>
 
         <ProgressBar x:Name="CopyProgressBar" Grid.Row="2" Value="0"/>

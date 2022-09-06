@@ -48,12 +48,6 @@ namespace winrt::Winnerino::implementation
         // TODO: Implement animated window icon control (on/off).
     }
 
-    void AdditionalSettingsPage::CompactOverlayToggleSwitch_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        // TODO: Remove "compact overlay" feature if useless, implement before v.2-3.
-        //Winnerino::MainWindow window = Winnerino::MainWindow::Current();
-    }
-
     IAsyncAction AdditionalSettingsPage::AppDataFolderHyperlink_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
         try

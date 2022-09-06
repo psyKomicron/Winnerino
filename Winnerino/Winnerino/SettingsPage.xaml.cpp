@@ -23,6 +23,7 @@ using namespace winrt::Windows::System;
 
 namespace winrt::Winnerino::implementation
 {
+    //TODO: Move to recycle bin or delete files (ask for every file, give choice when deleting, show option...)
     SettingsPage::SettingsPage()
     {
         InitializeComponent();
@@ -76,6 +77,7 @@ namespace winrt::Winnerino::implementation
         {
             container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
+
         container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsChecked()));
     }
 
@@ -102,6 +104,17 @@ namespace winrt::Winnerino::implementation
     {
         MainWindow::Current().NavigateTo(xaml_typename<MainPage>());
     }
+
+    void SettingsPage::HideSystemFilesCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
+
+        container.Values().Insert(L"HideSystemFiles", box_value(HideSystemFilesCheckBox().IsChecked().GetBoolean()));
+    }
 #pragma endregion
 
 
@@ -112,10 +125,9 @@ namespace winrt::Winnerino::implementation
         ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
         if (specificSettings)
         {
-            IInspectable inspectable = specificSettings.Values().TryLookup(L"ShowSpecialFolders");
-            ShowSpecialsFolderToggleSwitch().IsChecked(unbox_value_or<bool>(inspectable, false));
-            inspectable = specificSettings.Values().TryLookup(L"CalculateDirSize");
-            CalculateDirectorySizeToggleSwitch().IsChecked(unbox_value_or(inspectable, true));
+            ShowSpecialsFolderToggleSwitch().IsChecked(unbox_value_or<bool>(specificSettings.Values().TryLookup(L"ShowSpecialFolders"), false));
+            CalculateDirectorySizeToggleSwitch().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"CalculateDirSize"), true));
+            HideSystemFilesCheckBox().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"HideSystemFiles"), false));
         }
         else
         {
@@ -139,10 +151,10 @@ namespace winrt::Winnerino::implementation
                 Grid::SetColumnSpan(AboutGrid(), 2);
             }
 
-            if (Grid::GetColumnSpan(SettingsGrid()) != 2)
+            if (Grid::GetColumnSpan(SettingsListView()) != 2)
             {
-                Grid::SetColumnSpan(SettingsGrid(), 2);
-                Grid::SetRowSpan(SettingsGrid(), 1);
+                Grid::SetColumnSpan(SettingsListView(), 2);
+                Grid::SetRowSpan(SettingsListView(), 1);
             }
         }
         else
@@ -158,10 +170,10 @@ namespace winrt::Winnerino::implementation
                 Grid::SetColumnSpan(AboutGrid(), 1);
             }
 
-            if (Grid::GetColumnSpan(SettingsGrid()) != 1)
+            if (Grid::GetColumnSpan(SettingsListView()) != 1)
             {
-                Grid::SetColumnSpan(SettingsGrid(), 1);
-                Grid::SetRowSpan(SettingsGrid(), 2);
+                Grid::SetColumnSpan(SettingsListView(), 1);
+                Grid::SetRowSpan(SettingsListView(), 2);
             }
         }
     }
@@ -170,9 +182,4 @@ namespace winrt::Winnerino::implementation
     {
         SetLayout(args.Size().Width);
     }
-}
-
-void winrt::Winnerino::implementation::SettingsPage::HideSystemFilesCheckBox_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-
 }
