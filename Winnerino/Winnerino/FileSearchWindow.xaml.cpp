@@ -8,6 +8,9 @@
 #include "FileInfo.h"
 #include "FileSearcher2.h"
 #include "Helper.h"
+using namespace winrt::Windows::UI::Notifications;
+using namespace winrt::Windows::Data::Xml::Dom;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
 #define INVALIDATE_VIEW 0
 #define RESET_TITLE_BAR 0
@@ -103,18 +106,22 @@ namespace winrt::Winnerino::implementation
                     SearchResults().Items().Clear();
                 });
 
-
 #if TRUE
                 DispatcherQueue().TryEnqueue([this, results]()
                 {
+                    //IVector<FileEntryView> collection{ single_threaded_vector<FileEntryView>() };
                     for (size_t i = 0; i < results->size(); i++)
                     {
                         FileInfo file = results->at(i);
                         FileEntryView view = FileEntryView{ file.Name(), file.Path(), file.Size(), file.Attributes() };
                         view.ShowFilePath(true);
+
                         SearchResults().Items().Append(view);
+                        //collection.Append(view);
                     }
                     delete results;
+
+                    //SearchResults().ItemsSource(collection);
                 });
 #else
                 for (auto&& result : results)
@@ -140,6 +147,94 @@ namespace winrt::Winnerino::implementation
         {
             //Close();
         }
+    }
+
+    IAsyncAction FileSearchWindow::CopyPathFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        DataPackage data{};
+        data.RequestedOperation(DataPackageOperation::Copy);
+        IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
+
+        IVector<IInspectable> selectedItems = SearchResults().SelectedItems();
+        for (IInspectable selectedItem : selectedItems)
+        {
+            FileEntryView view = selectedItem.try_as<FileEntryView>();
+            if (view)
+            {
+                if (view.IsDirectory())
+                {
+                    items.Append(co_await StorageFolder::GetFolderFromPathAsync(view.FilePath()));
+                }
+                else
+                {
+                    items.Append(co_await StorageFile::GetFileFromPathAsync(view.FilePath()));
+                }
+            }
+        }
+
+        if (items.Size() > 0 && unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        {
+            //I18N: Clipboard actions -> "Copied" singular and plural "No files selected to copy"
+            hstring message{};
+            data.SetStorageItems(items);
+            Clipboard::SetContent(data);
+
+            if (items.Size() == 1)
+            {
+                message = L"Copied \"" + items.GetAt(0).Name() + L"\" to clipboard";
+            }
+            else
+            {
+                message = L"Copied " + to_hstring(items.Size()) + L" to clipboard";
+            }
+
+            XmlDocument toastContent{};
+            XmlElement root = toastContent.CreateElement(L"toast");
+            toastContent.AppendChild(root);
+
+            XmlElement visual = toastContent.CreateElement(L"visual");
+            root.AppendChild(visual);
+
+            XmlElement binding = toastContent.CreateElement(L"binding");
+            binding.SetAttribute(L"template", L"ToastText01");
+            visual.AppendChild(binding);
+
+            XmlElement text = toastContent.CreateElement(L"text");
+            text.SetAttribute(L"id", L"1");
+            text.InnerText(message);
+            binding.AppendChild(text);
+
+            ToastNotification toastNotif{ toastContent };
+            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+        }
+    }
+
+    IAsyncAction FileSearchWindow::OpenInExplorerFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        IVector<IInspectable> selectedItems = SearchResults().SelectedItems();
+        for (IInspectable item : selectedItems)
+        {
+            FileEntryView view = item.try_as<FileEntryView>();
+            if (view)
+            {
+                hstring filePath = view.FilePath();
+                hstring fileName = view.FileName();
+                try
+                {
+                    string path = to_string(filePath);
+                    string parent = path.substr(0, filePath.size() - fileName.size());
+                    co_await Launcher::LaunchUriAsync(Uri{ to_hstring(parent) });
+                }
+                catch (const hresult_error& ex)
+                {
+                    MainWindow::Current().NotifyError(ex.code(), L"Failed to open file explorer");
+                }
+            }
+        }
+    }
+
+    void FileSearchWindow::ShowPropertiesFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    {
     }
 
 
@@ -254,12 +349,12 @@ namespace winrt::Winnerino::implementation
     {
         if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Acrylic && !DesktopAcrylicController::IsSupported())
         {
-            // TODO: Trace "Desktop Acrylic Controller not supported on this platform"
+            OutputDebugString(L"FileSearchWindow > Desktop Acrylic Controller not supported on this platform");
             return;
         }
         else if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Mica && !MicaController::IsSupported())
         {
-            // TODO: Trace "Mica Controller not supported on this platform"
+            OutputDebugString(L"FileSearchWindow > Mica Controller not supported on this platform");
             return;
         }
 

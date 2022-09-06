@@ -46,6 +46,30 @@
                     <Setter Property="Margin" Value="0,7"/>
                 </Style>
             </ListView.Resources>
+
+            <ListView.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutSubItem IsEnabled="False" Text="Open with"/>
+
+                    <MenuFlyoutItem Text="Copy as path" Click="CopyPathFlyoutItem_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xe756;" FontSize="{StaticResource IconButtonFontSize}"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+
+                    <MenuFlyoutItem Text="Open containing folder" Click="OpenInExplorerFlyoutItem_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xec50;" FontSize="{StaticResource IconButtonFontSize}"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+
+                    <MenuFlyoutItem Text="Properties" Click="ShowPropertiesFlyoutItem_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xe90f;" FontSize="{StaticResource IconButtonFontSize}"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuFlyout>
+            </ListView.ContextFlyout>
         </ListView>
 
         <ProgressRing x:Name="SearchProgressRing" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="50" Visibility="Collapsed" IsIndeterminate="True" IsHitTestVisible="False"/>
