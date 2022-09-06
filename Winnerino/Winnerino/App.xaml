@@ -271,6 +271,7 @@
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="MinHeight" Value="{StaticResource SettingHostControlMinHeight}"/>
+                <Setter Property="Background" Value="{ThemeResource ExpanderBackground}"/>
             </Style>
 
             <Style x:Key="GridExpanderStyle" TargetType="Grid">
