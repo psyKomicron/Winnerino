@@ -34,6 +34,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                <!-- What's new -->
                 <ListView
                     Background="{ThemeResource ExpanderBackground}" 
                     SelectionMode="None"
@@ -48,6 +49,7 @@
                     <x:String>Improved search window results display.</x:String>
                 </ListView>
 
+                <!-- Fixes -->
                 <ListView
                     Background="{ThemeResource ExpanderBackground}" 
                     SelectionMode="None"
@@ -62,8 +64,11 @@
                     <x:String>Fixed application crash when open a directory before all current directory size have been calculated.</x:String>
                     <x:String>Fixed application rendering/appearing outside of the display bounds.</x:String>
                     <x:String>Fixed application crashes when using the search window.</x:String>
+                    <x:String>Scrolling through a long list no longer causes the application to crash (Windows App SDK fix with 1.1.4).</x:String>
+                    <x:String>Fixed a mistake potentially making file sizes (ones displayed) wrong.</x:String>
                 </ListView>
 
+                <!-- Known issues -->
                 <ListView 
                     SelectionMode="None" 
                     Grid.Row="2"
@@ -75,9 +80,9 @@
                         <TextBlock Text="Known issues" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
                     </ListView.Header>
 
-                    <x:String>Scrolling through a long list may cause the application to crash.</x:String>
                     <x:String>Application becomes unresponsive when loading a directory with a lot of files.</x:String>
                     <x:String>Application may crash after sorting if the number of files is large (> 5000).</x:String>
+                    <x:String>Directory sizes may not update properly or show the right size. However the correct directory size will be shown in the bottom bar.</x:String>
                 </ListView>
             </Grid>
         </Grid>
