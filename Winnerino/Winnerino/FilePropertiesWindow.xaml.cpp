@@ -127,12 +127,12 @@ namespace winrt::Winnerino::implementation
     {
         if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Acrylic && !DesktopAcrylicController::IsSupported())
         {
-            // TODO: Trace "Desktop Acrylic Controller not supported on this platform"
+            OutputDebugString(L"FilePropertiesWindow > Desktop Acrylic Controller not supported on this platform");
             return;
         }
         else if (transparencyControllerType == ::Winnerino::DesktopTransparencyControllerType::Mica && !MicaController::IsSupported())
         {
-            // TODO: Trace "Mica Controller not supported on this platform"
+            OutputDebugString(L"FilePropertiesWindow > Mica Controller not supported on this platform");
             return;
         }
 
