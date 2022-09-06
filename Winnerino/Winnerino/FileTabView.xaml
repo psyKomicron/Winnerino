@@ -53,7 +53,7 @@
             </NavigationViewItem>
         </NavigationView.MenuItems>
 
-        <Grid VerticalAlignment="Stretch" ColumnSpacing="5" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+        <Grid x:Name="ContentGrid" VerticalAlignment="Stretch" ColumnSpacing="5" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -119,6 +119,7 @@
                         VerticalAlignment="Center"
                         MaxSuggestionListHeight="300"
                         Margin="10,0,0,0"
+                        PreviewKeyDown="PathInputBox_PreviewKeyDown"
                         SuggestionChosen="PathInputBox_SuggestionChosen"
                         GotFocus="PathInputBox_GotFocus"
                         TextChanged="PathInputBox_TextChanged"
@@ -181,9 +182,9 @@
                         <AppBarButton x:Name="ClearFavoritesButton" Label="Clear favorites"  Click="ClearFavoritesButton_Click"/>
                         <AppBarButton x:Name="RefreshButton" Label="Refresh" Icon="Refresh" Click="RefreshButton_Click"/>
                         <AppBarSeparator/>
-                        <AppBarButton x:Name="SettingsButton" Label="Settings" Icon="Setting" Click="SettingsButton_Click"/>
-                        <AppBarSeparator/>
                         <AppBarButton x:Name="SpotlightImporter" Label="Import Spotlight images" Icon="Import" Click="SpotlightImporter_Click"/>
+                        <AppBarSeparator/>
+                        <AppBarButton x:Name="SettingsButton" Label="Settings" Icon="Setting" Click="SettingsButton_Click"/>
                     </CommandBar.SecondaryCommands>
                 </CommandBar>
             </Grid>
@@ -211,7 +212,7 @@
                 </ListView.ItemsPanel>
 
                 <ListView.ContextFlyout>
-                    <MenuFlyout>
+                    <MenuFlyout Opening="ListViewFlyout_Opening">
                         <MenuFlyoutSubItem IsEnabled="False" Text="Open with"/>
 
                         <MenuFlyoutItem Text="Copy as path" Click="CopyPathFlyoutItem_Click">
@@ -232,8 +233,9 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         
-                        <!--#region File actions -->
                         <MenuFlyoutSeparator/>
+
+                        <!--#region File actions -->
                         <MenuFlyoutItem Text="Cut">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xe8c6;" FontSize="{StaticResource IconButtonFontSize}"/>
@@ -295,24 +297,32 @@
 
                     <Grid Grid.Column="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{x:Bind ItemCount}" VerticalAlignment="Center" Grid.Column="0"/>
                         <TextBlock Text="items" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+
+                        <TextBlock x:Name="HiddenFilesCount" Text="0" VerticalAlignment="Center" Grid.Column="2" Margin="5,0,0,0"/>
+                        <TextBlock Text="hidden" VerticalAlignment="Center" Margin="2,0,0,0" Grid.Column="3"/>
                     </Grid>
 
                     <Grid Grid.Column="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+
                         <TextBlock Text="{x:Bind SelectedItemsCount}" VerticalAlignment="Center"  Grid.Column="0"/>
-                        <TextBlock Text="selected" VerticalAlignment="Center" Margin="3,0,0,0" Grid.Column="1"/>
+                        <TextBlock Text="selected" VerticalAlignment="Center" Margin="2,0,0,0" Grid.Column="1"/>
                     </Grid>
 
                     <TextBlock x:Name="FileSizeTextBlock" ToolTipService.ToolTip="Selected item(s) size" HorizontalAlignment="Center" Grid.Column="2"/>
+                    
                     <TextBlock x:Name="FileOpenAppTextBlock" ToolTipService.ToolTip="Opens with" Grid.Column="3"/>
+
                     <TextBlock x:Name="FilePerceivedTypeTextBlock" ToolTipService.ToolTip="File perceived type" Grid.Column="4"/>
                 </Grid>
 
@@ -325,6 +335,7 @@
                     </Grid.ColumnDefinitions>
 
                     <FontIcon x:Name="FileDangerousFontIcon" FontSize="12" Glyph="&#xe7ba;" Visibility="Collapsed" ToolTipService.ToolTip="File considered dangerous" Grid.Column="0"/>
+                    
                     <TextBlock x:Name="FileLastWriteTextBlock" ToolTipService.ToolTip="Last write" Grid.Column="1"/>
                 </Grid>
             </Grid>

@@ -33,6 +33,7 @@ namespace Winnerino
             *size /= (double)100;
             return L" Tb";
         }
+
         if (*size >= 0x40000000)
         {
             *size *= (double)100;
@@ -40,6 +41,7 @@ namespace Winnerino
             *size /= (double)100;
             return L" Gb";
         }
+
         if (*size >= 0x100000)
         {
             *size *= (double)100;
@@ -47,6 +49,7 @@ namespace Winnerino
             *size /= (double)100;
             return L" Mb";
         }
+
         if (*size >= 0x400)
         {
             *size *= (double)100;
@@ -54,12 +57,13 @@ namespace Winnerino
             *size /= (double)100;
             return L" Kb";
         }
+
         return L" b";
     };
 
     inline winrt::hstring format_size(double* size, uint16_t const& decimals)
     {
-        double multiplicator = decimals * 10.0;
+        double multiplicator = pow(10.0, decimals);
 
         if (*size >= 0x10000000000)
         {
@@ -68,6 +72,7 @@ namespace Winnerino
             *size /= multiplicator;
             return L" Tb";
         }
+
         if (*size >= 0x40000000)
         {
             *size *= multiplicator;
@@ -75,6 +80,7 @@ namespace Winnerino
             *size /= multiplicator;
             return L" Gb";
         }
+
         if (*size >= 0x100000)
         {
             *size *= multiplicator;
@@ -82,6 +88,7 @@ namespace Winnerino
             *size /= multiplicator;
             return L" Mb";
         }
+        
         if (*size >= 0x400)
         {
             *size *= multiplicator;
@@ -89,12 +96,13 @@ namespace Winnerino
             *size /= multiplicator;
             return L" Kb";
         }
+
         return L" b";
     }
 
     inline winrt::hstring format_size(double size, uint16_t const& decimals)
     {
-        double multiplicator = decimals * 10.0;
+        double multiplicator = pow(10, decimals);
 
         if (size >= 0x10000000000)
         {
@@ -103,6 +111,7 @@ namespace Winnerino
             size /= multiplicator;
             return winrt::to_hstring(size) + L" Tb";
         }
+
         if (size >= 0x40000000)
         {
             size *= multiplicator;
@@ -110,6 +119,7 @@ namespace Winnerino
             size /= multiplicator;
             return winrt::to_hstring(size) + L" Gb";
         }
+
         if (size >= 0x100000)
         {
             size *= multiplicator;
@@ -117,6 +127,7 @@ namespace Winnerino
             size /= multiplicator;
             return winrt::to_hstring(size) + L" Mb";
         }
+
         if (size >= 0x400)
         {
             size *= multiplicator;
@@ -124,6 +135,7 @@ namespace Winnerino
             size /= multiplicator;
             return winrt::to_hstring(size) + L" Kb";
         }
+
         return winrt::to_hstring(size) + L" b";
     };
 

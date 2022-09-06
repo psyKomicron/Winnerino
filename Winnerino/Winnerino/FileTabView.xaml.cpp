@@ -13,12 +13,11 @@
 #include "Helper.h"
 #include "FilePropertiesWindow.xaml.h"
 #include "FileSearchWindow.xaml.h"
+#include "FileInfo.h"
 
 using namespace std;
-
 using namespace ::Winnerino;
 using namespace ::Winnerino::Storage;
-
 using namespace winrt;
 using namespace winrt::Microsoft::UI;
 using namespace winrt::Microsoft::UI::Windowing;
@@ -100,7 +99,7 @@ namespace winrt::Winnerino::implementation
     void FileTabView::PathInputBox_SuggestionChosen(AutoSuggestBox const& sender, AutoSuggestBoxSuggestionChosenEventArgs const& args)
     {
         std::string s = to_string(sender.Text());
-        if (s.empty())
+        if (listingDrives || s.empty())
         {
             optional<hstring> opt = args.SelectedItem().try_as<hstring>();
             if (opt)
@@ -116,7 +115,7 @@ namespace winrt::Winnerino::implementation
                 }
             }
         }
-        else
+        else if (!listingDrives)
         {
             for (size_t i = s.size() - 1; i > 0; i--)
             {
@@ -134,7 +133,7 @@ namespace winrt::Winnerino::implementation
     {
         AutoSuggestBox box = sender.as<AutoSuggestBox>();
         IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
-        CompletePath(box.Text(), suggestions);
+        CompletePath(box.Text(), &suggestions);
         box.ItemsSource(suggestions);
     }
 
@@ -142,8 +141,9 @@ namespace winrt::Winnerino::implementation
     {
         if (args.Reason() == AutoSuggestionBoxTextChangeReason::UserInput)
         {
+            //TODO: Reduce memory footprint
             IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
-            CompletePath(sender.Text(), suggestions);
+            CompletePath(sender.Text(), &suggestions);
             sender.ItemsSource(suggestions);
         }
     }
@@ -310,11 +310,10 @@ namespace winrt::Winnerino::implementation
         windowBounds.X = MainWindow::Current().Position().X;
         windowBounds.Y = MainWindow::Current().Position().Y;
 
-        w.SetPosition(PointInt32
-                      {
+        w.SetPosition(PointInt32(
                           static_cast<int32_t>(windowBounds.X + (windowBounds.Width / 2.0f) - (w.Bounds().Width / 2.0f)),
-                          static_cast<int32_t>(windowBounds.Y + (windowBounds.Height / 2.0f) - (w.Bounds().Height / 2.0f))
-                      });
+                          static_cast<int32_t>(windowBounds.Y + (windowBounds.Height / 2.0f) - (w.Bounds().Height / 2.0f)))
+        );
         w.Activate();
     }
 
@@ -469,7 +468,6 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-
         DataPackage data{};
         data.RequestedOperation(DataPackageOperation::Copy);
         IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
@@ -491,13 +489,13 @@ namespace winrt::Winnerino::implementation
             }
         }
 
-        // I18N: Clipboard actions -> "Copied" singular and plural "No files selected to copy"
-        hstring message{};
-        if (items.Size() > 0)
+        if (items.Size() > 0 && unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
         {
+            //I18N: Clipboard actions -> "Copied" singular and plural "No files selected to copy"
+            hstring message{};
             data.SetStorageItems(items);
             Clipboard::SetContent(data);
-            
+
             if (items.Size() == 1)
             {
                 message = L"Copied \"" + items.GetAt(0).Name() + L"\" to clipboard";
@@ -506,14 +504,7 @@ namespace winrt::Winnerino::implementation
             {
                 message = L"Copied " + to_hstring(items.Size()) + L" to clipboard";
             }
-        }
-        else
-        {
-            message = L"No files selected to copy";
-        }
 
-        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
-        {
             XmlDocument toastContent{};
             XmlElement root = toastContent.CreateElement(L"toast");
             toastContent.AppendChild(root);
@@ -629,15 +620,99 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::SpotlightImporter_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        auto&& dialogResult = co_await SpotlightImporterDialog().ShowAsync();
-        if (dialogResult == ContentDialogResult::Primary)
+        co_await SpotlightImporterDialog().ShowAsync();
+    }
+
+    void FileTabView::PathInputBox_PreviewKeyDown(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
+    {
+        if (e.Key() == VirtualKey::Right)
         {
-            MainWindow::Current().NotifyUser(L"Biip boup", InfoBarSeverity::Informational);
+            IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
+            if (!PathInputBox().Text().ends_with(L"\\"))
+            {
+                PathInputBox().Text(PathInputBox().Text() + L"\\");
+            }
+            CompletePath(PathInputBox().Text(), &suggestions);
+            PathInputBox().ItemsSource(suggestions);
         }
     }
 
+    void FileTabView::ListViewFlyout_Opening(IInspectable const&, IInspectable const&)
+    {
+        //TODO: get the "Opens with" list of programs + customs
+#ifdef DEBUG
+        if (FileListView().SelectedItems().Size() == 1)
+        {
+            FileEntryView view = FileListView().SelectedItem().try_as<FileEntryView>();
+            if (view)
+            {
+                hstring ext = view.FileExtension() + L"\\OpenWithProgids";
 
-    void FileTabView::CompletePath(hstring const& query, IVector<IInspectable> const& suggestions)
+                HKEY hKey{};
+                if (SUCCEEDED(RegOpenKeyEx(HKEY_CLASSES_ROOT, ext.c_str(), 0, KEY_READ, &hKey)))
+                {
+                    DWORD cchClassName = MAX_PATH;
+                    DWORD subkeyCount = 0;
+                    DWORD maxSubkeySize = 0;
+                    DWORD maxClassNameLength = 0;
+                    DWORD valueCount = 0;
+                    DWORD maxValueNameLength = 0;
+                    DWORD maxValueLength = 0;
+                    DWORD securityDesc = 0;
+                    WCHAR className[MAX_PATH];
+                    FILETIME keyLastWrite{};
+
+                    LSTATUS resCode = RegQueryInfoKey(
+                        hKey,                 // key handle
+                        className,            // buffer for class name 
+                        &cchClassName,        // size of class string
+                        NULL,                 // reserved 
+                        &subkeyCount,         // number of subkeys
+                        &maxSubkeySize,       // longest subkey size 
+                        &maxClassNameLength,  // longest class string
+                        &valueCount,          // number of values for this key
+                        &maxValueNameLength,  // longest value name 
+                        &maxValueLength,      // longest value data 
+                        &securityDesc,        // longest value data 
+                        &keyLastWrite         // last write time 
+                    );
+
+                    if (SUCCEEDED(resCode))
+                    {
+                        for (size_t i = 0; i < subkeyCount; i++)
+                        {
+                            DWORD cbName = MAX_PATH;
+                            WCHAR subkeyName[MAX_PATH];
+                            resCode = RegEnumKeyEx(
+                                hKey,
+                                i,
+                                subkeyName,
+                                &cbName,
+                                NULL,
+                                NULL,
+                                NULL,
+                                &keyLastWrite
+                            );
+
+                            if (FAILED(resCode))
+                            {
+                                __debugbreak();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    __debugbreak();
+                }
+            }
+        }
+#endif // DEBUG
+
+    }
+
+
+    void FileTabView::CompletePath(hstring const& query, IVector<IInspectable>* const& suggestions)
     {
         if (!query.empty())
         {
@@ -648,18 +723,18 @@ namespace winrt::Winnerino::implementation
             {
                 do
                 {
-                    int64_t size = static_cast<int64_t>(data.nFileSizeHigh) << 32;
-                    size += data.nFileSizeLow;
-
-                    wchar_t dot[2]{ '.', '\0' };
-                    wchar_t dotdot[3]{ '.', '.', '\0' };
+                    const wchar_t dot[2]{ '.', '\0' };
+                    const wchar_t dotdot[3]{ '.', '.', '\0' };
                     if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(data.cFileName, dot) != 0 && wcscmp(data.cFileName, dotdot) != 0)
                     {
-                        suggestions.Append(box_value(to_hstring(data.cFileName)));
+                        suggestions->Append(box_value(to_hstring(data.cFileName)));
                     }
                 } while (FindNextFile(findHandle, &data));
+
                 FindClose(findHandle);
             }
+
+            listingDrives = false;
         }
         else
         {
@@ -705,7 +780,7 @@ namespace winrt::Winnerino::implementation
                             grid.Children().Append(fontIcon);
                             grid.Children().Append(textBlock);
 
-                            suggestions.Append(grid);
+                            suggestions->Append(grid);
                         }
                     }
                 }
@@ -715,8 +790,12 @@ namespace winrt::Winnerino::implementation
             list_local_drives(&drives);
             for (size_t i = 0; i < drives.size(); i++)
             {
-                suggestions.Append(box_value(drives[i]));
+                if (PathFileExists(drives.at(i).c_str()))
+                {
+                    suggestions->Append(box_value(drives[i]));
+                }
             }
+            listingDrives = true;
         }
     }
 
@@ -819,54 +898,83 @@ namespace winrt::Winnerino::implementation
             }
 
             _files.Clear();
+            fileEntryDeletedRevokers.clear();
+            //I18N: Number inter
+            HiddenFilesCount().Text(L"0");
+
             ProgressRing().Visibility(Visibility::Visible);
 
             concurrency::create_task([this, _path = path]()
             {
                 WIN32_FIND_DATA data{};
+
                 HANDLE handle = FindFirstFile((_path + L"*").c_str(), &data);
                 if (handle != INVALID_HANDLE_VALUE)
                 {
-                    bool showSpecialFolders = ShowSpecialFolders();
+                    bool showSpecialFolders = false;
+                    bool hideSystemFiles = false;
+                    GetOptions(&showSpecialFolders, &hideSystemFiles);
+
                     uint32_t loadedFiles = 0;
+                    uint32_t hiddenFiles = 0;
+
                     do
                     {
-                        hstring fileName = to_hstring(data.cFileName);
-                        if (showSpecialFolders || (fileName != L".." && fileName != L"."))
+                        const wchar_t dot[2]{ '.', '\0' };
+                        const wchar_t dotdot[3]{ '.', '.', '\0' };
+                        if (showSpecialFolders || (wcscmp(data.cFileName, dot) != 0 && wcscmp(data.cFileName, dotdot) != 0))
                         {
-                            WCHAR combinedPath[ALTERNATE_MAX_PATH]{ 0 };
-                            PathCombine(combinedPath, _path.c_str(), fileName.c_str());
-                            hstring filePath = to_hstring(combinedPath);
-
-                            uint64_t size = (static_cast<uint64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
-                            DateTime modifiedDate = clock::from_FILETIME(data.ftLastWriteTime);
-
-#define STA 1
-#if STA
-                            DispatcherQueue().TryEnqueue([this, fileName, filePath, size, attributes = data.dwFileAttributes, modifiedDate]()
+                            FileInfo fileInfo(&data, _path);
+                            if (fileInfo.IsSystemFile() && hideSystemFiles)
                             {
-                                FileEntryView view{ fileName, filePath, size, attributes };
-                                view.LastWrite(modifiedDate);
-                                view.Background(FileListView().Background());
+                                hiddenFiles++;
+                                continue;
+                            }
+
+                            DispatcherQueue().TryEnqueue([this, cfileInfo = move(fileInfo)]()
+                            {
+#ifdef DEBUG
+                                FileListView().ItemsSource(nullptr);
+#endif // DEBUG
+
+                                FileEntryView view{ cfileInfo.Name(), cfileInfo.Path(), cfileInfo.Size(), cfileInfo.Attributes() };
+                                view.LastWrite(cfileInfo.LastWrite());
+                                //view.Background(FileListView().Background());
                                 _files.Append(view);
+
+                                fileEntryDeletedRevokers.push_back(
+                                    view.Deleted(auto_revoke, [&](Winnerino::FileEntryView const& sender, IInspectable const&)
+                                    {
+                                        uint32_t index;
+                                        if (_files.IndexOf(sender, index))
+                                        {
+                                            _files.RemoveAt(index);
+                                        }
+                                    })
+                                );
+
+#ifdef DEBUG
+                                FileListView().ItemsSource(_files);
+#endif
                             });
-#else
-                            FileEntryView view{ fileName, filePath, size, data.dwFileAttributes };
-                            view.LastWrite(modifiedDate);
-                            _files.Append(view);
-#endif // MTA
-#undef STA
 
                             loadedFiles++;
                         }
                     } while (FindNextFile(handle, &data));
+
                     FindClose(handle);
+
                     previousPath = hstring{ _path };
                     
                     if (loadedFiles > 5000)
                     {
                         MainWindow::Current().NotifyUser(L"Sorting operations may fail because of the large number of files loaded", InfoBarSeverity::Warning);
                     }
+
+                    DispatcherQueue().TryEnqueue([&, hiddenFiles]()
+                    {
+                        HiddenFilesCount().Text(to_hstring(hiddenFiles));
+                    });
                 }
                 else
                 {
@@ -876,7 +984,7 @@ namespace winrt::Winnerino::implementation
                 DispatcherQueue().TryEnqueue([this, _path]()
                 {
                     PathInputBox().Text(_path);
-                    e_propertyChanged(*this, PropertyChangedEventArgs{ L"ItemCount" });
+                    e_propertyChanged(*this, PropertyChangedEventArgs(L"ItemCount"));
                     ProgressRing().Visibility(Visibility::Collapsed);
                 });
             });
@@ -918,16 +1026,13 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    inline bool FileTabView::ShowSpecialFolders()
+    inline void FileTabView::GetOptions(bool* showSpecialFolders, bool* hideSystemFiles)
     {
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
         {
-            return unbox_value_or(settings.Values().TryLookup(L"ShowSpecialFolders"), false);
-        }
-        else
-        {
-            return false;
+            *showSpecialFolders = unbox_value_or(settings.Values().TryLookup(L"ShowSpecialFolders"), false);
+            *hideSystemFiles = unbox_value_or(settings.Values().TryLookup(L"HideSystemFiles"), false);
         }
     }
 

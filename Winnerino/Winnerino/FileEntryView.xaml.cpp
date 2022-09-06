@@ -7,6 +7,7 @@
 #include <math.h>
 #include "fileapi.h"
 #include "FilePropertiesWindow.xaml.h"
+#include "Helper.h"
 
 using namespace std;
 using namespace winrt;
@@ -20,11 +21,12 @@ using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Media::Core;
+using namespace winrt::Windows::Media::Playback;
 using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::FileProperties;
-
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,7 +38,7 @@ namespace winrt::Winnerino::implementation
         InitializeComponent();
     }
 
-    FileEntryView::FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes)
+    FileEntryView::FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes) : FileEntryView()
     {
         loadedEventToken = Loaded({ this, &FileEntryView::OnLoaded });
         unloadedEventToken = Unloaded({ this, &FileEntryView::OnUnloaded });
@@ -57,6 +59,7 @@ namespace winrt::Winnerino::implementation
             UpdateSize(fileSize);
 
             PCWSTR ext = PathFindExtension(_fileName.c_str());
+            _fileExtension = to_hstring(ext);
             GetIcon(ext);
 
             InitializeComponent(); // we can use UI properties from now on
@@ -91,6 +94,84 @@ namespace winrt::Winnerino::implementation
         Unloaded(unloadedEventToken);
     }
 
+
+    uint64_t FileEntryView::FileBytes() const
+    {
+        return fileSize;
+    }
+
+    hstring FileEntryView::FileName() const
+    {
+        return _fileName;
+    }
+
+    hstring FileEntryView::FilePath() const
+    {
+        return _filePath;
+    }
+
+    hstring FileEntryView::FileIcon() const
+    {
+        return _icon;
+    }
+
+    hstring FileEntryView::FileSize() const
+    {
+        return to_hstring(_displayFileSize) + _fileSizeExtension;
+    }
+
+    hstring FileEntryView::FileExtension() const
+    {
+        return _fileExtension;
+    }
+
+    bool FileEntryView::IsDirectory() const
+    {
+        return _isDirectory;
+    }
+
+    bool FileEntryView::IsSystem() const
+    {
+        return _isSystem;
+    }
+
+    hstring FileEntryView::OpensWith() const
+    {
+        return _opensWith;
+    }
+
+    hstring FileEntryView::PerceivedType() const
+    {
+        return _perceivedType;
+    }
+
+    Windows::Foundation::DateTime FileEntryView::LastWrite() const
+    {
+        return _lastWrite;
+    }
+
+    void FileEntryView::LastWrite(Windows::Foundation::DateTime const& value)
+    {
+        _lastWrite = value;
+    }
+
+    bool FileEntryView::IsFileDangerous() const
+    {
+        return _isDangerous;
+    }
+
+    bool FileEntryView::ShowFilePath() const
+    {
+        return _showFilePath;
+    }
+
+    void FileEntryView::ShowFilePath(bool value)
+    {
+        _showFilePath = value;
+        e_propertyChanged(*this, PropertyChangedEventArgs{ L"ShowFilePath" });
+    }
+
+
     void FileEntryView::Delete()
     {
         if (!DeleteFile(_filePath.c_str()))
@@ -100,7 +181,7 @@ namespace winrt::Winnerino::implementation
         else
         {
             FileNameTextBlock().Opacity(0.5);
-            // TODO: raise deleted event or make the FileTabView handle directory changes ?
+            e_deleted(*this, IInspectable());
         }
     }
 
@@ -137,6 +218,7 @@ namespace winrt::Winnerino::implementation
         co_return;
 #endif // _DEBUG
     }
+
 
     void FileEntryView::MenuFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
@@ -212,19 +294,74 @@ namespace winrt::Winnerino::implementation
     {
         if (PathFileExists(_filePath.c_str()))
         {
-            if (!_isDirectory)
+            if (IsDirectory())
+            {
+                try
+                {
+                    StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
+                    IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
+                    wostringstream builder{};
+                    if (children.Size() > 1)
+                    {
+                        builder << children.GetAt(0).Name().c_str();
+                        for (size_t i = 1; i < children.Size(); i++)
+                        {
+                            builder << L", " << children.GetAt(i).Name().c_str();
+                        }
+
+                        DispatcherQueue().TryEnqueue([this, _text = builder.str()]()
+                        {
+                            TextBlock textBlock{};
+                            textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                            textBlock.Text(_text);
+
+                            UserControlToolTip().Content(textBlock);
+                        });
+                    }
+                    else
+                    {
+                        DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name()]()
+                        {
+                            TextBlock textBlock{};
+                            textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                            textBlock.Text(_text);
+
+                            UserControlToolTip().Content(textBlock);
+                        });
+                    }
+                }
+                catch (const hresult_error& ex)
+                {
+                    DispatcherQueue().TryEnqueue([this, message = ex.message()]()
+                    {
+                        TextBlock textBlock{};
+                        textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                        textBlock.Text(message);
+
+                        UserControlToolTip().Content(textBlock);
+                    });
+                    OutputDebugString(ex.message().c_str());
+                }
+            }
+            else
             {
                 Image image{};
-                image.Height(100);
-                image.Stretch(Stretch::Fill);
+                image.Stretch(Stretch::Uniform);
                 BitmapImage bitmapImage{};
                 image.Source(bitmapImage);
-                UserControlToolTip().Content(image);
+
+                Viewbox viewBox{};
+
+                viewBox.HorizontalAlignment(HorizontalAlignment::Center);
+                viewBox.VerticalAlignment(VerticalAlignment::Stretch);
+                viewBox.Child(image);
+
+                UserControlToolTip().Content(viewBox);
 
                 StorageFile file = co_await StorageFile::GetFileFromPathAsync(_filePath);
                 ThumbnailMode thumbnailMode = ThumbnailMode::ListView;
-                
-                switch (this->perceivedFileType)
+
+                switch (perceivedFileType)
                 {
                     case PERCEIVED_TYPE_IMAGE:
                         thumbnailMode = ThumbnailMode::PicturesView;
@@ -236,10 +373,10 @@ namespace winrt::Winnerino::implementation
                         thumbnailMode = ThumbnailMode::VideosView;
                         break;
                     case PERCEIVED_TYPE_TEXT:
-                    case PERCEIVED_TYPE_COMPRESSED:
                     case PERCEIVED_TYPE_DOCUMENT:
-                        thumbnailMode = ThumbnailMode::SingleItem;
+                        thumbnailMode = ThumbnailMode::DocumentsView;
                         break;
+                    case PERCEIVED_TYPE_COMPRESSED:
                     case PERCEIVED_TYPE_FIRST:
                     case PERCEIVED_TYPE_UNSPECIFIED:
                     case PERCEIVED_TYPE_FOLDER:
@@ -249,103 +386,37 @@ namespace winrt::Winnerino::implementation
                     case PERCEIVED_TYPE_GAMEMEDIA:
                     case PERCEIVED_TYPE_CONTACTS:
                     default:
+                        thumbnailMode = ThumbnailMode::SingleItem;
                         break;
                 }
-                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 200, ThumbnailOptions::ResizeThumbnail);
+
+                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 500, ThumbnailOptions::UseCurrentScale);
                 co_await bitmapImage.SetSourceAsync(thumbnail);
             }
-            else
-            {
-                TextBlock textBlock{};
-                textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
-                UserControlToolTip().Content(textBlock);
-
-                try
-                {
-                    StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
-                    IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
-                    wostringstream builder{};
-                    if (children.Size() > 1)
-                    {
-                        for (auto&& storageItem : children)
-                        {
-                            builder << storageItem.Name().c_str() << L", ";
-                        }
-                        wstring text = builder.str();
-
-                        DispatcherQueue().TryEnqueue([this, _text = text, textBlock]()
-                        {
-                            textBlock.Text(_text);
-                        });
-                    }
-                    else
-                    {
-                        DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name(), textBlock]()
-                        {
-                            textBlock.Text(_text);
-                        });
-                    }
-                }
-                catch (const hresult_error& ex)
-                {
-                    OutputDebugString(ex.message().c_str());
-                }
-            }
         }
     }
 
 
-    inline hstring FileEntryView::FormatSize(double* size)
-    {
-        if (*size >= 0x10000000000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x10000000000);
-            *size /= (double)100;
-            return L" Tb";
-        }
-        if (*size >= 0x40000000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x40000000);
-            *size /= (double)100;
-            return L" Gb";
-        }
-        if (*size >= 0x100000)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x100000);
-            *size /= (double)100;
-            return L" Mb";
-        }
-        if (*size >= 0x400)
-        {
-            *size *= (double)100;
-            *size = round(*size / 0x400);
-            *size /= (double)100;
-            return L" Kb";
-        }
-        return L" b";
-    }
-
-    void FileEntryView::GetAttributes(int64_t attributes)
+    void FileEntryView::GetAttributes(int64_t _attributes)
     {
         ResourceDictionary resources = Application::Current().Resources();
-        if (attributes & FILE_ATTRIBUTE_ARCHIVE)
+        if (_attributes & FILE_ATTRIBUTE_ARCHIVE)
         {
             FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Archive"));
+            ToolTipService::SetToolTip(f, box_value(L"Archived"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_ARCHIVE_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_COMPRESSED)
+
+        if (_attributes & FILE_ATTRIBUTE_COMPRESSED)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Compressed"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_COMPRESSED_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_DEVICE)
+
+        if (_attributes & FILE_ATTRIBUTE_DEVICE)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Device"));
@@ -353,68 +424,72 @@ namespace winrt::Winnerino::implementation
             attributesStackPanel().Children().Append(f);
         }
         // already used directory attribute
-        if (attributes & FILE_ATTRIBUTE_ENCRYPTED)
+        if (_attributes & FILE_ATTRIBUTE_ENCRYPTED)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Encrypted"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_ENCRYPTED_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_HIDDEN)
+
+        if (_attributes & FILE_ATTRIBUTE_HIDDEN)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Hidden"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_HIDDEN_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-#if false
-        if (attributes & FILE_ATTRIBUTE_INTEGRITY_STREAM)
+
+        /*if (_attributes & FILE_ATTRIBUTE_INTEGRITY_STREAM)
         {
         }
-        if (attributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
+        if (_attributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
         {
         }
-        if (attributes & FILE_ATTRIBUTE_NO_SCRUB_DATA)
+        if (_attributes & FILE_ATTRIBUTE_NO_SCRUB_DATA)
         {
-        }
-#endif
-        if (attributes & FILE_ATTRIBUTE_OFFLINE)
+        }*/
+
+        if (_attributes & FILE_ATTRIBUTE_OFFLINE)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Offline"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_OFFLINE_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_READONLY)
+
+        if (_attributes & FILE_ATTRIBUTE_READONLY)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Read-only"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_READONLY_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS)
+
+        if (_attributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Recalled on access"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_RECALL_ON_OPEN)
+
+        if (_attributes & FILE_ATTRIBUTE_RECALL_ON_OPEN)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Recalled on open"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_RECALL_ON_OPEN_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-#if false
-        if (attributes & FILE_ATTRIBUTE_REPARSE_POINT)
+
+        /*if (_attributes & FILE_ATTRIBUTE_REPARSE_POINT)
         {
         }
-        if (attributes & FILE_ATTRIBUTE_SPARSE_FILE)
+        if (_attributes & FILE_ATTRIBUTE_SPARSE_FILE)
         {
-        }
-#endif
-        if (attributes & FILE_ATTRIBUTE_SYSTEM)
+        }*/
+
+        if (_attributes & FILE_ATTRIBUTE_SYSTEM)
         {
             _isSystem = true;
             FontIcon f{};
@@ -422,14 +497,16 @@ namespace winrt::Winnerino::implementation
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_SYSTEM_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_TEMPORARY)
+
+        if (_attributes & FILE_ATTRIBUTE_TEMPORARY)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Temporary"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_TEMPORARY_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
-        if (attributes & FILE_ATTRIBUTE_VIRTUAL)
+
+        if (_attributes & FILE_ATTRIBUTE_VIRTUAL)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Virtual"));
@@ -553,41 +630,29 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::ProgressHandler(IInspectable const&, IReference<uint_fast64_t> const& args)
     {
-        uint_fast64_t newSize = args.as<uint_fast64_t>();
-        fileSize += newSize;
-        double displayFileSize = static_cast<double>(fileSize);
-        hstring c_ext = FormatSize(&displayFileSize);
-        
-#if FALSE
-        if (loaded && displayFileSize != _displayFileSize)
+        bool refresh = true;
+        uint_fast64_t newSize = fileSize + args.as<uint_fast64_t>();
+        refresh = (newSize / static_cast<double>(fileSize.load())) > 10;
+
+        if (loaded && refresh)
         {
-            _displayFileSize = displayFileSize;
-            DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
+            fileSize.exchange(newSize);
+            double displayFileSize = static_cast<double>(newSize);
+
+            DispatcherQueue().TryEnqueue([this, &c_newSize = displayFileSize]()
             {
-                if (FileSizeExtensionTextBlock() && FileSizeTextBlock())
-                {
-                    FileSizeExtensionTextBlock().Text(c_ext);
-                    FileSizeTextBlock().Text(to_hstring(c_newSize));
-                }
-            });
-        }
-#else
-        if (loaded && (displayFileSize - _displayFileSize) > 0.1)
-        {
-            _displayFileSize = displayFileSize;
-            DispatcherQueue().TryEnqueue([this, c_newSize = displayFileSize, c_ext]()
-            {
+                hstring c_ext = ::Winnerino::format_size(&c_newSize, 2);
                 FileSizeExtensionTextBlock().Text(c_ext);
                 FileSizeTextBlock().Text(to_hstring(c_newSize));
+                //_displayFileSize = c_newSize;
             });
         }
-#endif
     }
 
     inline void FileEntryView::UpdateSize(uint_fast64_t const& size)
     {
-        this->fileSize = size;
+        fileSize.exchange(size, std::memory_order_relaxed);
         _displayFileSize = static_cast<double>(size);
-        _fileSizeExtension = FormatSize(&_displayFileSize);
+        _fileSizeExtension = ::Winnerino::format_size(&_displayFileSize, 2);
     }
 }

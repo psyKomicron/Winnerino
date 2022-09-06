@@ -49,8 +49,7 @@
             Grid.Column="1"/>
 
         <TextBlock 
-            x:Name="FileTypeName" 
-            Text="File type" 
+            x:Name="FileTypeName"
             TextTrimming="CharacterEllipsis" 
             VerticalAlignment="Center" 
             HorizontalAlignment="Right" 
@@ -95,6 +94,9 @@
     </Grid>
 
     <ToolTipService.ToolTip>
-        <ToolTip x:Name="UserControlToolTip" Width="{x:Bind ActualWidth}" Opened="ToolTip_Opened"/>
+        <ToolTip 
+            x:Name="UserControlToolTip" 
+            Opened="ToolTip_Opened"
+            HorizontalContentAlignment="Center"/>
     </ToolTipService.ToolTip>
 </UserControl>

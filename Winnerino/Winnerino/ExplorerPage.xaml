@@ -5,13 +5,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
     NavigationCacheMode="Required">
 
     <TabView
         x:Name="Pages" 
-        Margin="0,-10,0,0"
+        Margin="0,-8,0,0"
         VerticalAlignment="Stretch"
         CornerRadius="5"
         CanReorderTabs="True"

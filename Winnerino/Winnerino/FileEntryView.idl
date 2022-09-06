@@ -11,6 +11,7 @@ namespace Winnerino
         String FilePath{ get; };
         String FileIcon{ get; };
         String FileSize{ get; };
+        String FileExtension{ get; };
         Boolean IsDirectory{ get; };
         String OpensWith{ get; };
         UInt64 FileBytes{ get; };
@@ -18,6 +19,8 @@ namespace Winnerino
         Windows.Foundation.DateTime LastWrite{ get; set; };
         Boolean IsFileDangerous{ get; };
         Boolean ShowFilePath{ get; set; };
+
+        event Windows.Foundation.TypedEventHandler<FileEntryView, IInspectable> Deleted;
 
         void Delete();
         Windows.Foundation.IAsyncAction Rename(String newName, Boolean generateUniqueName);

@@ -27,44 +27,9 @@ namespace winrt::Winnerino::implementation
     ExplorerPage::ExplorerPage()
     {
         // subscribing to the closed event because Page_Unloaded doesn't get called when the window is closed
-        windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::mainWindow_Closed });
+        windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::MainWindow_Closed });
+        loadingEventToken = Loading({ this, &ExplorerPage::Page_Loading });
         InitializeComponent();
-
-        TabViewItem tab{};
-        tab.IsClosable(false);
-        tab.Header(box_value(L"System health"));
-        tab.Content(SystemHealthView{});
-        Pages().TabItems().Append(tab);
-
-        // get last path
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        if (settings)
-        {
-            ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
-            if (tabs)
-            {
-                auto containers = tabs.Values();
-                for (auto&& c : containers)
-                {
-                    ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
-                    hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
-                    hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"Empty");
-
-                    AddTab(tabName, path);
-                }
-            }
-            // remove the container
-            settings.DeleteContainer(L"ExplorerTabs");
-        }
-        else
-        {
-            ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
-
-        if (Pages().TabItems().Size() == 1)
-        {
-            AddTab(L"Empty", L"");
-        }
     }
 
     ExplorerPage::~ExplorerPage()
@@ -94,9 +59,65 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void ExplorerPage::Page_Loaded(IInspectable const&, RoutedEventArgs const&)
+    void ExplorerPage::Page_Loading(FrameworkElement const&, IInspectable const&)
     {
-        
+        Loading(loadingEventToken);
+
+        TabViewItem tab{};
+        tab.IsClosable(false);
+        tab.Header(box_value(L"System health"));
+        tab.Content(SystemHealthView{});
+        Pages().TabItems().Append(tab);
+
+        // get last path
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (settings)
+        {
+            ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
+            if (tabs)
+            {
+                auto containers = tabs.Values();
+                for (auto&& c : containers)
+                {
+                    ApplicationDataCompositeValue composite = c.Value().try_as<ApplicationDataCompositeValue>();
+                    hstring path = unbox_value_or<hstring>(composite.Lookup(L"TabPath"), L"");
+                    hstring tabName = unbox_value_or<hstring>(composite.Lookup(L"TabName"), L"");
+                    if (tabName.empty() || tabName == L"Empty")
+                    {
+                        if (path.empty())
+                        {
+                            tabName = L"Empty";
+                        }
+                        else
+                        {
+                            int i = path.size() - (path.ends_with(L"\\") ? 2 : 1);
+                            for (; i >= 0; i--)
+                            {
+                                if (path[i] == '\\')
+                                {
+                                    wstring s(path.data());
+                                    tabName = s.substr(i + 1, path.size() - i - (path.ends_with(L"\\") ? 2 : 1));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    AddTab(tabName, path);
+                }
+            }
+            // remove the container
+            settings.DeleteContainer(L"ExplorerTabs");
+        }
+        else
+        {
+            ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
+        }
+
+        if (Pages().TabItems().Size() == 1)
+        {
+            AddTab(L"Empty", L"");
+        }
     }
 
     void ExplorerPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)
@@ -119,7 +140,7 @@ namespace winrt::Winnerino::implementation
     }
 
 
-    void ExplorerPage::mainWindow_Closed(IInspectable const&, WindowEventArgs const&)
+    void ExplorerPage::MainWindow_Closed(IInspectable const&, WindowEventArgs const&)
     {
         SavePage();
     }
@@ -152,8 +173,9 @@ namespace winrt::Winnerino::implementation
         ApplicationDataContainer tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);
 
         IVector<IInspectable> tabItems = Pages().TabItems();
-        for (IInspectable const& item : tabItems)
+        for (size_t i = 0; i < tabItems.Size(); i++)
         {
+            IInspectable const& item = tabItems.GetAt(i);
             TabViewItem tab = item.try_as<TabViewItem>();
             if (tab)
             {
@@ -167,10 +189,10 @@ namespace winrt::Winnerino::implementation
                     composite.Insert(L"TabName", box_value(tabName));
                     composite.Insert(L"TabPath", box_value(path));
 
-                    hstring key = CryptographicBuffer::EncodeToHexString(
-                        provider.HashData(CryptographicBuffer::ConvertStringToBinary(tabName + path, BinaryStringEncoding::Utf8)));
+                    /*hstring key = CryptographicBuffer::EncodeToHexString(
+                        provider.HashData(CryptographicBuffer::ConvertStringToBinary(tabName + path, BinaryStringEncoding::Utf8)));*/
 
-                    tabContainer.Values().Insert(key, composite);
+                    tabContainer.Values().Insert(to_hstring(i), composite);
                 }
             }
         }

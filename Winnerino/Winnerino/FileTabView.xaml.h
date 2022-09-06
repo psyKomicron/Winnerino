@@ -58,11 +58,14 @@ namespace winrt::Winnerino::implementation
         void SearchButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void ShowPropertiesFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         Windows::Foundation::IAsyncAction SpotlightImporter_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void PathInputBox_PreviewKeyDown(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
+        void ListViewFlyout_Opening(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& e);
 
     private:
         hstring previousPath;
         std::stack<hstring> backStack = std::stack<hstring>();
         std::stack<hstring> forwardStack = std::stack<hstring>();
+        std::vector<Winnerino::FileEntryView::Deleted_revoker> fileEntryDeletedRevokers{};
         event_token windowClosedToken;
         event_token windowSizeChangedToken;
         hstring previousInput;
@@ -74,15 +77,18 @@ namespace winrt::Winnerino::implementation
         { 
             single_threaded_observable_vector<Microsoft::UI::Xaml::FrameworkElement>()
         };
+        bool listingDrives = false;
+        bool tabRenamed = false;
+
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
-        void CompletePath(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
+        void CompletePath(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable>* const& suggestions);
         inline hstring FormatFileSize(double* toFormat) const;
         hstring GetRealPath(hstring const& dirtyPath);
         void LoadPath(hstring path);
         void SavePage();
         void Search(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
-        inline bool ShowSpecialFolders();
+        inline void GetOptions(bool* showSpecialFolders, bool* hideSystemFiles);
         void SortFiles(const std::function<uint8_t(const FileEntryView&, const FileEntryView&)>& comparer);
         void SetLayout(float const& width);
 

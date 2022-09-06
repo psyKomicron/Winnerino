@@ -2,6 +2,7 @@
 
 #include "FileEntryView.g.h"
 #include <shlwapi.h>
+#include <atomic>
 #include "DirectorySizeCalculator.h"
 
 using namespace std;
@@ -25,28 +26,30 @@ namespace winrt::Winnerino::implementation
         {
             e_propertyChanged.remove(token);
         };
+        event_token Deleted(Windows::Foundation::TypedEventHandler<Winnerino::FileEntryView, Windows::Foundation::IInspectable> const& handler)
+        {
+            return e_deleted.add(handler);
+        };
+        void Deleted(event_token const& token)
+        {
+            e_deleted.remove(token);
+        };
 
-        uint64_t FileBytes() { return fileSize; };
-        hstring FileName() { return _fileName; };
-        hstring FilePath() { return _filePath; };
-        hstring FileIcon() { return _icon; };
-        hstring FileSize() { return to_hstring(_displayFileSize) + _fileSizeExtension; };
-        bool IsDirectory() { return _isDirectory; };
-        bool IsSystem() { return _isSystem; };
-        hstring OpensWith() { return _opensWith; };
-        hstring PerceivedType() { return _perceivedType; };
-        Windows::Foundation::DateTime LastWrite() { return _lastWrite; };
-        void LastWrite(Windows::Foundation::DateTime const& lastWrite) { _lastWrite = lastWrite; };
-        bool IsFileDangerous() { return _isDangerous; };
-        bool ShowFilePath()
-        {
-            return _showFilePath;
-        };
-        void ShowFilePath(bool value)
-        {
-            _showFilePath = value;
-            e_propertyChanged(*this, PropertyChangedEventArgs{ L"ShowFilePath" });
-        };
+        uint64_t FileBytes() const;
+        hstring FileName() const;
+        hstring FilePath() const;
+        hstring FileIcon() const;
+        hstring FileSize() const;
+        hstring FileExtension() const;
+        bool IsDirectory() const;
+        bool IsSystem() const;
+        hstring OpensWith() const;
+        hstring PerceivedType() const;
+        Windows::Foundation::DateTime LastWrite() const;
+        void LastWrite(Windows::Foundation::DateTime const& value);
+        bool IsFileDangerous() const;
+        bool ShowFilePath() const;
+        void ShowFilePath(bool value);
  
         void Delete();
         Windows::Foundation::IAsyncAction Rename(hstring const& newName, bool const& generateUniqueName = false);
@@ -59,18 +62,20 @@ namespace winrt::Winnerino::implementation
 
     private:
         bool loaded = true;
+        atomic<uint64_t> fileSize = 1;
         Concurrency::cancellation_token_source cancellationToken{};
+        ::Winnerino::Storage::DirectorySizeCalculator calculator{};
+        event_token sizeProgressToken;
         event_token loadedEventToken;
         event_token unloadedEventToken;
-        event_token sizeProgressToken;
-        ::Winnerino::Storage::DirectorySizeCalculator calculator{};
         double _displayFileSize = 0;
-        PERCEIVED perceivedFileType;
+        PERCEIVED perceivedFileType = PERCEIVED_TYPE_UNKNOWN;
         hstring _fileSizeExtension;
         hstring _fileName;
         hstring _filePath;
-        uint64_t fileSize = 0;
         hstring _icon;
+        hstring _fileExtension;
+        uint64_t attributes;
         bool _isDangerous = false;
         bool _isDirectory = false;
         bool _isSystem = false;
@@ -80,13 +85,16 @@ namespace winrt::Winnerino::implementation
         bool _showFilePath = false;
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
+        event< Windows::Foundation::TypedEventHandler<Winnerino::FileEntryView, Windows::Foundation::IInspectable> > e_deleted;
 
-        inline hstring FormatSize(double* size);
         void GetAttributes(int64_t attributes);
         void GetIcon(PCWSTR const& ext);
         void InitFile(PCWSTR ext);
         void ProgressHandler(Windows::Foundation::IInspectable const&, Windows::Foundation::IReference<uint_fast64_t> const& newSize);
         inline void UpdateSize(uint_fast64_t const& size);
+        inline bool _IsDangerous();
+        inline bool _IsDirectory();
+        inline bool _IsSystem();
     };
 }
 
