@@ -6,14 +6,13 @@
 
 #include <shlwapi.h>
 #include <vector>
-#include <shobjidl.h>
+#include <shobjidl_core.h>
+#include <string>
 #include "winrt/Windows.Storage.Pickers.h"
 #include "DirectoryEnumerator.h"
 
 using namespace std;
-
 using namespace ::Winnerino::Storage;
-
 using namespace winrt;
 using namespace winrt::Microsoft::UI;
 using namespace winrt::Microsoft::UI::Xaml;
@@ -36,7 +35,7 @@ namespace winrt::Winnerino::implementation
         return _buttonsEnabled;
     }
 
-    void SpotlightImporter::UserControl_Loading(FrameworkElement const&, IInspectable const& args)
+    IAsyncAction SpotlightImporter::UserControl_Loading(FrameworkElement const&, IInspectable const& args)
     {
         // TODO: get string from settings/resources/online
         hstring spotlightPath = UserDataPaths::GetDefault().LocalAppData() + L"\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
@@ -51,6 +50,17 @@ namespace winrt::Winnerino::implementation
                 e_propertyChanged(*this, Data::PropertyChangedEventArgs(L"ButtonsEnabled"));
             }
         }
+
+        auto&& dirs = co_await KnownFolders::PicturesLibrary().GetFoldersAsync();
+        if (dirs.Size() > 0)
+        {
+            hstring p = (co_await dirs.GetAt(0).GetParentAsync()).Path();
+
+            DispatcherQueue().TryEnqueue([this, cname = p + L"\\Spotlight"]()
+            {
+                ChosenFolderPath().Text(cname);
+            });
+        }
     }
 
     IAsyncAction SpotlightImporter::ChooseFolderButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -61,11 +71,11 @@ namespace winrt::Winnerino::implementation
         // HACK: https://github.com/microsoft/WindowsAppSDK/issues/1063
         HWND mainWindowHandle = GetWindowFromWindowId(MainWindow::Current().Id());
         picker.as<IInitializeWithWindow>()->Initialize(mainWindowHandle);
-
         picker.FileTypeFilter().ReplaceAll({ L"*" });
         picker.SettingsIdentifier(L"Spotlight Importer");
         picker.SuggestedStartLocation(PickerLocationId::PicturesLibrary);
         picker.ViewMode(PickerViewMode::List);
+
         chosenFolder = co_await picker.PickSingleFolderAsync();
         if (chosenFolder)
         {
@@ -76,31 +86,52 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void SpotlightImporter::ImportButton_Click(IInspectable const&, RoutedEventArgs const&)
+    IAsyncAction SpotlightImporter::ImportButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        if (chosenFolder)
+        if (!chosenFolder)
         {
-            CopyProgressBar().Value(0);
+            chosenFolder = co_await KnownFolders::PicturesLibrary().CreateFolderAsync(L"Spotlight", CreationCollisionOption::OpenIfExists);
+        }
 
-            DirectoryEnumerator enumerator{};
-            hstring spotlightPath = UserDataPaths::GetDefault().LocalAppData() + L"\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
-            vector<FileInfo>* files = enumerator.GetFiles(spotlightPath);
-            if (files && files->size() > 0)
+        CopyProgressBar().Value(0);
+
+        hstring spotlightPath = UserDataPaths::GetDefault().LocalAppData() + L"\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
+        StorageFolder spotlightFolder = co_await StorageFolder::GetFolderFromPathAsync(spotlightPath);
+        auto&& files = co_await spotlightFolder.GetFilesAsync();
+        if (files.Size() > 0)
+        {
+            CopyProgressBar().Maximum(files.Size());
+
+            double format = atof(to_string(FormatComboBox().SelectedItem().as<FrameworkElement>().Tag().as<hstring>()).c_str());
+
+            for (size_t i = 0; i < files.Size(); i++)
             {
-                CopyProgressBar().Maximum(files->size());
-                
-                for (size_t i = 0; i < files->size(); i++)
+                auto&& imageProperties = co_await files.GetAt(i).Properties().GetImagePropertiesAsync();
+                if (imageProperties.Height() / static_cast<double>(imageProperties.Width()) == format)
                 {
                     WCHAR combined[ALTERNATE_MAX_PATH](0);
-                    PathCombine(combined, chosenFolder.Path().c_str(), files->at(i).Name().c_str());
+                    PathCombine(combined, chosenFolder.Path().c_str(), files.GetAt(i).Name().c_str());
                     hstring newPath = to_hstring(combined) + L".png";
-                    if (!CopyFile(files->at(i).Path().c_str(), newPath.c_str(), false))
+
+                    try
                     {
-                        MainWindow::Current().NotifyUser(L"Failed to copy " + files->at(i).Name(), winrt::Microsoft::UI::Xaml::Controls::InfoBarSeverity::Error);
+                        StorageFile newFile = co_await chosenFolder.CreateFileAsync(newPath);
+                        co_await files.GetAt(i).CopyAndReplaceAsync(newFile);
                     }
-                    CopyProgressBar().Value(i + 1);
+                    catch (hresult_error const& err)
+                    {
+                        //I18N: Translate.
+                        MainWindow::Current().NotifyUser(L"Failed to copy " + files.GetAt(i).Name(), winrt::Microsoft::UI::Xaml::Controls::InfoBarSeverity::Error);
+                    } 
                 }
+
+                DispatcherQueue().TryEnqueue([this, value = i + 1]()
+                {
+                    CopyProgressBar().Value(value);
+                });
             }
         }
+
+        co_return;
     }
 }
