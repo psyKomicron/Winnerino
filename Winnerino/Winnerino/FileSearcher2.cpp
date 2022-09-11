@@ -165,7 +165,7 @@ namespace Winnerino::Storage
             for (size_t i = 0; i < dirs->size(); i++)
             {
                 hstring subPath = std::move(dirs->at(i));
-                unique_ptr<vector<hstring>> subDirs{ enumerator->EnumerateDirectories(subPath) };
+                unique_ptr<vector<hstring>> subDirs{ enumerator->EnumerateFolders(subPath) };
                 if (subDirs)
                 {
                     for (size_t j = 0; j < subDirs->size(); j++)
