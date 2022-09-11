@@ -13,10 +13,12 @@ namespace Winnerino::Storage
         ~DirectoryEnumerator() = default;
 
         std::vector<winrt::hstring>* Enumerate(winrt::hstring const& path);
-        std::vector<winrt::hstring>* EnumerateDirectories(winrt::hstring const& path);
+        std::vector<winrt::hstring>* EnumerateFolders(winrt::hstring const& path);
         std::vector<winrt::hstring>* EnumerateFiles(winrt::hstring const& path);
         std::vector<winrt::hstring>* EnumerateDrives();
         std::vector<::Winnerino::Storage::FileInfo>* GetFiles(winrt::hstring const& directory);
+        bool GetFiles(winrt::hstring const& directory, std::vector<::Winnerino::Storage::FileInfo>* files);
+        std::vector<::Winnerino::Storage::FileInfo>* GetFolders(winrt::hstring const& directory, bool const& includeNavigators);
 
     private:
         bool includeSpecials = false;

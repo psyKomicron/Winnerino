@@ -34,7 +34,7 @@ namespace Winnerino::Storage
         return pathes;
     }
 
-    vector<hstring>* DirectoryEnumerator::EnumerateDirectories(winrt::hstring const& toEnumerate)
+    vector<hstring>* DirectoryEnumerator::EnumerateFolders(winrt::hstring const& toEnumerate)
     {
         CheckArguments(toEnumerate);
         hstring path = toEnumerate.ends_with(L"\\") ? toEnumerate : toEnumerate + L"\\";
@@ -112,7 +112,9 @@ namespace Winnerino::Storage
     vector<FileInfo>* DirectoryEnumerator::GetFiles(winrt::hstring const& directory)
     {
         vector<FileInfo>* files = nullptr;
+
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
+
         WIN32_FIND_DATA findData{};
         HANDLE findHandle = FindFirstFile((toEnumerate + L"*").c_str(), &findData);
         if (findHandle != INVALID_HANDLE_VALUE)
@@ -129,7 +131,72 @@ namespace Winnerino::Storage
 
             FindClose(findHandle);
         }
+
         return files;
+    }
+
+    bool DirectoryEnumerator::GetFiles(winrt::hstring const& directory, std::vector<::Winnerino::Storage::FileInfo>* files)
+    {
+        hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
+
+        WIN32_FIND_DATA findData{};
+        HANDLE findHandle = FindFirstFile((toEnumerate + L"*").c_str(), &findData);
+        if (findHandle != INVALID_HANDLE_VALUE)
+        {
+            if (files == nullptr)
+            {
+                files = new vector<FileInfo>();
+            }
+
+            do
+            {
+                // is file
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+                {
+                    files->push_back(FileInfo(&findData, toEnumerate));
+                }
+            } while (FindNextFile(findHandle, &findData));
+
+            FindClose(findHandle);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    vector<FileInfo>* DirectoryEnumerator::GetFolders(winrt::hstring const& directory, bool const& includeNavigators)
+    {
+        vector<FileInfo>* folders = nullptr;
+
+        hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
+
+        WIN32_FIND_DATA findData{};
+        HANDLE findHandle = FindFirstFile((toEnumerate + L"*").c_str(), &findData);
+        if (findHandle != INVALID_HANDLE_VALUE)
+        {
+            const wchar_t dot[2]{ '.', '\0' };
+            const wchar_t dotdot[3]{ '.', '.', '\0' };
+            folders = new vector<FileInfo>();
+
+            do
+            {
+                if (
+                        (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+                        (includeNavigators || (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0))
+                   )
+                {
+                    folders->push_back(FileInfo(&findData, toEnumerate));
+                }
+
+            } while (FindNextFile(findHandle, &findData));
+
+            FindClose(findHandle);
+        }
+
+        return folders;
     }
 
     inline void DirectoryEnumerator::CheckArguments(hstring const& path)
