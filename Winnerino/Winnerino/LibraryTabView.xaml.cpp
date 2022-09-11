@@ -105,7 +105,7 @@ namespace winrt::Winnerino::implementation
             }
         }
 
-        unique_ptr<vector<hstring>> dirs{ enumerator.EnumerateDirectories(directory) };
+        unique_ptr<vector<hstring>> dirs{ enumerator.EnumerateFolders(directory) };
         if (dirs)
         {
             for (size_t i = 0; i < dirs->size(); i++)
