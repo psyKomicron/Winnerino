@@ -18,12 +18,25 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button x:Name="BackButton" Style="{StaticResource NavigationBackButtonStyle}" Click="BackButton_Click"/>
-
         <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None">
             <ListView.Header>
-                <TextBlock Text="Additional settings" Style="{ThemeResource SubheaderTextBlockStyle}" Margin="20,0,0,20"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button 
+                        x:Name="BackButton" 
+                        Style="{StaticResource NavigationBackButtonStyle}"
+                        Grid.Column="0"
+                        Click="BackButton_Click"/>
+
+                    <TextBlock Text="Additional settings" Style="{ThemeResource SubheaderTextBlockStyle}" Grid.Column="1"/>
+                </Grid>
             </ListView.Header>
+
             <ListView.Resources>
                 <Style TargetType="ListViewHeaderItem">
                     <Setter Property="Margin" Value="0,0,0,-2"/>
