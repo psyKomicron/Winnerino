@@ -88,6 +88,7 @@ namespace winrt::Winnerino::implementation
     void FileTabView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         SetLayout(MainWindow::Current().Size().Width);
+        FileListView().Focus(FocusState::Programmatic);
     }
 
     void FileTabView::ContentNavigationView_PaneChanged(NavigationView const&, IInspectable const&)
@@ -253,6 +254,17 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::UpButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
+        wstring work = previousPath.c_str();
+        size_t i = work.size() - (work.ends_with('\\') ? 2 : 1);
+        for (; i > 0; i--)
+        {
+            if (work[i] == '\\')
+            {
+                backStack.push(previousPath);
+                LoadPath(hstring(work.substr(0, i)));
+                return;
+            }
+        }
     }
 
     void FileTabView::RecentsButton_Click(SplitButton const&, SplitButtonClickEventArgs const&)
@@ -556,8 +568,129 @@ namespace winrt::Winnerino::implementation
         co_return;
     }
 
-    void FileTabView::DeleteFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
+    IAsyncAction FileTabView::DeleteFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
+        if (FileListView().SelectedItems().Size() == 1)
+        {
+            FileEntryView view = FileListView().SelectedItem().try_as<FileEntryView>();
+            try
+            {
+                if (view)
+                {
+                    view.Delete();
+                }
+            }
+            catch (const std::exception& ex)
+            {
+                OutputDebugString(to_hstring(ex.what()).c_str());
+                MainWindow::Current().NotifyUser(L"Could not delete " + view.FileName(), InfoBarSeverity::Warning);
+            }
+        }
+        else if (FileListView().SelectedItems().Size() > 0)
+        {
+            short state = GetKeyState(static_cast<int>(VirtualKey::Shift));
+            IVector<FileEntryView> selectedItems{ single_threaded_vector<FileEntryView>() };
+
+            // Copy collection to avoid iterator corruption later
+            for (size_t i = 0; i < FileListView().SelectedItems().Size(); i++)
+            {
+                auto&& view = FileListView().SelectedItems().GetAt(i).as<FileEntryView>();
+                if (view)
+                {
+                    selectedItems.Append(view);
+                }
+            }
+
+            if (state & 0x8000)
+            {
+                for (IInspectable inspectable : selectedItems)
+                {
+                    FileEntryView view = inspectable.try_as<FileEntryView>();
+
+                    try
+                    {
+                        view.Delete();
+                    }
+                    catch (const std::exception& ex)
+                    {
+                        OutputDebugString(to_hstring(ex.what()).c_str());
+                        MainWindow::Current().NotifyUser(L"Could not delete " + view.FileName(), InfoBarSeverity::Warning);
+                    }
+                }
+            }
+            else
+            {
+                for (FileEntryView view : selectedItems)
+                {
+                    Grid grid{};
+                    grid.ColumnSpacing(15);
+
+                    ColumnDefinition colDef{};
+                    colDef.Width(GridLength(2, GridUnitType::Star));
+                    grid.ColumnDefinitions().Append(colDef);
+
+                    colDef = ColumnDefinition();
+                    colDef.Width(GridLength(1, GridUnitType::Star));
+                    grid.ColumnDefinitions().Append(colDef);
+
+                    TextBlock name{};
+                    TextBlock path{};
+                    path.Name(L"FilePath");
+                    name.TextTrimming(TextTrimming::CharacterEllipsis);
+                    path.TextWrapping(TextWrapping::Wrap);
+
+                    name.Text(view.FileName());
+                    path.Text(view.FilePath());
+
+                    Grid::SetColumn(name, 1);
+                    Grid::SetColumn(path, 0);
+                    grid.Children().Append(name);
+                    grid.Children().Append(path);
+
+                    DeleteMultipleListView().Items().Append(grid);
+                }
+
+                //DeleteMultipleContentDialog().Content().as<Grid>().MinWidth(ActualWidth() * 0.6);
+                auto&& dialogResult = co_await DeleteMultipleContentDialog().ShowAsync();
+                if (dialogResult == ContentDialogResult::Primary)
+                {
+                    DispatcherQueue().TryEnqueue([this]()
+                    {
+                        auto&& toDelete = DeleteMultipleListView().SelectedItems();
+                        auto&& selectedItems = FileListView().SelectedItems();
+
+                        for (auto&& item : toDelete)
+                        {
+                            UIElementCollection children = item.as<Grid>().Children();
+                            if (children)
+                            {
+                                IInspectable child = children.GetAt(1);
+                                hstring path = child.as<TextBlock>().Text();
+                                hstring name = child.as<TextBlock>().Name();
+
+                                for (IInspectable inspectable : selectedItems)
+                                {
+                                    FileEntryView view = inspectable.try_as<FileEntryView>();
+                                    if (view && view.FilePath() == path)
+                                    {
+                                        try
+                                        {
+                                            view.Delete();
+                                        }
+                                        catch (std::exception const& ex)
+                                        {
+                                            OutputDebugString((to_hstring(ex.what()) + L"\n").c_str());
+                                        }
+                                        // breaking, we should only have 1 file with the same path
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
     }
 
     void FileTabView::OpenWithFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
@@ -934,12 +1067,12 @@ namespace winrt::Winnerino::implementation
                             DispatcherQueue().TryEnqueue([this, cfileInfo = move(fileInfo)]()
                             {
 #ifdef DEBUG
-                                FileListView().ItemsSource(nullptr);
 #endif // DEBUG
+                                FileListView().ItemsSource(nullptr);
 
                                 FileEntryView view{ cfileInfo.Name(), cfileInfo.Path(), cfileInfo.Size(), cfileInfo.Attributes() };
                                 view.LastWrite(cfileInfo.LastWrite());
-                                //view.Background(FileListView().Background());
+                                view.Background(FileListView().Background());
                                 _files.Append(view);
 
                                 fileEntryDeletedRevokers.push_back(
@@ -953,8 +1086,8 @@ namespace winrt::Winnerino::implementation
                                     })
                                 );
 
-#ifdef DEBUG
                                 FileListView().ItemsSource(_files);
+#ifdef DEBUG
 #endif
                             });
 
