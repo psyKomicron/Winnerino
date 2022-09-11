@@ -63,16 +63,19 @@ namespace winrt::Winnerino::implementation
     {
         Loading(loadingEventToken);
 
-        TabViewItem tab{};
-        tab.IsClosable(false);
-        tab.Header(box_value(L"System health"));
-        tab.Content(SystemHealthView{});
-        Pages().TabItems().Append(tab);
-
         // get last path
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
         {
+            if (unbox_value_or(settings.Values().TryLookup(L"ShowSystemHealth"), true))
+            {
+                TabViewItem tab{};
+                tab.IsClosable(false);
+                tab.Header(box_value(L"System health"));
+                tab.Content(SystemHealthView{});
+                Pages().TabItems().Append(tab);
+            }
+
             ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
             if (tabs)
             {
