@@ -313,7 +313,7 @@ namespace winrt::Winnerino::implementation
 #if RESET_TITLE_BAR
         appWindow.TitleBar().ResetToDefault();
         appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
-#endif // DEBUG
+#endif
 
         HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
         UINT windowDpi = GetDpiForWindow(windowHandle);
@@ -372,7 +372,7 @@ namespace winrt::Winnerino::implementation
 
                 ABI::Windows::System::IDispatcherQueueController* ptr{ nullptr };
                 check_hresult(CreateDispatcherQueueController(options, &ptr));
-                dispatcherQueueController = { ptr, take_ownership_from_abi };
+                dispatcherQueueController = Windows::System::DispatcherQueueController(ptr, take_ownership_from_abi);
             }
 
             systemBackdropConfiguration = SystemBackdropConfiguration();
