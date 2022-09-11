@@ -5,18 +5,32 @@
 #endif
 
 #include <math.h>
+#include <Shellapi.h>     // Included for shell constants such as FO_* values
+#include <shlobj.h>       // Required for necessary shell dependencies
+#include <strsafe.h>      // Including StringCch* helpers
+#include <comdef.h>
+#include <comip.h>
+#include <string>
 #include "fileapi.h"
 #include "FilePropertiesWindow.xaml.h"
 #include "Helper.h"
+#include "DirectoryEnumerator.h"
+
+_COM_SMARTPTR_TYPEDEF(IFileOperation, __uuidof(IFileOperation));
+_COM_SMARTPTR_TYPEDEF(IShellItem, __uuidof(IShellItem));
 
 using namespace std;
-using namespace winrt;
+
 using namespace ::Winnerino::Storage;
+
+using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Documents;
 using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
+using namespace winrt::Microsoft::UI::Xaml::Input;
+
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
@@ -174,14 +188,45 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::Delete()
     {
-        if (!DeleteFile(_filePath.c_str()))
+        ApplicationDataContainer settings = ::Winnerino::get_or_create_container(L"Explorer");
+        if (unbox_value_or(settings.Values().TryLookup(L"MoveToRecyleBin"), true))
         {
-            MainWindow::Current().NotifyError(GetLastError(), L"Could not delete " + _fileName);
+            IFileOperationPtr fileOp;
+            HRESULT hr;
+            if (SUCCEEDED(hr = CoCreateInstance(__uuidof(FileOperation), NULL, CLSCTX_ALL, __uuidof(IFileOperation), reinterpret_cast<void**>(&fileOp))) ||
+                SUCCEEDED(hr = fileOp->SetOperationFlags(FOF_NO_UI | FOF_ALLOWUNDO)))
+            {
+                IShellItemPtr item;
+                if (SUCCEEDED(hr = SHCreateItemFromParsingName(_filePath.c_str(), nullptr, __uuidof(IShellItem), reinterpret_cast<void**>(&item))) &&
+                    SUCCEEDED(hr = fileOp->DeleteItem(item, nullptr)) &&
+                    SUCCEEDED(hr = fileOp->PerformOperations()))
+                {
+                    FileNameTextBlock().Opacity(0.5);
+                    e_deleted(*this, IInspectable());
+
+                    return;
+                }
+                else
+                {
+                    throw system_error(error_code(static_cast<int>(hr), generic_category()), "Could not delete file");
+                }
+            }
+            else
+            {
+                throw system_error(error_code(static_cast<int>(hr), generic_category()), "Could not delete file");
+            }
         }
         else
         {
-            FileNameTextBlock().Opacity(0.5);
-            e_deleted(*this, IInspectable());
+            if (!DeleteFile(_filePath.c_str()))
+            {
+                MainWindow::Current().NotifyError(GetLastError(), L"Could not delete " + _fileName);
+            }
+            else
+            {
+                FileNameTextBlock().Opacity(0.5);
+                e_deleted(*this, IInspectable());
+            }
         }
     }
 
@@ -296,104 +341,193 @@ namespace winrt::Winnerino::implementation
         {
             if (IsDirectory())
             {
-                try
+                DirectoryEnumerator enumerator{};
+                unique_ptr<vector<FileInfo>> list(enumerator.GetFolders(_filePath, false));
+                if (list.get() == nullptr)
                 {
-                    StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(_filePath);
-                    IVectorView<IStorageItem> children = co_await folder.GetItemsAsync();
-                    wostringstream builder{};
-                    if (children.Size() > 1)
-                    {
-                        builder << children.GetAt(0).Name().c_str();
-                        for (size_t i = 1; i < children.Size(); i++)
-                        {
-                            builder << L", " << children.GetAt(i).Name().c_str();
-                        }
+                    TextBlock textBlock{};
+                    textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                    //I18N:
+                    textBlock.Text(L"Preview not available (access denied)");
+                    UserControlToolTip().Content(textBlock);
 
-                        DispatcherQueue().TryEnqueue([this, _text = builder.str()]()
-                        {
-                            TextBlock textBlock{};
-                            textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
-                            textBlock.Text(_text);
-
-                            UserControlToolTip().Content(textBlock);
-                        });
-                    }
-                    else
-                    {
-                        DispatcherQueue().TryEnqueue([this, _text = children.GetAt(0).Name()]()
-                        {
-                            TextBlock textBlock{};
-                            textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
-                            textBlock.Text(_text);
-
-                            UserControlToolTip().Content(textBlock);
-                        });
-                    }
+                    co_return;
                 }
-                catch (const hresult_error& ex)
-                {
-                    DispatcherQueue().TryEnqueue([this, message = ex.message()]()
-                    {
-                        TextBlock textBlock{};
-                        textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
-                        textBlock.Text(message);
 
-                        UserControlToolTip().Content(textBlock);
-                    });
-                    OutputDebugString(ex.message().c_str());
+                if (list->size() == 0 && !enumerator.GetFiles(_filePath, list.get()))
+                {
+                    TextBlock textBlock{};
+                    textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                    //I18N:
+                    textBlock.Text(L"Preview not available (access denied)");
+                    UserControlToolTip().Content(textBlock);
+
+                    co_return;
+                }
+
+                wostringstream builder{};
+
+                if (list->size() > 1)
+                {
+                    builder << list->at(0).Name().c_str();
+                    for (size_t i = 1; i < list->size(); i++)
+                    {
+                        builder << L", " << list->at(i).Name().c_str();
+                    }
+
+                    TextBlock textBlock{};
+                    textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                    textBlock.Text(builder.str());
+
+                    UserControlToolTip().Content(textBlock);
+                }
+                else if (list->size() > 0)
+                {
+                    TextBlock textBlock{};
+                    textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                    textBlock.Text(list->at(0).Name());
+
+                    UserControlToolTip().Content(textBlock);
+                }
+                else
+                {
+                    TextBlock textBlock{};
+                    textBlock.TextTrimming(TextTrimming::CharacterEllipsis);
+                    //I18N:
+                    textBlock.Text(L"_-_-_-");
+
+                    UserControlToolTip().Content(textBlock);
                 }
             }
-            else
+            else if (perceivedFileType == PERCEIVED_TYPE_VIDEO)
             {
+#if FALSE
+                MediaPlayer player{};
+                Canvas canvas{};
+                canvas.Height(200);
+                canvas.Width(350);
+                UserControlToolTip().Content(canvas);
+
+                player.SetSurfaceSize(Size(canvas.ActualWidth(), canvas.ActualHeight()));
+
+                auto compositor = Microsoft::UI::Xaml::Hosting::ElementCompositionPreview::GetElementVisual(*this).Compositor();
+                auto surface = player.GetSurface(compositor);
+
+                auto spriteVisual = compositor.CreateSpriteVisual();
+                spriteVisual.Size({ static_cast<float>(canvas.ActualWidth()), static_cast<float>(canvas.ActualHeight()) });
+
+                auto brush = compositor.CreateSurfaceBrush();
+                spriteVisual.Brush(brush);
+
+                auto container = compositor.CreateContainerVisual();
+                container.Children().InsertAtTop(spriteVisual);
+
+                Windows::UI::Xaml::Hosting::ElementCompositionPreview::SetElementChildVisual(canvas, container);
+
+                player.Play();
+#else
                 Image image{};
-                image.Stretch(Stretch::Uniform);
+                image.Stretch(Stretch::UniformToFill);
                 BitmapImage bitmapImage{};
                 image.Source(bitmapImage);
 
                 Viewbox viewBox{};
-
-                viewBox.HorizontalAlignment(HorizontalAlignment::Center);
+                viewBox.MaxHeight(200);
+                viewBox.MaxWidth(350);
+                viewBox.HorizontalAlignment(HorizontalAlignment::Stretch);
                 viewBox.VerticalAlignment(VerticalAlignment::Stretch);
                 viewBox.Child(image);
 
                 UserControlToolTip().Content(viewBox);
 
                 StorageFile file = co_await StorageFile::GetFileFromPathAsync(_filePath);
-                ThumbnailMode thumbnailMode = ThumbnailMode::ListView;
-
-                switch (perceivedFileType)
-                {
-                    case PERCEIVED_TYPE_IMAGE:
-                        thumbnailMode = ThumbnailMode::PicturesView;
-                        break;
-                    case PERCEIVED_TYPE_AUDIO:
-                        thumbnailMode = ThumbnailMode::MusicView;
-                        break;
-                    case PERCEIVED_TYPE_VIDEO:
-                        thumbnailMode = ThumbnailMode::VideosView;
-                        break;
-                    case PERCEIVED_TYPE_TEXT:
-                    case PERCEIVED_TYPE_DOCUMENT:
-                        thumbnailMode = ThumbnailMode::DocumentsView;
-                        break;
-                    case PERCEIVED_TYPE_COMPRESSED:
-                    case PERCEIVED_TYPE_FIRST:
-                    case PERCEIVED_TYPE_UNSPECIFIED:
-                    case PERCEIVED_TYPE_FOLDER:
-                    case PERCEIVED_TYPE_UNKNOWN:
-                    case PERCEIVED_TYPE_SYSTEM:
-                    case PERCEIVED_TYPE_APPLICATION:
-                    case PERCEIVED_TYPE_GAMEMEDIA:
-                    case PERCEIVED_TYPE_CONTACTS:
-                    default:
-                        thumbnailMode = ThumbnailMode::SingleItem;
-                        break;
-                }
+                ThumbnailMode thumbnailMode = ThumbnailMode::SingleItem;
 
                 StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 500, ThumbnailOptions::UseCurrentScale);
                 co_await bitmapImage.SetSourceAsync(thumbnail);
+#endif // DEBUG
+
+            }
+            else if (perceivedFileType == PERCEIVED_TYPE_IMAGE)
+            {
+                Image image{};
+                image.Stretch(Stretch::UniformToFill);
+
+                BitmapImage bitmapImage{};
+                bitmapImage.AutoPlay(true);
+                bitmapImage.UriSource(Uri(_filePath));
+
+                image.Source(bitmapImage);
+
+                Viewbox viewBox{};
+                viewBox.MaxHeight(200);
+                viewBox.MaxWidth(350);
+                viewBox.HorizontalAlignment(HorizontalAlignment::Stretch);
+                viewBox.VerticalAlignment(VerticalAlignment::Stretch);
+                viewBox.Child(image);
+
+                UserControlToolTip().Content(viewBox);
             }
         }
+        else
+        {
+            UserControlToolTip().IsOpen(false);
+        }
+    }
+
+    void FileEntryView::ToolTip_Closed(IInspectable const&, RoutedEventArgs const&)
+    {
+        UserControlToolTip().Content(nullptr);
+    }
+
+    void FileEntryView::Grid_PointerEntered(IInspectable const&, PointerRoutedEventArgs const&)
+    {   
+        // Check if we can display the shortcut menu
+        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (container)
+        {
+            std::optional<uint8_t> menuType = container.Values().TryLookup(L"EntryShortcutMenuType").try_as<uint8_t>();
+            if (!menuType || menuType == 0)
+            {
+                return;
+            }
+        }
+
+        if (!GridLengthHelper::GetIsAuto(Column1().Width()))
+        {
+            Column1().Width(GridLengthHelper::Auto());
+        }
+
+        FileIconViewBox().Visibility(Visibility::Collapsed);
+        MoreButton().Visibility(Visibility::Visible);
+        Storyboard3().Begin();
+    }
+
+    void FileEntryView::Grid_PointerExited(IInspectable const&, PointerRoutedEventArgs const&)
+    {
+        // Check if we can display the shortcut menu
+        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        if (container)
+        {
+            std::optional<uint8_t> menuType = container.Values().TryLookup(L"EntryShortcutMenuType").try_as<uint8_t>();
+            if (!menuType || menuType == 0)
+            {
+                return;
+            }
+        }
+
+        if (Column1().Width().GridUnitType != GridUnitType::Pixel)
+        {
+            Column1().Width(GridLengthHelper::FromPixels(0));
+        }
+
+        if (Storyboard3().GetCurrentState() == winrt::Microsoft::UI::Xaml::Media::Animation::ClockState::Active)
+        {
+            Storyboard3().Stop();
+        }
+
+        FileIconViewBox().Visibility(Visibility::Visible);
+        MoreButton().Visibility(Visibility::Collapsed);
     }
 
 
@@ -619,10 +753,9 @@ namespace winrt::Winnerino::implementation
             FileTypeName().Text(L"");
         }
 
-        PERCEIVED perceived{};
         PERCEIVEDFLAG perceivedFlag{};
         PWSTR perceivedType = nullptr;
-        if (AssocGetPerceivedType(ext, &perceived, &perceivedFlag, &perceivedType) == S_OK)
+        if (AssocGetPerceivedType(ext, &perceivedFileType, &perceivedFlag, &perceivedType) == S_OK)
         {
             _perceivedType = to_hstring(perceivedType);
         }
@@ -637,14 +770,14 @@ namespace winrt::Winnerino::implementation
         if (loaded && refresh)
         {
             fileSize.exchange(newSize);
-            double displayFileSize = static_cast<double>(newSize);
 
-            DispatcherQueue().TryEnqueue([this, &c_newSize = displayFileSize]()
+            DispatcherQueue().TryEnqueue([this, c_newSize = newSize]()
             {
-                hstring c_ext = ::Winnerino::format_size(&c_newSize, 2);
+                double displayFileSize = static_cast<double>(c_newSize);
+                hstring c_ext = ::Winnerino::format_size(&displayFileSize, 2);
+
                 FileSizeExtensionTextBlock().Text(c_ext);
                 FileSizeTextBlock().Text(to_hstring(c_newSize));
-                //_displayFileSize = c_newSize;
             });
         }
     }

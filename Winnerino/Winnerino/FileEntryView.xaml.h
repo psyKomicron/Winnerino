@@ -59,6 +59,9 @@ namespace winrt::Winnerino::implementation
         void OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         Windows::Foundation::IAsyncAction ToolTip_Opened(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void Grid_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        void Grid_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        void ToolTip_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
     private:
         bool loaded = true;
@@ -75,7 +78,7 @@ namespace winrt::Winnerino::implementation
         hstring _filePath;
         hstring _icon;
         hstring _fileExtension;
-        uint64_t attributes;
+        uint64_t attributes = 0;
         bool _isDangerous = false;
         bool _isDirectory = false;
         bool _isSystem = false;
@@ -83,6 +86,7 @@ namespace winrt::Winnerino::implementation
         hstring _opensWith;
         hstring _perceivedType;
         bool _showFilePath = false;
+        winrt::Windows::Media::Playback::MediaPlayer player = nullptr;
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
         event< Windows::Foundation::TypedEventHandler<Winnerino::FileEntryView, Windows::Foundation::IInspectable> > e_deleted;
