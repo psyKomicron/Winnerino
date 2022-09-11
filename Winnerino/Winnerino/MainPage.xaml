@@ -32,6 +32,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- What's new -->
@@ -47,6 +48,7 @@
                     </ListView.Header>
 
                     <x:String>Improved search window results display.</x:String>
+                    <x:String>Improved file thumbnail (while hovering over a file with the mouse): smaller, keeps aspect ratio, only shows preview for images/videos.</x:String>
                 </ListView>
 
                 <!-- Fixes -->
@@ -83,6 +85,20 @@
                     <x:String>Application becomes unresponsive when loading a directory with a lot of files.</x:String>
                     <x:String>Application may crash after sorting if the number of files is large (> 5000).</x:String>
                     <x:String>Directory sizes may not update properly or show the right size. However the correct directory size will be shown in the bottom bar.</x:String>
+                </ListView>
+
+                <ListView 
+                    SelectionMode="None" 
+                    Grid.Row="3"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Background="{ThemeResource ExpanderBackground}"
+                    ItemTemplate="{StaticResource SettingsListViewDataTemplate}">
+                    <ListView.Header>
+                        <TextBlock Text="Future features" Margin="0,0,0,10" Style="{StaticResource TitleTextBlockStyle}"/>
+                    </ListView.Header>
+
+                    <x:String>File action shortcuts, displayed on the right of the file when hovering over it. It will give access to cut - copy - rename - delete without the need to right click. It will also give access to other actions, customizable from settings (open in explorer, properties, command prompt pipelining).</x:String>
                 </ListView>
             </Grid>
         </Grid>
