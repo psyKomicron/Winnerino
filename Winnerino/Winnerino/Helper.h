@@ -148,4 +148,15 @@ namespace Winnerino
     {
         return (static_cast<int64_t>(highPart) << 32) | lowPart;
     };
+
+    inline winrt::Windows::Storage::ApplicationDataContainer get_or_create_container(winrt::hstring const& containerName)
+    {
+        winrt::Windows::Storage::ApplicationDataContainer container = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Containers().TryLookup(containerName);
+        if (!container)
+        {
+            return winrt::Windows::Storage::ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer",
+                winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
+        }
+        return container;
+    }
 }
