@@ -6,6 +6,7 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include "Helper.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
@@ -32,9 +33,6 @@ namespace winrt::Winnerino::implementation
         hstring github = L"https://github.com/psykomicron/Winnerino";
         GithubHyperlinkButton().NavigateUri(Uri{ github });
 
-        SetLayout(MainWindow::Current().Size().Width);
-        mainWindowSizeChanged = MainWindow::Current().SizeChanged({ this, &SettingsPage::Window_SizeChanged });
-
         InitSettings();
     }
 
@@ -44,22 +42,6 @@ namespace winrt::Winnerino::implementation
     }
 
 #pragma region Event handlers
-    void SettingsPage::settingSearch_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const&)
-    {
-    }
-
-    void SettingsPage::settingSearch_SuggestionChosen(AutoSuggestBox const&, AutoSuggestBoxSuggestionChosenEventArgs const&)
-    {
-    }
-
-    void SettingsPage::settingSearch_TextChanged(AutoSuggestBox const&, AutoSuggestBoxTextChangedEventArgs const&)
-    {
-    }
-
-    void SettingsPage::settingSearch_GotFocus(IInspectable const&, RoutedEventArgs const&)
-    {
-    }
-
     void SettingsPage::ShowSpecialsFolderToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
@@ -107,79 +89,61 @@ namespace winrt::Winnerino::implementation
 
     void SettingsPage::HideSystemFilesCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
+        ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
 
         container.Values().Insert(L"HideSystemFiles", box_value(HideSystemFilesCheckBox().IsChecked().GetBoolean()));
+    }
+
+    void winrt::Winnerino::implementation::SettingsPage::ShortcutMenuType_Checked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    {
+        ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
+        uint8_t type = 0;
+        FrameworkElement element = sender.as<FrameworkElement>();
+        if (element.Tag().as<hstring>() == L"ShortcutMenuType_Show")
+        {
+            type = 1;
+        }
+        container.Values().Insert(L"EntryShortcutMenuType", box_value(type));
+    }
+
+    void SettingsPage::MoveOrDeleteFileCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        ::Winnerino::get_or_create_container(L"Explorer").Values().Insert(L"MoveToRecyleBin", MoveOrDeleteFileCheckBox().IsChecked());
+    }
+
+    void SettingsPage::ShowSystemHealthToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
+    {
+        ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
+        container.Values().Insert(L"ShowSystemHealth", box_value(ShowSystemHealthToggleSwitch().IsOn()));
     }
 #pragma endregion
 
 
     void SettingsPage::InitSettings()
     {
-        // Explorer
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
-        ApplicationDataContainer specificSettings = settings.Containers().TryLookup(L"Explorer");
-        if (specificSettings)
+
+        // Explorer settings
         {
+            ApplicationDataContainer specificSettings = ::Winnerino::get_or_create_container(L"Explorer");
+
             ShowSpecialsFolderToggleSwitch().IsChecked(unbox_value_or<bool>(specificSettings.Values().TryLookup(L"ShowSpecialFolders"), false));
             CalculateDirectorySizeToggleSwitch().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"CalculateDirSize"), true));
             HideSystemFilesCheckBox().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"HideSystemFiles"), false));
+            MoveOrDeleteFileCheckBox().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"MoveToRecyleBin"), false));
+
+            UseThumbnailsToggleSwitch().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"UseThumbails"), false));
+            ShowPathToggleSwitch().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"ShowFilePath"), false));
+
+            ShowSystemHealthToggleSwitch().IsOn(unbox_value_or(specificSettings.Values().TryLookup(L"ShowSystemHealth"), true));
         }
-        else
+
+        // File search settings
         {
-            ShowSpecialsFolderToggleSwitch().IsChecked(false);
-            CalculateDirectorySizeToggleSwitch().IsChecked(true);
+            ApplicationDataContainer specificSettings = ::Winnerino::get_or_create_container(L"FileSearchWindow");
+
+            FileSearchUsesRegex().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"UseRegex"), true));
+            IncludeFoldersCheckBox().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"IncludeFolders"), true));
         }
-    }
-
-    void SettingsPage::SetLayout(float const& width)
-    {
-        if (width < 800)
-        {
-            if (Grid::GetRow(AboutGrid()) != 2)
-            {
-                Grid::SetRow(AboutGrid(), 2);
-            }
-
-            if (Grid::GetColumn(AboutGrid()) != 0)
-            {
-                Grid::SetColumn(AboutGrid(), 0);
-                Grid::SetColumnSpan(AboutGrid(), 2);
-            }
-
-            if (Grid::GetColumnSpan(SettingsListView()) != 2)
-            {
-                Grid::SetColumnSpan(SettingsListView(), 2);
-                Grid::SetRowSpan(SettingsListView(), 1);
-            }
-        }
-        else
-        {
-            if (Grid::GetRow(AboutGrid()) != 0)
-            {
-                Grid::SetRow(AboutGrid(), 0);
-            }
-
-            if (Grid::GetColumn(AboutGrid()) != 1)
-            {
-                Grid::SetColumn(AboutGrid(), 1);
-                Grid::SetColumnSpan(AboutGrid(), 1);
-            }
-
-            if (Grid::GetColumnSpan(SettingsListView()) != 1)
-            {
-                Grid::SetColumnSpan(SettingsListView(), 1);
-                Grid::SetRowSpan(SettingsListView(), 2);
-            }
-        }
-    }
-
-    void SettingsPage::Window_SizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args)
-    {
-        SetLayout(args.Size().Width);
     }
 }

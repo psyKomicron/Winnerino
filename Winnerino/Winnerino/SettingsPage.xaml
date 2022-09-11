@@ -10,10 +10,9 @@
 
     <ScrollViewer>
         
-        <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="0,0,0,30">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="*" MaxWidth="300"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -26,8 +25,7 @@
                 SelectionMode="None"
                 Margin="20,0,0,0"
                 Grid.ColumnSpan="2"
-                Grid.Row="0"
-                Grid.RowSpan="2">
+                Grid.Row="0">
                 <ListView.Resources>
                     <Style TargetType="Rectangle" BasedOn="{StaticResource ExpanderSeparatorStyle}"/>
                     <Style TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
@@ -63,6 +61,8 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <CheckBox 
@@ -85,8 +85,27 @@
                             Content="Hide system files"
                             Click="HideSystemFilesCheckBox_Click"
                             Grid.Row="4"/>
+
+                        <Rectangle Grid.Row="5"/>
+
+                        <CheckBox
+                            x:Name="MoveOrDeleteFileCheckBox"
+                            Content="Move files and folders to recycle bin when deleting"
+                            Click="MoveOrDeleteFileCheckBox_Click"
+                            Grid.Row="6"/>
                     </Grid>
                 </Expander>
+
+                <Expander Style="{StaticResource ExpanderSettingStyle}" IsEnabled="False">
+                    <Expander.Header>
+                        <local:AppExpanderHeader Glyph="&#xe8f1;" Title="Libraries" Subtitle="Documents, downloads, music, pictures, videos"/>
+                    </Expander.Header>
+
+                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
+                    </StackPanel>
+                </Expander>
+
+                <ListViewHeaderItem Margin="-10,0,0,0"/>
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
@@ -101,6 +120,7 @@
                         </Grid.RowDefinitions>
 
                         <CheckBox 
+                            IsEnabled="False"
                             x:Name="UseThumbnailsToggleSwitch"
                             Content="Use thumbnails"
                             Click="UseThumbnailsToggleSwitch_Toggled"/>
@@ -108,12 +128,34 @@
                         <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="1"/>
 
                         <CheckBox 
+                            IsEnabled="False"
                             x:Name="ShowPathToggleSwitch"
                             Content="Show file path"
                             Click="ShowPathToggleSwitch_Toggled"
                             Grid.Row="2"/>
                     </Grid>
                 </Expander>
+
+                <Expander Style="{StaticResource ExpanderSettingStyle}">
+                    <Expander.Header>
+                        <local:AppExpanderHeader Glyph="&#xeda7;" Title="Quick menu" Subtitle="Choose quick menu type"/>
+                    </Expander.Header>
+
+                    <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Grid.Row="0">
+                            <RadioButton Content="None" Tag="ShortcutMenuType_None" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton Content="Normal" Tag="ShortcutMenuType_Show" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton Content="Detailed" Tag="ShortcutMenuType_Detailed" Checked="ShortcutMenuType_Checked"/>
+                        </StackPanel>
+                    </Grid>
+                </Expander>
+
+                <ListViewHeaderItem Margin="-10,0,0,0"/>
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
@@ -140,17 +182,6 @@
                     </Grid>
                 </Expander>
 
-                <Expander Style="{StaticResource ExpanderSettingStyle}" IsEnabled="False">
-                    <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xe8f1;" Title="Libraries" Subtitle="Documents, downloads, music, pictures, videos"/>
-                    </Expander.Header>
-
-                    <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
-                    </StackPanel>
-                </Expander>
-
-                <ListViewHeaderItem Margin="-10,0,0,0"/>
-
                 <Grid Style="{StaticResource GridExpanderStyle}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="25"/>
@@ -165,12 +196,13 @@
                         <FontIcon Glyph="&#xe819;"/>
                     </Viewbox>
 
-                    <TextBlock Text="Load last path on start-up" VerticalAlignment="Center" Margin="15,0,0,0" Grid.Column="1"/>
+                    <TextBlock Text="Show system health" VerticalAlignment="Center" Margin="15,0,0,0" Grid.Column="1"/>
 
-                    <ToggleSwitch Grid.Column="2" Margin="{StaticResource ToggleSwitchCenterMargin}"/>
+                    <ToggleSwitch x:Name="ShowSystemHealthToggleSwitch" Grid.Column="2" Margin="{StaticResource ToggleSwitchCenterMargin}" Toggled="ShowSystemHealthToggleSwitch_Toggled"/>
                 </Grid>
 
                 <ListViewHeaderItem Margin="-10,0,0,0"/>
+
                 <Button x:Name="AdditionalSettingsButton" Style="{StaticResource ButtonExpanderStyle}" Click="AdditionalSettingsButton_Click">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -185,56 +217,52 @@
                 </Button>
             </ListView>
 
-            <Grid x:Name="AboutGrid" RowSpacing="10" Margin="10,0,0,0">
+            <Grid x:Name="AboutGrid" RowSpacing="30" Margin="40,0,0,0" VerticalAlignment="Top" Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="About this app" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Row="0"/>
-                
-                <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
-
-                <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
-
-                <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)" Grid.Row="3"/>
-
-                <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk" Grid.Row="4"/>
-
-                <TextBlock Text="Version 1.1.4" Grid.Row="5"/>
-
-                <HyperlinkButton Content="Help" IsEnabled="False" Grid.Row="6"/>
-
-                <HyperlinkButton x:Name="NewContentButton" Grid.Row="7" Click="NewContentButton_Click">
-                    <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
-                        <FontIcon Glyph="&#xe789;"/>
-                        <TextBlock Text="What's new"/>
-                    </StackPanel>
-                </HyperlinkButton>
-            </Grid>
-
-            <!--#region ContentDialog -->
-            <ContentDialog x:Name="contentDialog" Title="Export settings" PrimaryButtonText="Export" SecondaryButtonText="Cancel" DefaultButton="Primary">
-                <Grid RowSpacing="20">
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="About this app" Grid.Row="0" Margin="0,0,0,15"/>
+                    <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
+                    <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
+
+                    <HyperlinkButton x:Name="NewContentButton" Grid.RowSpan="2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="NewContentButton_Click">
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xe789;"/>
+                            <TextBlock Text="What's new"/>
+                        </StackPanel>
+                    </HyperlinkButton>
+                </Grid>
+
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Choose file format for settings export:" Grid.Row="0"/>
-                    <ComboBox HorizontalAlignment="Stretch" SelectedIndex="1" Grid.Row="1">
-                        <ComboBoxItem Content="JSON" Tag="json" IsEnabled="False"/>
-                        <ComboBoxItem Content="XML" Tag="xml"/>
-                    </ComboBox>
+                    <TextBlock Text="Other links" Margin="0,0,0,15"/>
+
+                    <VariableSizedWrapGrid Grid.Row="1" Orientation="Horizontal">
+                        <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)"/>
+
+                        <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk"/>
+
+                        <HyperlinkButton Content="Help" IsEnabled="False"/>
+                    </VariableSizedWrapGrid>
                 </Grid>
-            </ContentDialog>
-            <!--#endregion-->
+            </Grid>
         </Grid>
     </ScrollViewer>
 </Page>
