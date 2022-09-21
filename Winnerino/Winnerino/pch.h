@@ -28,7 +28,6 @@
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
-#include <winrt/Microsoft.UI.Xaml.Hosting.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Interop.h>
@@ -43,6 +42,7 @@
 #include <winrt/Windows.UI.Composition.h>
 #include <winrt/Windows.UI.Notifications.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
+#include <winrt/Windows.UI.Xaml.Hosting.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
@@ -63,7 +63,7 @@
 #pragma comment(lib, "Shell32.lib")
 
 
-// 32 768 bits
+// 32 768 bits -- Supported by UTF-8 APIs
 constexpr int16_t ALTERNATE_MAX_PATH = 2048;
 
 
