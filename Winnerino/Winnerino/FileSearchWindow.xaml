@@ -40,12 +40,14 @@
             <ListView.Background>
                 <AcrylicBrush TintColor="{ThemeResource SolidBackgroundFillColorBase}" TintOpacity="0.7" TintLuminosityOpacity="0.6"/>
             </ListView.Background>
-            
             <ListView.Resources>
                 <Style TargetType="local:FileEntryView">
                     <Setter Property="Margin" Value="0,7"/>
                 </Style>
             </ListView.Resources>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource FileListViewItemStyle}"/>
+            </ListView.ItemContainerStyle>
 
             <ListView.ContextFlyout>
                 <MenuFlyout>
