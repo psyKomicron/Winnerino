@@ -84,6 +84,9 @@
     <ClCompile Include="FileSearcher2.cpp">
       <Filter>Common\Storage</Filter>
     </ClCompile>
+    <ClCompile Include="ToastGenerator.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -120,6 +123,10 @@
     <ClInclude Include="DesktopTransparencyControllerType.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ToastGenerator.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -142,7 +149,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PropertySheet.props" />
     <None Include="packages.config" />
     <None Include="cpp.hint" />
   </ItemGroup>
@@ -151,5 +157,16 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Winnerino.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Resources.lang-en-us.resw">
+      <Filter>Assets</Filter>
+    </PRIResource>
+    <PRIResource Include="Resources.lang-fr-fr.resw">
+      <Filter>Assets</Filter>
+    </PRIResource>
   </ItemGroup>
 </Project>
