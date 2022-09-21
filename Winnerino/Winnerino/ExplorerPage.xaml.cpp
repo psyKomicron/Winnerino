@@ -93,7 +93,7 @@ namespace winrt::Winnerino::implementation
                         }
                         else
                         {
-                            int i = path.size() - (path.ends_with(L"\\") ? 2 : 1);
+                            size_t i = path.size() - (path.ends_with(L"\\") ? 2 : 1);
                             for (; i >= 0; i--)
                             {
                                 if (path[i] == '\\')
@@ -117,7 +117,7 @@ namespace winrt::Winnerino::implementation
             ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
         }
 
-        if (Pages().TabItems().Size() == 1)
+        if (Pages().TabItems().Size() == 0)
         {
             AddTab(L"Empty", L"");
         }
