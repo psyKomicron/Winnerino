@@ -88,7 +88,7 @@ namespace winrt::Winnerino::implementation
             {
                 for (size_t i = 0; i < vect->size(); i++)
                 {
-                    FileLargeView view{ vect->at(i).Path() };
+                    FileLargeView view{ vect->at(i).Path(), true };
                     FilesList().Children().Append(view);
                 }
             }
@@ -98,7 +98,7 @@ namespace winrt::Winnerino::implementation
                 {
                     DispatcherQueue().TryEnqueue([this, i, _info = vect->at(i)]() mutable
                     {
-                        FileLargeView view{ _info.Path() };
+                        FileLargeView view{ _info.Path(), true };
                         FilesList().Children().Append(view);
                     });
                 }
