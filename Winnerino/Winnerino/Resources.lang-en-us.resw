@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SettingPageFileExplorerOptions.Subtitle" xml:space="preserve">
+    <value>File explorer options</value>
+  </data>
+  <data name="SettingPageFileExplorerOptions.Title" xml:space="preserve">
+    <value>Files &amp; folders</value>
+  </data>
+  <data name="ShowSpecialsFolderToggleSwitch.Content" xml:space="preserve">
+    <value>Show special folders (. &amp; ..)</value>
+  </data>
+  <data name="CalculateDirectorySizeToggleSwitch.Content" xml:space="preserve">
+    <value>Show directory size</value>
+  </data>
+  <data name="HideSystemFilesCheckBox.Content" xml:space="preserve">
+    <value>Hide system files</value>
+  </data>
+  <data name="MoveOrDeleteFileCheckBox.Content" xml:space="preserve">
+    <value>Move files and folders to recycle bin when deleting</value>
+  </data>
+  <data name="AdditionalSettingsAcrylicRadioButton.Content" xml:space="preserve">
+    <value>Acrylic</value>
+  </data>
+  <data name="AdditionalSettingsAnimatedIconCheckBox.Content" xml:space="preserve">
+    <value>Title bar animated icon</value>
+  </data>
+  <data name="AdditionalSettingsAppDataExpander.Subtitle" xml:space="preserve">
+    <value>Clear and export settings, clear temporary data</value>
+  </data>
+  <data name="AdditionalSettingsAppDataExpander.Title" xml:space="preserve">
+    <value>App data</value>
+  </data>
+  <data name="AdditionalSettingsAppearanceExpander.Subtitle" xml:space="preserve">
+    <value>Title bar, secondary windows appearance</value>
+  </data>
+  <data name="AdditionalSettingsAppearanceExpander.Title" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="AdditionalSettingsAppThemeExpander.Subtitle" xml:space="preserve">
+    <value>Choose application theme</value>
+  </data>
+  <data name="AdditionalSettingsAppThemeExpander.Title" xml:space="preserve">
+    <value>App theme</value>
+  </data>
+  <data name="AdditionalSettingsDarkThemeRadioButton.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="AdditionalSettingsDefaultThemeRadioButton.Content" xml:space="preserve">
+    <value>Use system setting</value>
+  </data>
+  <data name="AdditionalSettingsExportSettingsTextBlock.Text" xml:space="preserve">
+    <value>Export settings</value>
+  </data>
+  <data name="AdditionalSettingsGeneralExpander.Subtitle" xml:space="preserve">
+    <value>Navigation, history, startup</value>
+  </data>
+  <data name="AdditionalSettingsGeneralExpander.Title" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="AdditionalSettingsKeepFilePropertiesWindowOnTop.Content" xml:space="preserve">
+    <value>Keep file properties window on top</value>
+  </data>
+  <data name="AdditionalSettingsLightThemeRadioButton.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="AdditionalSettingsLoadLastPageCheckBox.Content" xml:space="preserve">
+    <value>Save and restore last page</value>
+  </data>
+  <data name="AdditionalSettingsMicaRadioButton.Content" xml:space="preserve">
+    <value>Mica</value>
+  </data>
+  <data name="AdditionalSettingsNotificationsExpander.Subtitle" xml:space="preserve">
+    <value>Turn notifications on/off</value>
+  </data>
+  <data name="AdditionalSettingsNotificationsExpander.Title" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="AdditionalSettingsResetSettingsTextBlock.Text" xml:space="preserve">
+    <value>Reset settings</value>
+  </data>
+  <data name="AdditionalSettingsTitleTextBlock.Text" xml:space="preserve">
+    <value>Additional settings</value>
+  </data>
+  <data name="AdditionalSettingsTransparencyEffectExpander.Subtitle" xml:space="preserve">
+    <value>Use tranparency effects, control transparency type</value>
+  </data>
+  <data name="AdditionalSettingsTransparencyEffectExpander.Title" xml:space="preserve">
+    <value>Tranparency effects</value>
+  </data>
+  <data name="ChooseTransparencyEffectType.Text" xml:space="preserve">
+    <value>Choose transparency effect type</value>
+  </data>
+  <data name="FileTabAlphabeticalSortButton.Text" xml:space="preserve">
+    <value>Alphabetical</value>
+  </data>
+  <data name="FileTabClearFavoritesButton.Label" xml:space="preserve">
+    <value>Clear favorites</value>
+  </data>
+  <data name="FileTabFavoriteButton.Label" xml:space="preserve">
+    <value>Add to favorites</value>
+  </data>
+  <data name="FileTabRefreshButton.Label" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="FileTabSettingsButton.Label" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="FileTabSizeAscendingButton.Text" xml:space="preserve">
+    <value>Size (ascending)</value>
+  </data>
+  <data name="FileTabSizeDescSortButton.Text" xml:space="preserve">
+    <value>Size (descending)</value>
+  </data>
+  <data name="FileTabSpotlightImporterButton.Label" xml:space="preserve">
+    <value>Import Spotlight images</value>
+  </data>
+  <data name="OpenApplicationFolderHyperlinkButton.Content" xml:space="preserve">
+    <value>Open application folder (File explorer)</value>
+  </data>
+  <data name="SettingsAboutThisAppTextBlock.Text" xml:space="preserve">
+    <value>About this app</value>
+  </data>
+  <data name="SettingsAdditionalSettingsExpander.Subtitle" xml:space="preserve">
+    <value>App theme, app data, permissions, customization</value>
+  </data>
+  <data name="SettingsAdditionalSettingsExpander.Title" xml:space="preserve">
+    <value>Additional settings</value>
+  </data>
+  <data name="SettingsAppNameTextBlock.Text" xml:space="preserve">
+    <value>Winnerino (Explorer) by @psyKomicron</value>
+  </data>
+  <data name="SettingsDisplayExpander.Subtitle" xml:space="preserve">
+    <value>Thumbnails, attributes...</value>
+  </data>
+  <data name="SettingsDisplayExpander.Title" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="SettingsFileSearchUsesRegex.Content" xml:space="preserve">
+    <value>Use regex</value>
+  </data>
+  <data name="SettingsGithubHyperlinkButton.Content" xml:space="preserve">
+    <value>Go to project repository (GitHub)</value>
+  </data>
+  <data name="SettingsHelpHyperlinkButton.Content" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="SettingsIncludeFoldersCheckBox.Content" xml:space="preserve">
+    <value>Include folders</value>
+  </data>
+  <data name="SettingsLibrariesExpander.Subtitle" xml:space="preserve">
+    <value>Documents, downloads, music, pictures, videos</value>
+  </data>
+  <data name="SettingsLibrariesExpander.Title" xml:space="preserve">
+    <value>Libraries</value>
+  </data>
+  <data name="SettingsNewContentTextBlock.Text" xml:space="preserve">
+    <value>What's new</value>
+  </data>
+  <data name="SettingsOtherLinksTextBlock.Text" xml:space="preserve">
+    <value>Other links</value>
+  </data>
+  <data name="SettingsQuickMenuExpander.Subtitle" xml:space="preserve">
+    <value>Choose quick menu type</value>
+  </data>
+  <data name="SettingsQuickMenuExpander.Title" xml:space="preserve">
+    <value>Quick menu</value>
+  </data>
+  <data name="SettingsSearchExpander.Subtitle" xml:space="preserve">
+    <value>Use regex, include folders</value>
+  </data>
+  <data name="SettingsSearchExpander.Title" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SettingsShortcutMenuType_Detailed.Content" xml:space="preserve">
+    <value>Detailed</value>
+  </data>
+  <data name="SettingsShortcutMenuType_None.Content" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SettingsShortcutMenuType_Show.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="SettingsShowPathToggleSwitch.Content" xml:space="preserve">
+    <value>Show file path</value>
+  </data>
+  <data name="SettingsShowSystemHealthTextBlock.Text" xml:space="preserve">
+    <value>Show system health</value>
+  </data>
+  <data name="SettingsUseThumbnailsToggleSwitch.Content" xml:space="preserve">
+    <value>Use thumbnails</value>
+  </data>
+  <data name="SettingsWindowsAppSDKHyperlinkButton.Content" xml:space="preserve">
+    <value>Windows App SDK / Winui3</value>
+  </data>
+  <data name="TransparencyEffectsInFilePropertiesWindow.Text" xml:space="preserve">
+    <value>Transparency effects in file properties window</value>
+  </data>
+  <data name="TransparencyEffectsInFileSearchWindow.Text" xml:space="preserve">
+    <value>Transparency effects in file search window</value>
+  </data>
+</root>
