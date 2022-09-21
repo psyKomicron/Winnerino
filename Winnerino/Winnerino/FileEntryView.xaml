@@ -13,13 +13,31 @@
     FontStretch="SemiCondensed"
     x:DefaultBindMode="OneWay">
 
-    <Grid Background="{ThemeResource SolidBackgroundFillColorBase}">
+    <Grid x:Name="RootGrid" BackgroundSizing="InnerBorderEdge" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" CornerRadius="{StaticResource ControlCornerRadius}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="Column1" Width="0"/>
             <ColumnDefinition x:Name="Column0" Width="*"/>
         </Grid.ColumnDefinitions>
+        <Grid.BackgroundTransition>
+            <BrushTransition Duration="0:0:0.083" />
+        </Grid.BackgroundTransition>
 
-        <Grid ColumnSpacing="10" Padding="0,0,10,0" VerticalAlignment="Stretch" Grid.Column="1">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Normal"/>
+
+                <VisualState x:Name="PointerOver">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SolidBackgroundFillColorQuarternaryBrush}" />
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid ColumnSpacing="10" Padding="0,0,10,0" VerticalAlignment="Stretch" Grid.Column="1" CornerRadius="{StaticResource ControlCornerRadius}">
             <Grid.ColumnDefinitions>
                 <!-- icon -->
                 <ColumnDefinition Width="40"/>

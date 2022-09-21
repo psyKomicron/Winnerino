@@ -64,7 +64,7 @@ namespace winrt::Winnerino::implementation
         void ToolTip_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
     private:
-        bool loaded = true;
+        atomic_bool loaded = false;
         atomic<uint64_t> fileSize = 1;
         Concurrency::cancellation_token_source cancellationToken{};
         ::Winnerino::Storage::DirectorySizeCalculator calculator{};

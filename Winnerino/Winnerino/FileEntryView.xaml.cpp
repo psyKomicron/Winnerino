@@ -288,7 +288,7 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::OnLoaded(IInspectable const&, RoutedEventArgs const&)
     {
-        loaded = true;
+        loaded.exchange(true);
         if (_isDirectory)
         {
             if (_fileName != L"." && _fileName != L"..")
@@ -302,7 +302,7 @@ namespace winrt::Winnerino::implementation
                         calculator.Progress(sizeProgressToken);
                         UpdateSize(dirSize);
 
-                        if (loaded)
+                        if (loaded.load())
                         {
                             DispatcherQueue().TryEnqueue([this]()
                             {
@@ -331,8 +331,9 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::OnUnloaded(IInspectable const&, RoutedEventArgs const&)
     {
-        loaded = false;
-        calculator.Progress(sizeProgressToken);
+        loaded.exchange(false);
+        cancellationToken.cancel();
+        //calculator.Progress(sizeProgressToken);
     }
 
     IAsyncAction FileEntryView::ToolTip_Opened(IInspectable const&, RoutedEventArgs const&)
@@ -401,31 +402,6 @@ namespace winrt::Winnerino::implementation
             }
             else if (perceivedFileType == PERCEIVED_TYPE_VIDEO)
             {
-#if FALSE
-                MediaPlayer player{};
-                Canvas canvas{};
-                canvas.Height(200);
-                canvas.Width(350);
-                UserControlToolTip().Content(canvas);
-
-                player.SetSurfaceSize(Size(canvas.ActualWidth(), canvas.ActualHeight()));
-
-                auto compositor = Microsoft::UI::Xaml::Hosting::ElementCompositionPreview::GetElementVisual(*this).Compositor();
-                auto surface = player.GetSurface(compositor);
-
-                auto spriteVisual = compositor.CreateSpriteVisual();
-                spriteVisual.Size({ static_cast<float>(canvas.ActualWidth()), static_cast<float>(canvas.ActualHeight()) });
-
-                auto brush = compositor.CreateSurfaceBrush();
-                spriteVisual.Brush(brush);
-
-                auto container = compositor.CreateContainerVisual();
-                container.Children().InsertAtTop(spriteVisual);
-
-                Windows::UI::Xaml::Hosting::ElementCompositionPreview::SetElementChildVisual(canvas, container);
-
-                player.Play();
-#else
                 Image image{};
                 image.Stretch(Stretch::UniformToFill);
                 BitmapImage bitmapImage{};
@@ -445,8 +421,6 @@ namespace winrt::Winnerino::implementation
 
                 StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(thumbnailMode, 500, ThumbnailOptions::UseCurrentScale);
                 co_await bitmapImage.SetSourceAsync(thumbnail);
-#endif // DEBUG
-
             }
             else if (perceivedFileType == PERCEIVED_TYPE_IMAGE)
             {
@@ -478,10 +452,21 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::ToolTip_Closed(IInspectable const&, RoutedEventArgs const&)
     {
         UserControlToolTip().Content(nullptr);
+
+        if (player)
+        {
+            player.Close();
+        }
     }
 
     void FileEntryView::Grid_PointerEntered(IInspectable const&, PointerRoutedEventArgs const&)
     {   
+        if (!VisualStateManager::GoToState(*this, L"PointerOver", false))
+        {
+            __debugbreak();
+        }
+
+
         // Check if we can display the shortcut menu
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (container)
@@ -505,6 +490,9 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::Grid_PointerExited(IInspectable const&, PointerRoutedEventArgs const&)
     {
+        VisualStateManager::GoToState(*this, L"Normal", true);
+
+
         // Check if we can display the shortcut menu
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (container)
@@ -766,18 +754,18 @@ namespace winrt::Winnerino::implementation
         bool refresh = true;
         uint_fast64_t newSize = fileSize + args.as<uint_fast64_t>();
         refresh = (newSize / static_cast<double>(fileSize.load())) > 10;
+        fileSize.exchange(newSize);
 
         if (loaded && refresh)
         {
-            fileSize.exchange(newSize);
-
-            DispatcherQueue().TryEnqueue([this, c_newSize = newSize]()
+            DispatcherQueue().TryEnqueue([this]()
             {
-                double displayFileSize = static_cast<double>(c_newSize);
+                uint64_t newSize = fileSize.load();
+                double displayFileSize = static_cast<double>(newSize);
                 hstring c_ext = ::Winnerino::format_size(&displayFileSize, 2);
 
                 FileSizeExtensionTextBlock().Text(c_ext);
-                FileSizeTextBlock().Text(to_hstring(c_newSize));
+                FileSizeTextBlock().Text(to_hstring(displayFileSize));
             });
         }
     }
