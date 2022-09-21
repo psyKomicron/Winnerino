@@ -14,17 +14,23 @@
 #include "FilePropertiesWindow.xaml.h"
 #include "FileSearchWindow.xaml.h"
 #include "FileInfo.h"
+#include "DirectoryEnumerator.h"
+
 
 using namespace std;
+
 using namespace ::Winnerino;
 using namespace ::Winnerino::Storage;
+
 using namespace winrt;
+
 using namespace winrt::Microsoft::UI;
 using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Media;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
@@ -34,13 +40,9 @@ using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Security::Cryptography;
 using namespace winrt::Windows::Security::Cryptography::Core;
 using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::System;
-using namespace winrt::Windows::UI::Notifications;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using namespace winrt::Windows::UI::Notifications; 
 
 namespace winrt::Winnerino::implementation
 {
@@ -70,12 +72,13 @@ namespace winrt::Winnerino::implementation
         
         windowClosedToken = MainWindow::Current().Closed({ this, &FileTabView::MainWindow_Closed });
         windowSizeChangedToken = MainWindow::Current().SizeChanged({ this, &FileTabView::Window_SizeChanged });
+        loadingEventToken = Loading({ this, &FileTabView::UserControl_Loading });
     }
 
     FileTabView::FileTabView(const hstring& path) : FileTabView()
     {
+        previousPath = path;
         InitializeComponent();
-        LoadPath(path);
     }
 
     FileTabView::~FileTabView()
@@ -88,7 +91,17 @@ namespace winrt::Winnerino::implementation
     void FileTabView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
         SetLayout(MainWindow::Current().Size().Width);
-        FileListView().Focus(FocusState::Programmatic);
+        FilesListView().Focus(FocusState::Programmatic);
+    }
+
+    void FileTabView::UserControl_Loading(FrameworkElement const&, IInspectable const&)
+    {
+        Loading(loadingEventToken);
+
+        if (!previousPath.empty())
+        {
+            LoadPath(previousPath);
+        }
     }
 
     void FileTabView::ContentNavigationView_PaneChanged(NavigationView const&, IInspectable const&)
@@ -100,6 +113,7 @@ namespace winrt::Winnerino::implementation
     void FileTabView::PathInputBox_SuggestionChosen(AutoSuggestBox const& sender, AutoSuggestBoxSuggestionChosenEventArgs const& args)
     {
         std::string s = to_string(sender.Text());
+
         if (listingDrives || s.empty())
         {
             optional<hstring> opt = args.SelectedItem().try_as<hstring>();
@@ -109,10 +123,10 @@ namespace winrt::Winnerino::implementation
             }
             else
             {
-                optional<FrameworkElement> element = args.SelectedItem().try_as<FrameworkElement>();
+                FrameworkElement element = args.SelectedItem().try_as<FrameworkElement>();
                 if (element)
                 {
-                    sender.Text(element.Value().FindName(L"PathTextBlock").as<TextBlock>().Text());
+                    sender.Text(element.FindName(L"PathTextBlock").as<TextBlock>().Text());
                 }
             }
         }
@@ -123,7 +137,8 @@ namespace winrt::Winnerino::implementation
                 if (s[i] == '\\')
                 {
                     std::string substr = s.substr(0, i + 1);
-                    sender.Text(to_hstring(substr) + unbox_value<hstring>(args.SelectedItem()));
+                    sender.SetValue(AutoSuggestBox::TextProperty(), box_value(to_hstring(substr) + unbox_value<hstring>(args.SelectedItem())));
+                    //sender.Text();
                     return;
                 }
             }
@@ -140,9 +155,13 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::PathInputBox_TextChanged(AutoSuggestBox const& sender, AutoSuggestBoxTextChangedEventArgs const& args)
     {
+        if (args.Reason() == AutoSuggestionBoxTextChangeReason::ProgrammaticChange)
+        {
+            __debugbreak();
+        }
+
         if (args.Reason() == AutoSuggestionBoxTextChangeReason::UserInput)
         {
-            //TODO: Reduce memory footprint
             IVector<IInspectable> suggestions{ single_threaded_vector<IInspectable>() };
             CompletePath(sender.Text(), &suggestions);
             sender.ItemsSource(suggestions);
@@ -160,7 +179,7 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::ListView_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
     {
-        FileEntryView entry = FileListView().SelectedItem().try_as<FileEntryView>();
+        FileEntryView entry = FilesListView().SelectedItem().try_as<FileEntryView>();
         if (entry)
         {
             if (entry.IsDirectory())
@@ -174,19 +193,7 @@ namespace winrt::Winnerino::implementation
             else
             {
                 // open the file with shell
-                try
-                {
-                    hstring filePath = entry.FilePath();
-                    StorageFile file = co_await StorageFile::GetFileFromPathAsync(filePath);
-                    if (!co_await Launcher::LaunchFileAsync(file))
-                    {
-                        MainWindow::Current().NotifyUser(L"Failed to open file.", InfoBarSeverity::Warning);
-                    }
-                }
-                catch (const hresult& ex)
-                {
-                    MainWindow::Current().NotifyError(ex);
-                }
+                co_await Open(entry.FilePath());
             }
         }
     }
@@ -195,9 +202,9 @@ namespace winrt::Winnerino::implementation
     {
         e_propertyChanged(*this, PropertyChangedEventArgs{ L"SelectedItemsCount" });
 
-        if (FileListView().SelectedItems().Size() == 1)
+        if (FilesListView().SelectedItems().Size() == 1)
         {
-            FileEntryView view = FileListView().SelectedItem().try_as<FileEntryView>();
+            FileEntryView view = FilesListView().SelectedItem().try_as<FileEntryView>();
             if (view)
             {
                 FileOpenAppTextBlock().Text(view.OpensWith());
@@ -214,7 +221,7 @@ namespace winrt::Winnerino::implementation
             FileLastWriteTextBlock().Text(L"");
             FileDangerousFontIcon().Visibility(Visibility::Collapsed);
 
-            auto&& selectedItems = FileListView().SelectedItems();
+            auto&& selectedItems = FilesListView().SelectedItems();
             uint64_t combinedSize = 0;
             for (IInspectable selectedItem : selectedItems)
             {
@@ -311,7 +318,6 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::InputModeButton_Click(SplitButton const&, SplitButtonClickEventArgs const&)
     {
-        
     }
 
     void FileTabView::SearchButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -322,9 +328,9 @@ namespace winrt::Winnerino::implementation
         windowBounds.X = MainWindow::Current().Position().X;
         windowBounds.Y = MainWindow::Current().Position().Y;
 
-        w.SetPosition(PointInt32(
-                          static_cast<int32_t>(windowBounds.X + (windowBounds.Width / 2.0f) - (w.Bounds().Width / 2.0f)),
-                          static_cast<int32_t>(windowBounds.Y + (windowBounds.Height / 2.0f) - (w.Bounds().Height / 2.0f)))
+        w.SetPosition(
+            PointInt32(static_cast<int32_t>(windowBounds.X + (windowBounds.Width / 2.0f) - (w.Bounds().Width / 2.0f)), 
+            static_cast<int32_t>(windowBounds.Y + (windowBounds.Height / 2.0f) - (w.Bounds().Height / 2.0f)))
         );
         w.Activate();
     }
@@ -366,34 +372,34 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::FavoriteButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        if (!previousInput.empty())
-        {
-            ApplicationDataContainer explorerSettings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-            if (explorerSettings)
-            {
-                ApplicationDataContainer favorites = explorerSettings.Containers().TryLookup(L"Favorites");
-                if (!favorites)
-                {
-                    favorites = explorerSettings.CreateContainer(L"Favorites", ApplicationDataCreateDisposition::Always);
-                }
+        //if (!previousInput.empty())
+        //{
+        //    ApplicationDataContainer explorerSettings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        //    if (explorerSettings)
+        //    {
+        //        ApplicationDataContainer favorites = explorerSettings.Containers().TryLookup(L"Favorites");
+        //        if (!favorites)
+        //        {
+        //            favorites = explorerSettings.CreateContainer(L"Favorites", ApplicationDataCreateDisposition::Always);
+        //        }
 
-                IPropertySet values = favorites.Values();
-                for (auto&& value : values)
-                {
-                    const optional<hstring>& optional = value.try_as<hstring>();
-                    if (optional && optional.Value() == previousPath)
-                    {
-                        return;
-                    }
-                }
+        //        IPropertySet values = favorites.Values();
+        //        for (auto&& value : values)
+        //        {
+        //            const optional<hstring>& optional = value.try_as<hstring>();
+        //            if (optional && optional.Value() == previousPath)
+        //            {
+        //                return;
+        //            }
+        //        }
 
-                HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
-                hstring key = CryptographicBuffer::EncodeToHexString(
-                    provider.HashData(CryptographicBuffer::ConvertStringToBinary(previousPath, BinaryStringEncoding::Utf8)));
-                favorites.Values().Insert(key, box_value(previousInput));
-                // PathInputBox().Text()
-            }
-        }
+        //        HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
+        //        hstring key = CryptographicBuffer::EncodeToHexString(
+        //            provider.HashData(CryptographicBuffer::ConvertStringToBinary(previousPath, BinaryStringEncoding::Utf8)));
+        //        favorites.Values().Insert(key, box_value(previousInput));
+        //        // PathInputBox().Text()
+        //    }
+        //}
     }
 
     void FileTabView::ClearFavoritesButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -418,7 +424,7 @@ namespace winrt::Winnerino::implementation
         data.RequestedOperation(DataPackageOperation::Move);
         IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
 
-        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        IVector<IInspectable> selectedItems = FilesListView().SelectedItems();
         for (IInspectable selectedItem : selectedItems)
         {
             FileEntryView view = selectedItem.try_as<FileEntryView>();
@@ -455,27 +461,7 @@ namespace winrt::Winnerino::implementation
             message = L"No files selected to move";
         }
 
-        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
-        {
-            XmlDocument toastContent{};
-            XmlElement root = toastContent.CreateElement(L"toast");
-            toastContent.AppendChild(root);
-
-            XmlElement visual = toastContent.CreateElement(L"visual");
-            root.AppendChild(visual);
-
-            XmlElement binding = toastContent.CreateElement(L"binding");
-            binding.SetAttribute(L"template", L"ToastText01");
-            visual.AppendChild(binding);
-
-            XmlElement text = toastContent.CreateElement(L"text");
-            text.SetAttribute(L"id", L"1");
-            text.InnerText(message);
-            binding.AppendChild(text);
-
-            ToastNotification toastNotif{ toastContent };
-            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
-        }
+        toastGenerator.ShowToastNotification(message);
     }
 
     IAsyncAction FileTabView::CopyFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
@@ -484,7 +470,7 @@ namespace winrt::Winnerino::implementation
         data.RequestedOperation(DataPackageOperation::Copy);
         IVector<IStorageItem> items{ single_threaded_vector<IStorageItem>() };
 
-        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        IVector<IInspectable> selectedItems = FilesListView().SelectedItems();
         for (IInspectable selectedItem : selectedItems)
         {
             FileEntryView view = selectedItem.try_as<FileEntryView>();
@@ -501,7 +487,7 @@ namespace winrt::Winnerino::implementation
             }
         }
 
-        if (items.Size() > 0 && unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        if (items.Size() > 0)
         {
             //I18N: Clipboard actions -> "Copied" singular and plural "No files selected to copy"
             hstring message{};
@@ -517,24 +503,7 @@ namespace winrt::Winnerino::implementation
                 message = L"Copied " + to_hstring(items.Size()) + L" to clipboard";
             }
 
-            XmlDocument toastContent{};
-            XmlElement root = toastContent.CreateElement(L"toast");
-            toastContent.AppendChild(root);
-
-            XmlElement visual = toastContent.CreateElement(L"visual");
-            root.AppendChild(visual);
-
-            XmlElement binding = toastContent.CreateElement(L"binding");
-            binding.SetAttribute(L"template", L"ToastText01");
-            visual.AppendChild(binding);
-
-            XmlElement text = toastContent.CreateElement(L"text");
-            text.SetAttribute(L"id", L"1");
-            text.InnerText(message);
-            binding.AppendChild(text);
-
-            ToastNotification toastNotif{ toastContent };
-            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+            toastGenerator.ShowToastNotification(message);
         }
     }
 
@@ -570,9 +539,9 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::DeleteFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        if (FileListView().SelectedItems().Size() == 1)
+        if (FilesListView().SelectedItems().Size() == 1)
         {
-            FileEntryView view = FileListView().SelectedItem().try_as<FileEntryView>();
+            FileEntryView view = FilesListView().SelectedItem().try_as<FileEntryView>();
             try
             {
                 if (view)
@@ -586,15 +555,15 @@ namespace winrt::Winnerino::implementation
                 MainWindow::Current().NotifyUser(L"Could not delete " + view.FileName(), InfoBarSeverity::Warning);
             }
         }
-        else if (FileListView().SelectedItems().Size() > 0)
+        else if (FilesListView().SelectedItems().Size() > 0)
         {
             short state = GetKeyState(static_cast<int>(VirtualKey::Shift));
             IVector<FileEntryView> selectedItems{ single_threaded_vector<FileEntryView>() };
 
             // Copy collection to avoid iterator corruption later
-            for (size_t i = 0; i < FileListView().SelectedItems().Size(); i++)
+            for (size_t i = 0; i < FilesListView().SelectedItems().Size(); i++)
             {
-                auto&& view = FileListView().SelectedItems().GetAt(i).as<FileEntryView>();
+                auto&& view = FilesListView().SelectedItems().GetAt(i).as<FileEntryView>();
                 if (view)
                 {
                     selectedItems.Append(view);
@@ -657,7 +626,7 @@ namespace winrt::Winnerino::implementation
                     DispatcherQueue().TryEnqueue([this]()
                     {
                         auto&& toDelete = DeleteMultipleListView().SelectedItems();
-                        auto&& selectedItems = FileListView().SelectedItems();
+                        auto&& selectedItems = FilesListView().SelectedItems();
 
                         for (auto&& item : toDelete)
                         {
@@ -699,7 +668,7 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::CopyPathFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        IVector<IInspectable> selectedItems = FilesListView().SelectedItems();
         for (IInspectable item : selectedItems)
         {
             FileEntryView view = item.try_as<FileEntryView>();
@@ -723,7 +692,7 @@ namespace winrt::Winnerino::implementation
 
     IAsyncAction FileTabView::OpenInExplorerFlyoutItem_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        IVector<IInspectable> selectedItems = FileListView().SelectedItems();
+        IVector<IInspectable> selectedItems = FilesListView().SelectedItems();
         for (IInspectable item : selectedItems)
         {
             FileEntryView view = item.try_as<FileEntryView>();
@@ -767,6 +736,8 @@ namespace winrt::Winnerino::implementation
             }
             CompletePath(PathInputBox().Text(), &suggestions);
             PathInputBox().ItemsSource(suggestions);
+
+            previousPath = PathInputBox().Text();
         }
     }
 
@@ -774,9 +745,9 @@ namespace winrt::Winnerino::implementation
     {
         //TODO: get the "Opens with" list of programs + customs
 #ifdef DEBUG
-        if (FileListView().SelectedItems().Size() == 1)
+        if (FilesListView().SelectedItems().Size() == 1)
         {
-            FileEntryView view = FileListView().SelectedItem().try_as<FileEntryView>();
+            FileEntryView view = FilesListView().SelectedItem().try_as<FileEntryView>();
             if (view)
             {
                 hstring ext = view.FileExtension() + L"\\OpenWithProgids";
@@ -842,6 +813,75 @@ namespace winrt::Winnerino::implementation
         }
 #endif // DEBUG
 
+    }
+
+    void FileTabView::ListViewButton_Click(IInspectable const& sender, RoutedEventArgs const&)
+    {
+        GridViewButton().IsChecked(false);
+
+        if (FilesGridView().Visibility() == Visibility::Visible && GridViewScrollViewer().Visibility() == Visibility::Visible)
+        {
+            FilesGridView().Visibility(Visibility::Collapsed);
+            GridViewScrollViewer().Visibility(Visibility::Collapsed);
+        }
+
+        // show files default
+        if (FilesListView().Visibility() == Visibility::Collapsed)
+        {
+            FilesListView().Visibility(Visibility::Visible);
+        }
+    }
+
+    void FileTabView::GridViewButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        ListViewButton().IsChecked(false);
+
+        // Show files as thumbnails
+        if (FilesListView().Visibility() == Visibility::Visible)
+        {
+            FilesListView().Visibility(Visibility::Collapsed);
+        }
+
+        if (FilesGridView().Visibility() == Visibility::Collapsed && GridViewScrollViewer().Visibility() == Visibility::Collapsed)
+        {
+            FilesGridView().Visibility(Visibility::Visible);
+            GridViewScrollViewer().Visibility(Visibility::Visible);
+        }
+
+        if (FilesGridView().Items().Size() == 0)
+        {
+            ProgressRing().Visibility(Visibility::Visible);
+
+            // List files
+            DirectoryEnumerator enumerator{};
+            unique_ptr<vector<FileInfo>> vect(enumerator.GetEntries(previousPath));
+
+            if (vect.get())
+            {
+                for (size_t i = 0; i < vect->size(); i++)
+                {
+                    FilesGridView().Items().Append(FileLargeView(vect->at(i).Path(), !vect->at(i).IsDirectory()));
+                }
+            }
+
+            ProgressRing().Visibility(Visibility::Collapsed);
+        }
+    }
+
+    IAsyncAction FileTabView::FilesGridView_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
+    {
+        FileLargeView view = FilesGridView().SelectedItem().try_as<FileLargeView>();
+        if (view)
+        {
+            if (view.IsDirectory())
+            {
+                LoadPath(view.FilePath());
+            }
+            else
+            {
+                co_await Open(view.FilePath());
+            }
+        }
     }
 
 
@@ -1014,24 +1054,19 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::LoadPath(hstring path)
     {
-        if (path == L"")
-        {
-#ifdef _DEBUG
-            MainWindow::Current().NotifyUser(L"Path is empty (Debug)", InfoBarSeverity::Warning);
-#endif // _DEBUG
-            return;
-        }
-
         if (PathFileExists(path.c_str()))
         {
             path = GetRealPath(path); // get the real path with GetFinalPathNameByHandle, can return empty
-            if (path == L"")
+            if (path.empty())
             {
                 return;
             }
 
             _files.Clear();
+            FilesGridView().Items().Clear();
+            PathInputBox().Text(path);
             fileEntryDeletedRevokers.clear();
+
             //I18N: Number inter
             HiddenFilesCount().Text(L"0");
 
@@ -1040,7 +1075,6 @@ namespace winrt::Winnerino::implementation
             concurrency::create_task([this, _path = path]()
             {
                 WIN32_FIND_DATA data{};
-
                 HANDLE handle = FindFirstFile((_path + L"*").c_str(), &data);
                 if (handle != INVALID_HANDLE_VALUE)
                 {
@@ -1066,13 +1100,10 @@ namespace winrt::Winnerino::implementation
 
                             DispatcherQueue().TryEnqueue([this, cfileInfo = move(fileInfo)]()
                             {
-#ifdef DEBUG
-#endif // DEBUG
-                                FileListView().ItemsSource(nullptr);
+                                FilesListView().ItemsSource(nullptr);
 
                                 FileEntryView view{ cfileInfo.Name(), cfileInfo.Path(), cfileInfo.Size(), cfileInfo.Attributes() };
                                 view.LastWrite(cfileInfo.LastWrite());
-                                view.Background(FileListView().Background());
                                 _files.Append(view);
 
                                 fileEntryDeletedRevokers.push_back(
@@ -1086,18 +1117,15 @@ namespace winrt::Winnerino::implementation
                                     })
                                 );
 
-                                FileListView().ItemsSource(_files);
-#ifdef DEBUG
-#endif
+                                FilesListView().ItemsSource(_files);
                             });
 
                             loadedFiles++;
                         }
                     } while (FindNextFile(handle, &data));
-
                     FindClose(handle);
 
-                    previousPath = hstring{ _path };
+                    previousPath = hstring(_path);
                     
                     if (loadedFiles > 5000)
                     {
@@ -1114,9 +1142,8 @@ namespace winrt::Winnerino::implementation
                     MainWindow::Current().NotifyError(GetLastError());
                 }
 
-                DispatcherQueue().TryEnqueue([this, _path]()
+                DispatcherQueue().TryEnqueue([this]()
                 {
-                    PathInputBox().Text(_path);
                     e_propertyChanged(*this, PropertyChangedEventArgs(L"ItemCount"));
                     ProgressRing().Visibility(Visibility::Collapsed);
                 });
@@ -1139,7 +1166,7 @@ namespace winrt::Winnerino::implementation
         try
         {
             wregex re = wregex(query.data(), regex_constants::icase);
-            IVector<IInspectable> listViewItems = FileListView().Items();
+            IVector<IInspectable> listViewItems = FilesListView().Items();
 
             for (IInspectable const& listViewItem : listViewItems)
             {
@@ -1203,46 +1230,43 @@ namespace winrt::Winnerino::implementation
 
     void FileTabView::SetLayout(float const& width)
     {
-        if (width < 730)
+        if (width < 730 && CommandBarColumn().Width().GridUnitType != GridUnitType::Pixel)
         {
-            if (CommandBarColumn().Width().GridUnitType != GridUnitType::Pixel)
-            {
-                GridLength gridLength{};
-                gridLength.Value = 0;
-                gridLength.GridUnitType = GridUnitType::Pixel;
-                CommandBarColumn().Width(gridLength);
-            }
+            CommandBarColumn().Width(GridLengthHelper::FromPixels(0));
         }
-        else
+        else if (CommandBarColumn().Width().GridUnitType != GridUnitType::Auto)
         {
-            if (CommandBarColumn().Width().GridUnitType != GridUnitType::Auto)
-            {
-                GridLength gridLength{};
-                gridLength.GridUnitType = GridUnitType::Auto;
-                CommandBarColumn().Width(gridLength);
-            }
+            CommandBarColumn().Width(GridLengthHelper::Auto());
         }
 
-        if (width < 500)
+
+        if (width < 500 && InputModeButtonColumn().Width().Value != 0)
         {
-            if (InputModeButtonColumn().Width().GridUnitType != GridUnitType::Pixel)
-            {
-                GridLength gridLength{};
-                gridLength.Value = 0;
-                gridLength.GridUnitType = GridUnitType::Pixel;
-                InputModeButtonColumn().Width(gridLength);
-            }
+            InputModeButtonColumn().Width(GridLengthHelper::FromPixels(0));
         }
-        else
+        else if (InputModeButtonColumn().Width().Value != 40)
         {
-            if (InputModeButtonColumn().Width().GridUnitType != GridUnitType::Auto)
-            {
-                GridLength gridLength{};
-                gridLength.GridUnitType = GridUnitType::Auto;
-                InputModeButtonColumn().Width(gridLength);
-            }
+            InputModeButtonColumn().Width(GridLengthHelper::FromPixels(40));
         }
     }
+
+    IAsyncAction FileTabView::Open(hstring const& filePath)
+    {
+        try
+        {
+            StorageFile file = co_await StorageFile::GetFileFromPathAsync(filePath);
+            if (!co_await Launcher::LaunchFileAsync(file))
+            {
+                // I18N
+                MainWindow::Current().NotifyUser(L"Failed to open file.", InfoBarSeverity::Warning);
+            }
+        }
+        catch (const hresult& ex)
+        {
+            MainWindow::Current().NotifyError(ex);
+        }
+    }
+
 
     void FileTabView::Window_SizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args)
     {
