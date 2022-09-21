@@ -83,7 +83,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void SystemHealthView::DeviceNameBox_QuerySubmitted(AutoSuggestBox const& sender, AutoSuggestBoxQuerySubmittedEventArgs const& args)
+    void SystemHealthView::DeviceNameBox_QuerySubmitted(AutoSuggestBox const&, AutoSuggestBoxQuerySubmittedEventArgs const& args)
     {
         if (!args.QueryText().empty())
         {
