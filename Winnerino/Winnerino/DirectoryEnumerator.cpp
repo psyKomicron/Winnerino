@@ -111,6 +111,7 @@ namespace Winnerino::Storage
 
     vector<FileInfo>* DirectoryEnumerator::GetFiles(winrt::hstring const& directory)
     {
+        CheckArguments(directory);
         vector<FileInfo>* files = nullptr;
 
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
@@ -137,6 +138,7 @@ namespace Winnerino::Storage
 
     bool DirectoryEnumerator::GetFiles(winrt::hstring const& directory, std::vector<::Winnerino::Storage::FileInfo>* files)
     {
+        CheckArguments(directory);
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
 
         WIN32_FIND_DATA findData{};
@@ -169,6 +171,8 @@ namespace Winnerino::Storage
 
     vector<FileInfo>* DirectoryEnumerator::GetFolders(winrt::hstring const& directory, bool const& includeNavigators)
     {
+        CheckArguments(directory);
+
         vector<FileInfo>* folders = nullptr;
 
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
@@ -198,6 +202,38 @@ namespace Winnerino::Storage
 
         return folders;
     }
+
+    vector<FileInfo>* DirectoryEnumerator::GetEntries(winrt::hstring const& path)
+    {
+        CheckArguments(path);
+
+        vector<FileInfo>* entries = nullptr;
+
+        hstring toEnumerate = path.ends_with(L"\\") ? path : path + L"\\";
+
+        WIN32_FIND_DATA findData{};
+        HANDLE findHandle = FindFirstFile((toEnumerate + L"*").c_str(), &findData);
+        if (findHandle != INVALID_HANDLE_VALUE)
+        {
+            const wchar_t dot[2]{ '.', '\0' };
+            const wchar_t dotdot[3]{ '.', '.', '\0' };
+            entries = new vector<FileInfo>();
+
+            do
+            {
+                if (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0)
+                {
+                    entries->push_back(FileInfo(&findData, toEnumerate));
+                }
+
+            } while (FindNextFile(findHandle, &findData));
+
+            FindClose(findHandle);
+        }
+
+        return entries;
+    }
+
 
     inline void DirectoryEnumerator::CheckArguments(hstring const& path)
     {
