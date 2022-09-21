@@ -11,17 +11,23 @@ namespace winrt::Winnerino::implementation
     {
     public:
         FileLargeView();
-        FileLargeView(hstring const& path);
-        FileLargeView(winrt::Windows::Storage::StorageFile const& file, winrt::Windows::Foundation::IInspectable const& dummy);
-        void UserControl_PointerPressed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        FileLargeView(hstring const& path, bool isFile);
+        FileLargeView(winrt::Windows::Storage::StorageFile const& file);
 
+        inline bool IsDirectory() { return _isDirectory; };
+        inline winrt::hstring FilePath() { return _filePath; };
+
+        void UserControl_PointerPressed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void Grid_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void Grid_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
 
     private:
         Windows::Storage::StorageFile file = nullptr;
+        bool _isDirectory = false;
+        winrt::hstring _filePath{};
 
         winrt::Windows::Foundation::IAsyncAction LoadFile(hstring path);
+        winrt::Windows::Foundation::IAsyncAction LoadFolder(hstring path);
         winrt::Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile file);
         inline void OnException();
         inline void OnException(winrt::hstring const& message, winrt::hstring const& name);
