@@ -53,27 +53,32 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
@@ -138,10 +143,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="2.0.220608.4" />
-    <PackageReference Include="Microsoft.Windows.ImplementationLibrary" Version="1.0.220201.1" />
+    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="2.0.220912.1" />
+    <PackageReference Include="Microsoft.Windows.ImplementationLibrary" Version="1.0.220914.1" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25131-preview" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.4" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.5" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>
