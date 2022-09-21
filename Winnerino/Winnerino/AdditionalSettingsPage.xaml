@@ -20,7 +20,6 @@
 
         <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None">
             <ListView.Header>
-
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -33,7 +32,7 @@
                         Grid.Column="0"
                         Click="BackButton_Click"/>
 
-                    <TextBlock Text="Additional settings" Style="{ThemeResource SubheaderTextBlockStyle}" Grid.Column="1"/>
+                    <TextBlock x:Uid="AdditionalSettingsTitleTextBlock" Style="{ThemeResource SubheaderTextBlockStyle}" Grid.Column="1"/>
                 </Grid>
             </ListView.Header>
 
@@ -45,19 +44,13 @@
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe9f5;" Title="General" Subtitle="Navigation, history, startup"/>
+                    <local:AppExpanderHeader x:Uid="AdditionalSettingsGeneralExpander" Glyph="&#xe9f5;"/>
                 </Expander.Header>
 
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
-
-                    <CheckBox
-                        Content="Auto-load setting page"
-                        IsChecked="False"
-                        ToolTipService.ToolTip="Load corresponding setting page when navigating from a page"/>
-
                     <CheckBox 
                         x:Name="LoadLastPageToggleSwitch"
-                        Content="Save and restore last page" 
+                        x:Uid="AdditionalSettingsLoadLastPageCheckBox"
                         Click="LoadLastPageToggleSwitch_Toggled"/>
                 </StackPanel>
             </Expander>
@@ -68,10 +61,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <local:AppExpanderHeader VerticalAlignment="Center" Glyph="&#xea8f;" Title="Notifications" Subtitle="Turn notifications on/off"/>
+                <local:AppExpanderHeader x:Uid="AdditionalSettingsNotificationsExpander" VerticalAlignment="Center" Glyph="&#xea8f;"/>
                 <ToggleSwitch
-                    x:Name="NotificationsSwitch" 
-                    Grid.Column="1" 
+                    x:Name="NotificationsSwitch"
+                    Grid.Column="1"
                     Margin="{StaticResource ToggleSwitchCenterMargin}"
                     VerticalAlignment="Center" 
                     Toggled="NotificationsSwitch_Toggled"/>
@@ -81,19 +74,19 @@
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe790;" Title="App theme" Subtitle="Choose application theme"/>
+                    <local:AppExpanderHeader x:Uid="AdditionalSettingsAppThemeExpander" Glyph="&#xe790;"/>
                 </Expander.Header>
 
                 <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
-                    <RadioButton x:Name="DarkThemeRadioButton" Content="Dark" Checked="DarkThemeButton_Click"/>
-                    <RadioButton x:Name="LightThemeRadioButton" Content="Light" Checked="LightThemeButton_Click"/>
-                    <RadioButton x:Name="DefaultThemeRadioButton" Content="Use system setting" Checked="DefaultThemeButton_Click"/>
+                    <RadioButton x:Name="DarkThemeRadioButton" x:Uid="AdditionalSettingsDarkThemeRadioButton" Checked="DarkThemeButton_Click"/>
+                    <RadioButton x:Name="LightThemeRadioButton" x:Uid="AdditionalSettingsLightThemeRadioButton" Checked="LightThemeButton_Click"/>
+                    <RadioButton x:Name="DefaultThemeRadioButton" x:Uid="AdditionalSettingsDefaultThemeRadioButton" Checked="DefaultThemeButton_Click"/>
                 </StackPanel>
             </Expander>
 
             <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe799;" Title="Appearance" Subtitle="Title bar, secondary windows appearance"/>
+                    <local:AppExpanderHeader x:Uid="AdditionalSettingsAppearanceExpander" Glyph="&#xe799;"/>
                 </Expander.Header>
 
                 <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -106,7 +99,7 @@
                     </Grid.RowDefinitions>
 
                     <CheckBox
-                        Content="Title bar animated icon"
+                        x:Uid="AdditionalSettingsAnimatedIconCheckBox"
                         IsChecked="True"
                         VerticalAlignment="Center"
                         Click="AnimatedIconToggleSwitch_Toggled"/>
@@ -123,7 +116,7 @@
 
                     <CheckBox
                         x:Name="KeepFilePropertiesWindowOnTop"
-                        Content="Keep file properties window on top"
+                        x:Uid="AdditionalSettingsKeepFilePropertiesWindowOnTop"
                         Click="KeepFilePropertiesWindowOnTop_Toggled" 
                         Grid.Row="4"/>
                 </Grid>
@@ -131,9 +124,8 @@
 
             <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xe799;" Title="Tranparency effects" Subtitle="Use tranparency effects, control transparency type">
+                    <local:AppExpanderHeader x:Uid="AdditionalSettingsTransparencyEffectExpander" Glyph="&#xe799;">
                         <local:AppExpanderHeader.RightContent>
-
                             <ToggleSwitch 
                                 x:Name="UseAcrylicToggleSwitch"
                                 Margin="{StaticResource ToggleSwitchCenterMargin}" 
@@ -166,7 +158,7 @@
                         </Style>
                     </Grid.Resources>
 
-                    <TextBlock Text="Transparency effects in file search window"/>
+                    <TextBlock x:Uid="TransparencyEffectsInFileSearchWindow"/>
                     <ToggleSwitch 
                         x:Name="SearchWindowTransparencyEffects"
                         Margin="{StaticResource ToggleSwitchCenterMargin}" 
@@ -176,7 +168,7 @@
 
                     <Rectangle Grid.Row="1"/>
 
-                    <TextBlock Text="Transparency effects in file properties window" Grid.Row="2"/>
+                    <TextBlock x:Uid="TransparencyEffectsInFilePropertiesWindow" Grid.Row="2"/>
                     <ToggleSwitch 
                         x:Name="FilePropsWindowTransparencyEffects"
                         Margin="{StaticResource ToggleSwitchCenterMargin}" 
@@ -186,17 +178,17 @@
 
                     <Rectangle Grid.Row="3"/>
 
-                    <TextBlock Text="Choose transparency effect type" Grid.Row="4"/>
+                    <TextBlock x:Uid="ChooseTransparencyEffectType" Grid.Row="4"/>
                     <StackPanel Grid.Row="5" Spacing="3" Margin="5">
                         <RadioButton
-                            x:Name="AcrylicRadioButton" 
-                            Content="Acrylic" 
+                            x:Name="AcrylicRadioButton"
+                            x:Uid="AdditionalSettingsAcrylicRadioButton"
                             IsEnabled="{x:Bind TransparencyControlsEnabled}" 
                             Click="AcrylicRadioButton_Click"/>
 
                         <RadioButton
                             x:Name="MicaRadioButton"
-                            Content="Mica"
+                            x:Uid="MicaMicaRadioButton"
                             IsEnabled="{x:Bind TransparencyControlsEnabled}"
                             Click="MicaRadioButton_Click"/>
                     </StackPanel>
@@ -207,7 +199,7 @@
 
             <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <local:AppExpanderHeader Glyph="&#xef58;" Title="App data" Subtitle="Clear and export settings, clear temporary data"/>
+                    <local:AppExpanderHeader x:Uid="AdditionalSettingsAppDataExpander" Glyph="&#xef58;"/>
                 </Expander.Header>
 
                 <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -228,21 +220,20 @@
                         </Style>
                     </Grid.Resources>
 
-                    <HyperlinkButton Grid.Column="0" Grid.Row="0" Content="Open application folder (File explorer)" Click="AppDataFolderHyperlink_Click"/>
+                    <HyperlinkButton Grid.Column="0" Grid.Row="0" x:Uid="OpenApplicationFolderHyperlinkButton" Click="AppDataFolderHyperlink_Click"/>
                     <Button Grid.Column="1" Grid.Row="0" Click="OpenSettingsFile_Click" HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xE8A7;" FontSize="{StaticResource IconButtonFontSize}"/>
-                            <TextBlock Text="Export settings"/>
+                            <TextBlock x:Uid="AdditionalSettingsExportSettingsTextBlock"/>
                         </StackPanel>
                     </Button>
 
                     <Rectangle Grid.Row="1"/>
 
-                    <HyperlinkButton Grid.Column="0" Grid.Row="2" Content="Open application settings folder (File explorer)" Click="AppSettingsFolderHyperlink_Click"/>
                     <Button Grid.Column="1" Grid.Row="2" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
-                            <TextBlock Text="Reset settings"/>
+                            <TextBlock x:Uid="AdditionalSettingsResetSettingsTextBlock"/>
                         </StackPanel>
                     </Button>
 

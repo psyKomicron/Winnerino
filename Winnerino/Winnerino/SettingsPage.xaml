@@ -51,7 +51,7 @@
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xec50;" Title="Files &amp; folders" Subtitle="File explorer options"/>
+                        <local:AppExpanderHeader x:Uid="SettingPageFileExplorerOptions" Glyph="&#xec50;"/>
                     </Expander.Header>
 
                     <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -67,14 +67,14 @@
 
                         <CheckBox 
                             x:Name="ShowSpecialsFolderToggleSwitch"
-                            Content="Show special folders (. &amp; ..)"
+                            x:Uid="ShowSpecialsFolderToggleSwitch"
                             Click="ShowSpecialsFolderToggleSwitch_Toggled"/>
 
                         <Rectangle Grid.Row="1"/>
 
                         <CheckBox 
                             x:Name="CalculateDirectorySizeToggleSwitch"
-                            Content="Show directory size"
+                            x:Uid="CalculateDirectorySizeToggleSwitch"
                             Click="CalculateDirectorySizeToggleSwitch_Toggled"
                             Grid.Row="2"/>
 
@@ -82,7 +82,7 @@
 
                         <CheckBox
                             x:Name="HideSystemFilesCheckBox"
-                            Content="Hide system files"
+                            x:Uid="HideSystemFilesCheckBox"
                             Click="HideSystemFilesCheckBox_Click"
                             Grid.Row="4"/>
 
@@ -90,7 +90,7 @@
 
                         <CheckBox
                             x:Name="MoveOrDeleteFileCheckBox"
-                            Content="Move files and folders to recycle bin when deleting"
+                            x:Uid="MoveOrDeleteFileCheckBox"
                             Click="MoveOrDeleteFileCheckBox_Click"
                             Grid.Row="6"/>
                     </Grid>
@@ -98,7 +98,7 @@
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}" IsEnabled="False">
                     <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xe8f1;" Title="Libraries" Subtitle="Documents, downloads, music, pictures, videos"/>
+                        <local:AppExpanderHeader x:Uid="SettingsLibrariesExpander" Glyph="&#xe8f1;"/>
                     </Expander.Header>
 
                     <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
@@ -109,7 +109,7 @@
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xef1f;" Title="Display" Subtitle="Thumbnails, attributes..."/>
+                        <local:AppExpanderHeader x:Uid="SettingsDisplayExpander" Glyph="&#xef1f;"/>
                     </Expander.Header>
 
                     <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -120,17 +120,17 @@
                         </Grid.RowDefinitions>
 
                         <CheckBox 
-                            IsEnabled="False"
                             x:Name="UseThumbnailsToggleSwitch"
-                            Content="Use thumbnails"
+                            x:Uid="SettingsUseThumbnailsToggleSwitch"
+                            IsEnabled="False"
                             Click="UseThumbnailsToggleSwitch_Toggled"/>
 
                         <Rectangle Style="{StaticResource ExpanderSeparatorStyle}" Grid.Row="1"/>
 
                         <CheckBox 
-                            IsEnabled="False"
                             x:Name="ShowPathToggleSwitch"
-                            Content="Show file path"
+                            x:Uid="SettingsShowPathToggleSwitch"
+                            IsEnabled="False"
                             Click="ShowPathToggleSwitch_Toggled"
                             Grid.Row="2"/>
                     </Grid>
@@ -138,7 +138,7 @@
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xeda7;" Title="Quick menu" Subtitle="Choose quick menu type"/>
+                        <local:AppExpanderHeader x:Uid="SettingsQuickMenuExpander" Glyph="&#xeda7;"/>
                     </Expander.Header>
 
                     <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -148,9 +148,9 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Grid.Row="0">
-                            <RadioButton Content="None" Tag="ShortcutMenuType_None" Checked="ShortcutMenuType_Checked"/>
-                            <RadioButton Content="Normal" Tag="ShortcutMenuType_Show" Checked="ShortcutMenuType_Checked"/>
-                            <RadioButton Content="Detailed" Tag="ShortcutMenuType_Detailed" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Uid="SettingsShortcutMenuType_None" Tag="ShortcutMenuType_None" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Uid="SettingsShortcutMenuType_Show" Tag="ShortcutMenuType_Show" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Uid="SettingsShortcutMenuType_Detailed" Tag="ShortcutMenuType_Detailed" Checked="ShortcutMenuType_Checked"/>
                         </StackPanel>
                     </Grid>
                 </Expander>
@@ -159,7 +159,7 @@
 
                 <Expander Style="{StaticResource ExpanderSettingStyle}">
                     <Expander.Header>
-                        <local:AppExpanderHeader Glyph="&#xe71e;" Title="Search" Subtitle="Use regex, include folders"/>
+                        <local:AppExpanderHeader x:Uid="SettingsSearchExpander" Glyph="&#xe71e;"/>
                     </Expander.Header>
 
                     <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
@@ -171,13 +171,13 @@
 
                         <CheckBox
                             x:Name="FileSearchUsesRegex"
-                            Content="Use regex"/>
+                            x:Uid="SettingsFileSearchUsesRegex"/>
 
                         <Rectangle Grid.Row="1"/>
 
                         <CheckBox
                             x:Name="IncludeFoldersCheckBox"
-                            Content="Include folders"
+                            x:Uid="SettingsIncludeFoldersCheckBox"
                             Grid.Row="2"/>
                     </Grid>
                 </Expander>
@@ -196,9 +196,14 @@
                         <FontIcon Glyph="&#xe819;"/>
                     </Viewbox>
 
-                    <TextBlock Text="Show system health" VerticalAlignment="Center" Margin="15,0,0,0" Grid.Column="1"/>
+                    <TextBlock x:Uid="SettingsShowSystemHealthTextBlock" VerticalAlignment="Center" Margin="15,0,0,0" Grid.Column="1"/>
 
-                    <ToggleSwitch x:Name="ShowSystemHealthToggleSwitch" Grid.Column="2" Margin="{StaticResource ToggleSwitchCenterMargin}" Toggled="ShowSystemHealthToggleSwitch_Toggled"/>
+                    <ToggleSwitch
+                        x:Name="ShowSystemHealthToggleSwitch"
+                        Style="{StaticResource SettingToggleSwitchStyle}"
+                        Grid.Column="2"
+                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
+                        Toggled="ShowSystemHealthToggleSwitch_Toggled"/>
                 </Grid>
 
                 <ListViewHeaderItem Margin="-10,0,0,0"/>
@@ -210,7 +215,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <local:AppExpanderHeader Glyph="&#xe9f5;" Title="Additional settings" Subtitle="App theme, app data, permissions, customization"/>
+                        <local:AppExpanderHeader x:Uid="SettingsAdditionalSettingsExpander" Glyph="&#xe9f5;"/>
 
                         <FontIcon Glyph="&#xe76c;" Grid.Column="1" FontSize="{StaticResource ExpanderChevronGlyphSize}" Margin="8" Height="{ThemeResource ExpanderChevronButtonSize}" Width="{ThemeResource ExpanderChevronButtonSize}"/>
                     </Grid>
@@ -224,26 +229,17 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    
-                    <TextBlock Text="About this app" Grid.Row="0" Margin="0,0,0,15"/>
-                    <TextBlock Text="Winnerino (Explorer) by @psyKomicron" Grid.Row="1"/>
+
+                    <TextBlock x:Uid="SettingsAboutThisAppTextBlock" Grid.Row="0" Margin="0,0,0,15"/>
+                    <TextBlock x:Uid="SettingsAppNameTextBlock" Grid.Row="1"/>
                     <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
 
-                    <HyperlinkButton x:Name="NewContentButton" Grid.RowSpan="2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="NewContentButton_Click">
-                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
-                            <FontIcon Glyph="&#xe789;"/>
-                            <TextBlock Text="What's new"/>
-                        </StackPanel>
-                    </HyperlinkButton>
+                    
                 </Grid>
 
                 <Grid Grid.Row="0">
@@ -252,14 +248,21 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Other links" Margin="0,0,0,15"/>
+                    <TextBlock x:Uid="SettingsOtherLinksTextBlock" Margin="0,0,0,15"/>
 
                     <VariableSizedWrapGrid Grid.Row="1" Orientation="Horizontal">
-                        <HyperlinkButton x:Name="GithubHyperlinkButton" Content="Go to project repository (GitHub)"/>
+                        <HyperlinkButton x:Name="GithubHyperlinkButton" x:Uid="SettingsGithubHyperlinkButton"/>
 
-                        <HyperlinkButton Content="Windows App SDK / Winui3" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk"/>
+                        <HyperlinkButton x:Uid="SettingsWindowsAppSDKHyperlinkButton" NavigateUri="https://github.com/microsoft/windowsappsdk" ToolTipService.ToolTip="https://github.com/microsoft/windowsappsdk"/>
 
-                        <HyperlinkButton Content="Help" IsEnabled="False"/>
+                        <HyperlinkButton x:Uid="SettingsHelpHyperlinkButton" IsEnabled="False"/>
+
+                        <HyperlinkButton x:Name="NewContentButton" Grid.RowSpan="2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="NewContentButton_Click">
+                            <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                                <FontIcon Glyph="&#xe789;"/>
+                                <TextBlock x:Uid="SettingsNewContentTextBlock"/>
+                            </StackPanel>
+                        </HyperlinkButton>
                     </VariableSizedWrapGrid>
                 </Grid>
             </Grid>

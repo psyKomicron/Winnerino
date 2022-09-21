@@ -60,11 +60,6 @@ namespace winrt::Winnerino::implementation
         }
     }
 
-    void AdditionalSettingsPage::AppSettingsFolderHyperlink_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        // Serialize all settings into a data type file and open it for the user ?
-    }
-
     IAsyncAction AdditionalSettingsPage::TempDataFolderHyperlink_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
         try
