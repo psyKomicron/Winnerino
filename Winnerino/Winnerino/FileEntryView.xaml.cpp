@@ -11,6 +11,7 @@
 #include <comdef.h>
 #include <comip.h>
 #include <string>
+#include <chrono>
 #include "fileapi.h"
 #include "FilePropertiesWindow.xaml.h"
 #include "Helper.h"
@@ -42,21 +43,26 @@ using namespace winrt::Windows::System;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::FileProperties;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
     FileEntryView::FileEntryView()
     {
         InitializeComponent();
+
+        loadingEventToken = Loaded({ [&](auto, auto)
+        {
+            BrushTransition transition{};
+            transition.Duration(TimeSpan(chrono::milliseconds(89)));
+            RootGrid().BackgroundTransition(transition);
+
+            Loaded(loadingEventToken);
+        } });
     }
 
-    FileEntryView::FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes) : FileEntryView()
+    FileEntryView::FileEntryView(hstring const& cFileName, hstring const& path, uint64_t fileSize, int64_t attributes) 
+        : FileEntryView()
     {
-        loadedEventToken = Loaded({ this, &FileEntryView::OnLoaded });
-        unloadedEventToken = Unloaded({ this, &FileEntryView::OnUnloaded });
-
         _fileName = cFileName;
         _filePath = path;
         if (attributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -91,24 +97,17 @@ namespace winrt::Winnerino::implementation
     }
 
     FileEntryView::FileEntryView(hstring const&)
+        : FileEntryView()
     {
     }
 
     FileEntryView::~FileEntryView()
     {
         cancellationToken.cancel();
-        /*try
-        {
-            calculateSizeTask.wait();
-        }
-        catch (const hresult_error&) {}
-        catch (const std::exception&) {}*/
-
-        Loaded(loadedEventToken);
-        Unloaded(unloadedEventToken);
     }
 
 
+    #pragma region Properties
     uint64_t FileEntryView::FileBytes() const
     {
         return fileSize;
@@ -184,6 +183,7 @@ namespace winrt::Winnerino::implementation
         _showFilePath = value;
         e_propertyChanged(*this, PropertyChangedEventArgs{ L"ShowFilePath" });
     }
+    #pragma endregion
 
 
     void FileEntryView::Delete()
@@ -289,6 +289,7 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::OnLoaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded.exchange(true);
+
         if (_isDirectory)
         {
             if (_fileName != L"." && _fileName != L"..")
@@ -332,7 +333,7 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::OnUnloaded(IInspectable const&, RoutedEventArgs const&)
     {
         loaded.exchange(false);
-        cancellationToken.cancel();
+        //cancellationToken.cancel();
         //calculator.Progress(sizeProgressToken);
     }
 
@@ -461,11 +462,7 @@ namespace winrt::Winnerino::implementation
 
     void FileEntryView::Grid_PointerEntered(IInspectable const&, PointerRoutedEventArgs const&)
     {   
-        if (!VisualStateManager::GoToState(*this, L"PointerOver", false))
-        {
-            __debugbreak();
-        }
-
+        VisualStateManager::GoToState(*this, L"PointerOver", false);
 
         // Check if we can display the shortcut menu
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
@@ -522,13 +519,6 @@ namespace winrt::Winnerino::implementation
     void FileEntryView::GetAttributes(int64_t _attributes)
     {
         ResourceDictionary resources = Application::Current().Resources();
-        if (_attributes & FILE_ATTRIBUTE_ARCHIVE)
-        {
-            FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Archived"));
-            f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_ARCHIVE_IconGlyph"))));
-            attributesStackPanel().Children().Append(f);
-        }
 
         if (_attributes & FILE_ATTRIBUTE_COMPRESSED)
         {
@@ -545,6 +535,7 @@ namespace winrt::Winnerino::implementation
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_DEVICE_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
+
         // already used directory attribute
         if (_attributes & FILE_ATTRIBUTE_ENCRYPTED)
         {
@@ -562,24 +553,6 @@ namespace winrt::Winnerino::implementation
             attributesStackPanel().Children().Append(f);
         }
 
-        /*if (_attributes & FILE_ATTRIBUTE_INTEGRITY_STREAM)
-        {
-        }
-        if (_attributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
-        {
-        }
-        if (_attributes & FILE_ATTRIBUTE_NO_SCRUB_DATA)
-        {
-        }*/
-
-        if (_attributes & FILE_ATTRIBUTE_OFFLINE)
-        {
-            FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Offline"));
-            f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_OFFLINE_IconGlyph"))));
-            attributesStackPanel().Children().Append(f);
-        }
-
         if (_attributes & FILE_ATTRIBUTE_READONLY)
         {
             FontIcon f{};
@@ -588,7 +561,7 @@ namespace winrt::Winnerino::implementation
             attributesStackPanel().Children().Append(f);
         }
 
-        if (_attributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS)
+        if (_attributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS || _attributes & FILE_ATTRIBUTE_RECALL_ON_OPEN)
         {
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"Recalled on access"));
@@ -596,43 +569,12 @@ namespace winrt::Winnerino::implementation
             attributesStackPanel().Children().Append(f);
         }
 
-        if (_attributes & FILE_ATTRIBUTE_RECALL_ON_OPEN)
-        {
-            FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Recalled on open"));
-            f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_RECALL_ON_OPEN_IconGlyph"))));
-            attributesStackPanel().Children().Append(f);
-        }
-
-        /*if (_attributes & FILE_ATTRIBUTE_REPARSE_POINT)
-        {
-        }
-        if (_attributes & FILE_ATTRIBUTE_SPARSE_FILE)
-        {
-        }*/
-
         if (_attributes & FILE_ATTRIBUTE_SYSTEM)
         {
             _isSystem = true;
             FontIcon f{};
             ToolTipService::SetToolTip(f, box_value(L"System"));
             f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_SYSTEM_IconGlyph"))));
-            attributesStackPanel().Children().Append(f);
-        }
-
-        if (_attributes & FILE_ATTRIBUTE_TEMPORARY)
-        {
-            FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Temporary"));
-            f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_TEMPORARY_IconGlyph"))));
-            attributesStackPanel().Children().Append(f);
-        }
-
-        if (_attributes & FILE_ATTRIBUTE_VIRTUAL)
-        {
-            FontIcon f{};
-            ToolTipService::SetToolTip(f, box_value(L"Virtual"));
-            f.Glyph(unbox_value<hstring>(resources.TryLookup(box_value(L"FILE_ATTRIBUTE_VIRTUAL_IconGlyph"))));
             attributesStackPanel().Children().Append(f);
         }
     }

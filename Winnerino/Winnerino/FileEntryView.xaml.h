@@ -71,6 +71,7 @@ namespace winrt::Winnerino::implementation
         event_token sizeProgressToken;
         event_token loadedEventToken;
         event_token unloadedEventToken;
+        event_token loadingEventToken;
         double _displayFileSize = 0;
         PERCEIVED perceivedFileType = PERCEIVED_TYPE_UNKNOWN;
         hstring _fileSizeExtension;

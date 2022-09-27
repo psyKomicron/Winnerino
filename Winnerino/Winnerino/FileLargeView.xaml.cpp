@@ -7,7 +7,6 @@
 #include <regex>
 #include <shlwapi.h>
 
-
 using namespace std;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
@@ -19,105 +18,88 @@ using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::FileProperties;
 
+
 namespace winrt::Winnerino::implementation
 {
     FileLargeView::FileLargeView()
     {
         InitializeComponent();
+        loaded.store(true);
     }
 
-    FileLargeView::FileLargeView(hstring const& path, bool isFile) : FileLargeView()
+
+    IAsyncAction FileLargeView::Initialize(hstring const& path, bool isFile)
     {
         _isDirectory = !isFile;
         _filePath = path;
 
         if (isFile)
         {
-            LoadFile(path);
+            co_await LoadFile(path);
         }
         else
         {
-            LoadFolder(path);
+            co_await LoadFolder(path);
         }
     }
 
-    FileLargeView::FileLargeView(StorageFile const& file) : FileLargeView()
-    {
-        _filePath = file.Path();
-        _isDirectory = false;
-        LoadFile(file);
-    }
-
-
     void FileLargeView::Grid_PointerEntered(IInspectable const&, PointerRoutedEventArgs const&)
     {
-#if FALSE
-        OverlayGrid().Visibility(Visibility::Visible);
-        OverlayGrid().Opacity(1);
-#endif // FALSE
-
     }
 
     void FileLargeView::Grid_PointerExited(IInspectable const&, PointerRoutedEventArgs const&)
     {
-#if FALSE
-        OverlayGrid().Opacity(0);
-        OverlayGrid().Visibility(Visibility::Collapsed);
-#endif // FALSE
-
     }
 
     void FileLargeView::UserControl_PointerPressed(IInspectable const&, PointerRoutedEventArgs const&)
     {
     }
 
+    void FileLargeView::UserControl_Loaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        //loaded.store(true);
+    }
+
+    void FileLargeView::UserControl_Unloaded(IInspectable const&, RoutedEventArgs const&)
+    {
+        loaded.store(false);
+    }
+
 
     IAsyncAction FileLargeView::LoadFile(hstring path)
     {
+        //auto lifetime = get_strong();
+
         ImageProgressRing().IsIndeterminate(true);
         BitmapImage imageSource{};
         Thumbnail().Source(imageSource);
 
-        try
+        file = co_await StorageFile::GetFileFromPathAsync(path);
+
+        PERCEIVEDFLAG perceivedFlag{};
+        PERCEIVED perceivedFileType{};
+        PCWSTR ext = file.FileType().c_str();
+        if (FAILED(AssocGetPerceivedType(ext, &perceivedFileType, &perceivedFlag, NULL)))
         {
-            file = co_await StorageFile::GetFileFromPathAsync(path);
+            perceivedFileType = PERCEIVED::PERCEIVED_TYPE_UNKNOWN;
+        }
 
-            PERCEIVEDFLAG perceivedFlag{};
-            PERCEIVED perceivedFileType{};
-            PCWSTR ext = file.FileType().c_str();
-            if (FAILED(AssocGetPerceivedType(ext, &perceivedFileType, &perceivedFlag, NULL)))
-            {
-                perceivedFileType = PERCEIVED::PERCEIVED_TYPE_UNKNOWN;
-            }
+        if (perceivedFileType == PERCEIVED::PERCEIVED_TYPE_IMAGE)
+        {
+            imageSource.UriSource(Uri(path));
+        }
+        else
+        {
+            StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(ThumbnailMode::SingleItem, 300, ThumbnailOptions::UseCurrentScale);
+            co_await imageSource.SetSourceAsync(thumbnail);
+        }
 
-            if (perceivedFileType == PERCEIVED::PERCEIVED_TYPE_IMAGE)
-            {
-                imageSource.UriSource(Uri(path));
-            }
-            else
-            {
-                ThumbnailMode mode = ThumbnailMode::SingleItem;
-
-                /*wregex audioRe = wregex(L"^audio");
-                wregex videoRe = wregex(L"^video");
-                hstring contentType = file.ContentType();
-                if (regex_search(contentType.c_str(), audioRe))
-                {
-                    mode = ThumbnailMode::MusicView;
-                }
-                else if (regex_search(contentType.c_str(), videoRe))
-                {
-                    mode = ThumbnailMode::VideosView;
-                }*/
-
-                StorageItemThumbnail thumbnail = co_await file.GetThumbnailAsync(mode, 500, ThumbnailOptions::UseCurrentScale);
-                co_await imageSource.SetSourceAsync(thumbnail);
-            }
-
+        if (loaded.load())
+        {
             DispatcherQueue().TryEnqueue([this, c_perceivedFileType = perceivedFileType]()
             {
                 ImageProgressRing().IsIndeterminate(false);
-                FileName().Text(file.Name());
+                FileNameTextBlock().Text(file.Name());
 
                 AttributesListView().Items().Append(box_value(L"Display name : " + file.DisplayName()));
                 AttributesListView().Items().Append(box_value(L"File path : " + file.Path()));
@@ -132,28 +114,13 @@ namespace winrt::Winnerino::implementation
                     case PERCEIVED::PERCEIVED_TYPE_VIDEO:
                         FileTypeFontIcon().Glyph(L"\ue714");
                         break;
+                    case PERCEIVED::PERCEIVED_TYPE_AUDIO:
+                        FileTypeFontIcon().Glyph(L"\ue8d6");
+                        break;
                     default:
-                        FileTypeFontIcon().Glyph(L"\uec50");
+                        FileTypeFontIcon().Glyph(L"\ue8a5");
                         break;
                 }
-            });
-
-        }
-        catch (hresult_invalid_argument const& ex)
-        {
-            // Invalid arguments means we are loading a directory
-            OnException(ex.message(), path);
-            DispatcherQueue().TryEnqueue([&]()
-            {
-                Thumbnail().Source(nullptr);
-            });
-        }
-        catch (const hresult_error& ex)
-        {
-            OnException(ex.message(), path);
-            DispatcherQueue().TryEnqueue([&]()
-            {
-                Thumbnail().Source(nullptr);
             });
         }
     }
@@ -164,33 +131,29 @@ namespace winrt::Winnerino::implementation
         BitmapImage imageSource{};
         Thumbnail().Source(imageSource);
 
-        try
-        {
-            StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(path);
-            ThumbnailMode mode = ThumbnailMode::SingleItem;
-            auto&& thumbnail = co_await folder.GetThumbnailAsync(mode, 300);
-            co_await imageSource.SetSourceAsync(thumbnail);
+        StorageFolder folder = co_await StorageFolder::GetFolderFromPathAsync(path);
+        
+        auto&& thumbnail = co_await folder.GetThumbnailAsync(ThumbnailMode::SingleItem, 300, ThumbnailOptions::UseCurrentScale);
+        co_await imageSource.SetSourceAsync(thumbnail);
 
+        if (loaded.load())
+        {
             DispatcherQueue().TryEnqueue([this, name = folder.Name(), displayName = folder.DisplayName(), path = folder.Path()]()
             {
                 ImageProgressRing().IsIndeterminate(false);
-                FileName().Text(name);
+                FileNameTextBlock().Text(name);
 
                 AttributesListView().Items().Append(box_value(L"Folder"));
                 AttributesListView().Items().Append(box_value(L"Display name : " + displayName));
                 AttributesListView().Items().Append(box_value(L"File path : " + path));
             });
         }
-        catch (hresult_error const& ex)
-        {
-            OnException(ex.message(), path);
-        }
     }
 
     IAsyncAction FileLargeView::LoadFile(StorageFile storageFile)
     {
         ImageProgressRing().IsIndeterminate(true);
-        FileName().Text(storageFile.Path());
+        FileNameTextBlock().Text(storageFile.Path());
         BitmapImage imageSource{};
         Thumbnail().Source(imageSource);
 
@@ -227,7 +190,7 @@ namespace winrt::Winnerino::implementation
             DispatcherQueue().TryEnqueue([this]()
             {
                 ImageProgressRing().IsIndeterminate(false);
-                FileName().Text(file.Name());
+                FileNameTextBlock().Text(file.Name());
 
                 AttributesListView().Items().Append(box_value(L"Display name : " + file.DisplayName()));
                 AttributesListView().Items().Append(box_value(L"File path : " + file.Path()));
@@ -251,7 +214,7 @@ namespace winrt::Winnerino::implementation
         if (DispatcherQueue().HasThreadAccess())
         {
             ImageProgressRing().IsIndeterminate(false);
-            FileName().Text(message);
+            FileNameTextBlock().Text(message);
 
             TextBlock textBlock{};
             textBlock.TextWrapping(TextWrapping::Wrap);
@@ -263,7 +226,7 @@ namespace winrt::Winnerino::implementation
             DispatcherQueue().TryEnqueue([this, _message = message, _name = name]()
             {
                 ImageProgressRing().IsIndeterminate(false);
-                FileName().Text(_message);
+                FileNameTextBlock().Text(_message);
 
                 TextBlock textBlock{};
                 textBlock.TextWrapping(TextWrapping::Wrap);

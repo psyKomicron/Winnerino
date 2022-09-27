@@ -4,10 +4,11 @@ namespace Winnerino
     runtimeclass FileLargeView : Microsoft.UI.Xaml.Controls.UserControl
     {
         FileLargeView();
-        FileLargeView(String path, Boolean isFile);
-        FileLargeView(Windows.Storage.StorageFile file);
 
-        Boolean IsDirectory{ get; };
+        Windows.Foundation.IAsyncAction Initialize(String path, Boolean isFile);
+
+        String FileName{ get; };
         String FilePath{ get; };
+        Boolean IsDirectory{ get; };
     }
 }
