@@ -7,13 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="contentGrid" Background="Transparent">
+    <Grid x:Name="RootGrid" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="titleBarGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="0">
+        <Grid x:Name="TitleBarGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="34"/>
                 <ColumnDefinition Width="Auto"/>
@@ -41,7 +41,7 @@
                 Grid.Column="2"/>
         </Grid>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="1">
+        <Grid x:Name="ContentGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>

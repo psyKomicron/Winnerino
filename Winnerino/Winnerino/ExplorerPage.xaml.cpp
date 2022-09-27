@@ -4,6 +4,8 @@
 #include "ExplorerPage.g.cpp"
 #endif
 
+#include "Helper.h"
+
 using namespace winrt;
 using namespace std;
 
@@ -19,8 +21,6 @@ using namespace Windows::Security::Cryptography::Core;
 using namespace Windows::Storage;
 using namespace Windows::Storage::Streams;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
@@ -29,7 +29,11 @@ namespace winrt::Winnerino::implementation
         // subscribing to the closed event because Page_Unloaded doesn't get called when the window is closed
         windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::MainWindow_Closed });
         loadingEventToken = Loading({ this, &ExplorerPage::Page_Loading });
+
         InitializeComponent();
+
+        ApplicationDataContainer settings = ::Winnerino::get_or_create_container(L"Explorer");
+        ContentNavigationView().IsPaneOpen(unbox_value_or<bool>(settings.Values().TryLookup(L"IsPaneOpen"), true));
     }
 
     ExplorerPage::~ExplorerPage()
@@ -93,7 +97,7 @@ namespace winrt::Winnerino::implementation
                         }
                         else
                         {
-                            size_t i = path.size() - (path.ends_with(L"\\") ? 2 : 1);
+                            int64_t i = static_cast<int64_t>(path.size()) - (path.ends_with(L"\\") ? 2 : 1);
                             for (; i >= 0; i--)
                             {
                                 if (path[i] == '\\')
@@ -142,6 +146,17 @@ namespace winrt::Winnerino::implementation
         AddTab(L"Empty", L"");
     }
 
+    void ExplorerPage::ContentNavigationView_PaneChanged(NavigationView const&, IInspectable const&)
+    {
+        ApplicationDataContainer settings = ::Winnerino::get_or_create_container(L"Explorer");
+        settings.Values().Insert(L"IsPaneOpen", box_value(ContentNavigationView().IsPaneOpen()));
+    }
+
+    void ExplorerPage::ContentNavigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
+    {
+        //MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>(), args.InvokedItem());
+    }
+
 
     void ExplorerPage::MainWindow_Closed(IInspectable const&, WindowEventArgs const&)
     {
@@ -170,7 +185,9 @@ namespace winrt::Winnerino::implementation
 
     void ExplorerPage::SavePage()
     {
-        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
+        ApplicationDataContainer settings = ::Winnerino::get_or_create_container(L"Explorer");
+
+        settings.Values().Insert(L"IsPaneOpen", box_value(ContentNavigationView().IsPaneOpen()));
 
         HashAlgorithmProvider provider = HashAlgorithmProvider::OpenAlgorithm(HashAlgorithmNames::Sha256());
         ApplicationDataContainer tabContainer = settings.CreateContainer(L"ExplorerTabs", ApplicationDataCreateDisposition::Always);

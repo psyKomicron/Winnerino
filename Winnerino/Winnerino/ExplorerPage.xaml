@@ -8,12 +8,60 @@
     Unloaded="Page_Unloaded"
     NavigationCacheMode="Required">
 
-    <TabView
-        x:Name="Pages" 
-        Margin="0,-6,0,0"
-        VerticalAlignment="Stretch"
-        CornerRadius="5"
-        CanReorderTabs="True"
-        AddTabButtonClick="TabView_AddTabButtonClick"
-        TabCloseRequested="TabView_TabCloseRequested"/>
+    <NavigationView 
+        x:Name="ContentNavigationView"
+        Grid.RowSpan="2" 
+        Grid.Column="0"
+        OpenPaneLength="230"
+        SelectionFollowsFocus="Disabled"
+        IsSettingsVisible="False"
+        IsBackButtonVisible="Collapsed"
+        CornerRadius="0"
+        BorderThickness="0"
+        ItemInvoked="ContentNavigationView_ItemInvoked"
+        PaneClosed="ContentNavigationView_PaneChanged"
+        PaneOpened="ContentNavigationView_PaneChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Uid="FileTabDocumentsNavigationItem" x:Name="DocumentsNavigationItem" Tag="Documents">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe8a5;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItem x:Uid="FileTabDownloadsNavigationItem" x:Name="DownloadsNavigationItem" Tag="Downloads" >
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe896;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItem x:Uid="FileTabMusicNavigationItem" x:Name="MusicNavigationItem" Tag="Music">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xec4f;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItem x:Uid="FileTabPicturesNavigationItem" x:Name="PicturesNavigationItem" Tag="Pictures">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe8b9;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItem x:Uid="FileTabVideosNavigationItem" x:Name="VideosNavigationItem" Tag="Videos">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe714;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+
+        <TabView
+            x:Name="Pages"
+            Margin="0,-6,0,0"
+            VerticalAlignment="Stretch"
+            CornerRadius="5"
+            CanReorderTabs="True"
+            BorderThickness="0"
+            AddTabButtonClick="TabView_AddTabButtonClick"
+            TabCloseRequested="TabView_TabCloseRequested"/>
+    </NavigationView>
 </Page>

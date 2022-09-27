@@ -19,6 +19,7 @@ namespace winrt::Winnerino::implementation
         inline hstring ItemCount() { return to_hstring(FilesListView().Items().Size()); };
         inline hstring SelectedItemsCount() { return to_hstring(FilesListView().SelectedItems().Size()); };
         inline Windows::Foundation::Collections::IObservableVector<Microsoft::UI::Xaml::FrameworkElement> Files() { return _files; };
+        inline bool ProgressVisibility() { return _progressVisibility; };
 
         event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
@@ -46,36 +47,39 @@ namespace winrt::Winnerino::implementation
         void ClearFavoritesButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void SettingsButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
         void UpButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
-        void ContentNavigationView_ItemInvoked(winrt::Microsoft::UI::Xaml::Controls::NavigationView const& sender, winrt::Microsoft::UI::Xaml::Controls::NavigationViewItemInvokedEventArgs const& args);
         void OpenWithFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void CopyPathFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ContentNavigationView_PaneChanged(winrt::Microsoft::UI::Xaml::Controls::NavigationView const& sender, winrt::Windows::Foundation::IInspectable const& args);
         void SearchButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void ShowPropertiesFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void PathInputBox_PreviewKeyDown(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
         void ListViewFlyout_Opening(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& e);
-        void GridViewButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void ListViewButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void UserControl_Loading(winrt::Microsoft::UI::Xaml::FrameworkElement const& sender, winrt::Windows::Foundation::IInspectable const& args);
-        Windows::Foundation::IAsyncAction FilesGridView_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction ListView_DoubleTapped(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const&);
-        Windows::Foundation::IAsyncAction CutFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction CopyFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction RenameFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction DeleteFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction SpotlightImporter_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction GridViewButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction FilesGridView_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction OpenInExplorerFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction ListView_DoubleTapped(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const&);
+        winrt::Windows::Foundation::IAsyncAction CutFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction CopyFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction RenameFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction DeleteFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction SpotlightImporter_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void UserControl_PointerPressed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
 
     private:
-        hstring previousPath{};
+        winrt::hstring previousPath{};
         std::stack<hstring> backStack = std::stack<hstring>();
         std::stack<hstring> forwardStack = std::stack<hstring>();
         std::vector<Winnerino::FileEntryView::Deleted_revoker> fileEntryDeletedRevokers{};
-        event_token windowClosedToken;
-        event_token windowSizeChangedToken;
-        event_token loadingEventToken;
+        winrt::event_token windowClosedToken;
+        winrt::event_token windowSizeChangedToken;
+        winrt::event_token loadingEventToken;
         ::Winnerino::Common::ToastGenerator toastGenerator{};
-        //hstring previousInput;
+        bool listingDrives = false;
+        bool tabRenamed = false;
+        bool gridViewLoaded = false;
+        bool listViewLoaded = false;
+        bool _progressVisibility = false;
         Windows::Globalization::DateTimeFormatting::DateTimeFormatter formatter
         {
             L"{hour.integer}:{minute.integer(2)} {month.integer(2)}/{day.integer(2)}/{year.abbreviated}"
@@ -84,21 +88,22 @@ namespace winrt::Winnerino::implementation
         { 
             single_threaded_observable_vector<Microsoft::UI::Xaml::FrameworkElement>()
         };
-        bool listingDrives = false;
-        bool tabRenamed = false;
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
-        void CompletePath(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable>* const& suggestions);
-        inline hstring FormatFileSize(double* toFormat) const;
-        hstring GetRealPath(hstring const& dirtyPath);
-        void LoadPath(hstring path);
-        void SavePage();
-        void Search(hstring const& query, Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
+        void CompletePath(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable>* const& suggestions);
+        winrt::hstring GetRealPath(winrt::hstring const& dirtyPath);
         inline void GetOptions(bool* showSpecialFolders, bool* hideSystemFiles);
-        void SortFiles(const std::function<uint8_t(const FileEntryView&, const FileEntryView&)>& comparer);
-        void SetLayout(float const& width);
+        void LoadPath(hstring path);
+        Windows::Foundation::IAsyncAction LoadToGridView(winrt::hstring path);
         Windows::Foundation::IAsyncAction Open(winrt::hstring const& info);
+        void ProgressVisibility(bool const& value);
+        void SavePage();
+        void Search(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
+        void SortFiles(const std::function<uint8_t(const winrt::Winnerino::FileEntryView&, const winrt::Winnerino::FileEntryView&)>& comparer);
+        void SetLayout(float const& width);
+        void GoForward();
+        void GoBack();
 
         void Window_SizeChanged(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowSizeChangedEventArgs const& args);
         void MainWindow_Closed(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&);

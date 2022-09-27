@@ -8,21 +8,21 @@
 
 using namespace winrt;
 
-using namespace Microsoft::UI;
-using namespace Microsoft::UI::Windowing;
-using namespace Microsoft::UI::Xaml;
-using namespace Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI;
+using namespace winrt::Microsoft::UI::Windowing;
+using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml::Media;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI::Composition;
+using namespace winrt::Microsoft::UI::Composition::SystemBackdrops;
 
 using namespace winrt::Windows::UI::Xaml::Interop;
-using namespace Windows::Graphics;
-using namespace Windows::Storage;
-using namespace Windows::System;
-using namespace Windows::Foundation::Collections;
-using namespace Windows::Foundation;
+using namespace winrt::Windows::Graphics;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Foundation;
 
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
@@ -31,15 +31,11 @@ namespace winrt::Winnerino::implementation
     MainWindow::MainWindow()
     {
         InitializeComponent();
-#if USING_TIMER
-        dispatcherQueueTimer = DispatcherQueue().CreateTimer();
-        dispatcherQueueTimer.Interval(TimeSpan{ 2s });
-        dispatcherQueueTimer.IsRepeating(true);
-        dispatcherQueueTimer.Tick({ this, &MainWindow::dispatcherQueueTimer_Tick });
-#endif // USING_TIMER
 
         singleton = *this;
+
         InitWindow();
+        SetBackground();
     }
 
     Windows::Foundation::Size MainWindow::Size() const
@@ -101,7 +97,7 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::ChangeTheme(ElementTheme const& theme)
     {
-        contentGrid().RequestedTheme(theme);
+        RootGrid().RequestedTheme(theme);
         e_themeChanged(*this, theme);
         ApplicationData::Current().LocalSettings().Values().Insert(L"AppTheme", box_value(static_cast<int32_t>(theme)));
     }
@@ -169,12 +165,21 @@ namespace winrt::Winnerino::implementation
         e.Handled(true);
     }
 
-    void MainWindow::appWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
+    void MainWindow::AppWindow_Closing(AppWindow const&, AppWindowClosingEventArgs const&)
     {
         SaveWindowState();
+
+        if (backdropController)
+        {
+            backdropController.Close();
+        }
+        if (dispatcherQueueController)
+        {
+            dispatcherQueueController.ShutdownQueueAsync();
+        }
     }
 
-    void MainWindow::appWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const&)
+    void MainWindow::AppWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const&)
     {
         if (appWindow.Presenter().Kind() == AppWindowPresenterKind::Overlapped)
         {
@@ -270,7 +275,7 @@ namespace winrt::Winnerino::implementation
             }
         }
 
-        contentGrid().RequestedTheme((ElementTheme)unbox_value_or<int32_t>(settings.Values().TryLookup(L"AppTheme"), static_cast<int32_t>(ElementTheme::Default)));
+        RootGrid().RequestedTheme((ElementTheme)unbox_value_or<int32_t>(settings.Values().TryLookup(L"AppTheme"), static_cast<int32_t>(ElementTheme::Default)));
 #pragma endregion
 
         auto nativeWindow{ this->try_as<::IWindowNative>() };
@@ -302,10 +307,9 @@ namespace winrt::Winnerino::implementation
             }
             appWindow.MoveAndResize(rect);
 
-            appWindow.SetIcon(L"Images/multitool.ico");
-            appWindow.Title(L"Multitool");
-            appWindow.Closing({ this, &MainWindow::appWindow_Closing });
-            appWindow.Changed({ this, &MainWindow::appWindow_Changed });
+            appWindow.Title(L"Winnerino");
+            appWindow.Closing({ this, &MainWindow::AppWindow_Closing });
+            appWindow.Changed({ this, &MainWindow::AppWindow_Changed });
 
             if (AppWindowTitleBar::IsCustomizationSupported())
             {
@@ -313,9 +317,7 @@ namespace winrt::Winnerino::implementation
 
                 appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
 
-                //appWindow.TitleBar().ButtonBackgroundColor(Colors::Black());
-                appWindow.TitleBar().ButtonBackgroundColor(
-                    Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                appWindow.TitleBar().ButtonBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
@@ -427,8 +429,74 @@ namespace winrt::Winnerino::implementation
             dragRectangleLeft.Width = (leftAdditionalPadding + leftPadding) * scale;
             rectVector.push_back(dragRectangleLeft);
 
-            appWindow.TitleBar().SetDragRectangles(vect);
+            appWindow.TitleBar().SetDragRectangles(rectVector);
         }*/
+    }
+
+    void MainWindow::SetBackground()
+    {
+        auto&& supportsBackdrop = try_as<ICompositionSupportsSystemBackdrop>();
+        if (supportsBackdrop)
+        {
+            TitleBarGrid().Background(SolidColorBrush(Colors::Transparent()));
+            ContentGrid().Background(SolidColorBrush(Colors::Transparent()));
+
+            appWindow.TitleBar().ButtonBackgroundColor(Colors::Transparent());
+
+            appWindow.TitleBar().ButtonHoverBackgroundColor(
+                Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
+
+            appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
+            appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
+            appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
+
+
+            if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
+            {
+                DispatcherQueueOptions options
+                {
+                    sizeof(DispatcherQueueOptions),
+                    DQTYPE_THREAD_CURRENT,
+                    DQTAT_COM_NONE
+                };
+
+                ABI::Windows::System::IDispatcherQueueController* ptr{ nullptr };
+                check_hresult(CreateDispatcherQueueController(options, &ptr));
+                dispatcherQueueController = Windows::System::DispatcherQueueController(ptr, take_ownership_from_abi);
+            }
+
+            systemBackdropConfiguration = SystemBackdropConfiguration();
+            systemBackdropConfiguration.IsInputActive(true);
+            systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+
+            /*activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
+            {
+                systemBackdropConfiguration.IsInputActive(WindowActivationState::Deactivated != args.WindowActivationState());
+            });*/
+
+            themeChangedRevoker = RootGrid().ActualThemeChanged(auto_revoke, [this](FrameworkElement const&, IInspectable const&)
+            {
+                systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+            });
+
+
+            ResourceDictionary resources = Application::Current().Resources();
+            backdropController = BackdropController();
+            //backdropController.Kind(MicaKind::BaseAlt);
+
+            backdropController.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+            backdropController.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+            backdropController.TintOpacity(
+                static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+            );
+            backdropController.LuminosityOpacity(
+                static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+            );
+
+            backdropController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
+
+            backdropController.AddSystemBackdropTarget(supportsBackdrop);
+        }
     }
 
 #if USING_TIMER
