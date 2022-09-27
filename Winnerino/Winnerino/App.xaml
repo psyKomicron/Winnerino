@@ -19,22 +19,32 @@
             <x:Double x:Key="NavigationBackButtonIconSize">14</x:Double>
             <x:Double x:Key="ProgressBarHeight">14</x:Double>
             <x:Double x:Key="CaptionTextBlockOpacity">0.6</x:Double>
-            <x:Double x:Key="SettingHostControlMinHeight">64</x:Double>
-            <x:Double x:Key="BackdropTintOpacity">0.7</x:Double>
-            <x:Double x:Key="BackdropLuminosityOpacity">0.01</x:Double>
+            <x:Double x:Key="SettingHostControlMinHeight">68</x:Double>
+
+            <x:Double x:Key="BackdropTintOpacity">0.6</x:Double>
+            <x:Double x:Key="BackdropLuminosityOpacity">0.95</x:Double>
+            <x:Double x:Key="BackdropSecondaryTintOpacity">0.85</x:Double>
+            <x:Double x:Key="BackdropSecondaryLuminosityOpacity">0.95</x:Double>
+
             <x:Double x:Key="ExpanderHeaderIconHeight">20</x:Double>
             <x:Double x:Key="ExpanderHeaderIconWidth">20</x:Double>
             <x:Double x:Key="ExpanderGridRowSpacing">10</x:Double>
 
+            <!--
+            <CornerRadius x:Key="ControlCornerRadius">2,2,2,2</CornerRadius>
+            <CornerRadius x:Key="OverlayCornerRadius">5,5,5,5</CornerRadius>
+            -->
+
             <Thickness x:Key="ExpanderContentMargin">40,0,19,0</Thickness>
-            <Thickness x:Key="ToggleSwitchCenterMargin">0,0,-35,0</Thickness>
+            <Thickness x:Key="ToggleSwitchCenterMargin">0,0,-75,0</Thickness>
             <Thickness x:Key="ExpanderHeaderGridPadding">0,10,0,10</Thickness>
 
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
 
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
 
-            
+            <SolidColorBrush x:Key="FileControlBackgroundBrush" Color="{ThemeResource SolidBackgroundFillColorBase}"/>
+
             <!--#region Font icons -->
             <x:String x:Key="DirectoryFontIconGlyph">&#xe8d5;</x:String>
             <x:String x:Key="FileFontIconGlyph">&#xE8A5;</x:String>
@@ -237,7 +247,7 @@
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="MinWidth" Value="{ThemeResource ListViewItemMinWidth}" />
-                <Setter Property="MinHeight" Value="35" />
+                <Setter Property="MinHeight" Value="30" />
                 <Setter Property="AllowDrop" Value="False" />
                 <Setter Property="UseSystemFocusVisuals" Value="True" />
                 <Setter Property="FocusVisualMargin" Value="1" />
@@ -307,6 +317,7 @@
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="MinHeight" Value="{StaticResource SettingHostControlMinHeight}"/>
+                <Setter Property="MinWidth" Value="200"/>
             </Style>
 
             <Style x:Key="PathNavigationButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
@@ -380,6 +391,7 @@
 
             <Style x:Key="ExpanderSeparatorStyle" TargetType="Rectangle">
                 <Setter Property="Fill" Value="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"/>
+                <Setter Property="Opacity" Value="0.95"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Height" Value="1"/>
@@ -417,6 +429,7 @@
                 <Setter Property="MinWidth" Value="{StaticResource ToggleSwitchThemeMinWidth}" />
                 <Setter Property="FocusVisualMargin" Value="-7,-3,-7,-3" />
                 <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+                <Setter Property="Margin" Value="{StaticResource ToggleSwitchCenterMargin}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleSwitch">
