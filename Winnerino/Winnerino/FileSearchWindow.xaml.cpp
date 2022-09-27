@@ -8,16 +8,11 @@
 #include "FileInfo.h"
 #include "FileSearcher2.h"
 #include "Helper.h"
-using namespace winrt::Windows::UI::Notifications;
-using namespace winrt::Windows::Data::Xml::Dom;
-using namespace winrt::Windows::ApplicationModel::DataTransfer;
-
-#define INVALIDATE_VIEW 0
-#define RESET_TITLE_BAR 0
 
 using namespace ::Winnerino::Storage;
 
 using namespace winrt;
+
 using namespace winrt::Microsoft::UI;
 using namespace winrt::Microsoft::UI::Composition;
 using namespace winrt::Microsoft::UI::Composition::SystemBackdrops;
@@ -25,14 +20,16 @@ using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Media;
+
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
+using namespace winrt::Windows::UI::Notifications;
+using namespace winrt::Windows::Data::Xml::Dom;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
@@ -396,8 +393,12 @@ namespace winrt::Winnerino::implementation
 
                 controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
-                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.TintOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+                );
+                controller.LuminosityOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+                );
                 controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
                 controller.AddSystemBackdropTarget(supportsBackdrop);
 
@@ -409,8 +410,12 @@ namespace winrt::Winnerino::implementation
 
                 controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
-                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.TintOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+                );
+                controller.LuminosityOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+                );
                 controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
                 controller.AddSystemBackdropTarget(supportsBackdrop);
 

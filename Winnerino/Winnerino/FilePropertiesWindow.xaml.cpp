@@ -175,8 +175,12 @@ namespace winrt::Winnerino::implementation
                 
                 controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
-                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.TintOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+                );
+                controller.LuminosityOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+                );
                 controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
                 controller.AddSystemBackdropTarget(supportsBackdrop);
 
@@ -188,8 +192,12 @@ namespace winrt::Winnerino::implementation
 
                 controller.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                 controller.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
-                controller.TintOpacity(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>());
-                controller.LuminosityOpacity(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>());
+                controller.TintOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+                );
+                controller.LuminosityOpacity(
+                    static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+                );
                 controller.SetSystemBackdropConfiguration(systemBackdropConfiguration);
                 controller.AddSystemBackdropTarget(supportsBackdrop);
 
