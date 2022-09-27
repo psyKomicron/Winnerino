@@ -10,7 +10,7 @@
 
     <ScrollViewer>
         
-        <Grid ColumnSpacing="5" RowSpacing="10" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="0,0,0,30">
+        <Grid ColumnSpacing="5" RowSpacing="10" Padding="0,0,0,30">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
                             Grid.Column="0"
                             Click="GoBackButton_Click"/>
 
-                        <TextBlock Text="Settings" Style="{ThemeResource SubheaderTextBlockStyle}" Grid.Column="1"/>
+                        <TextBlock x:Uid="SettingsHeaderTextBlock" Style="{ThemeResource SubheaderTextBlockStyle}" Grid.Column="1"/>
                     </Grid>
                 </ListView.Header>
 
@@ -148,9 +148,9 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Grid.Row="0">
-                            <RadioButton x:Uid="SettingsShortcutMenuType_None" Tag="ShortcutMenuType_None" Checked="ShortcutMenuType_Checked"/>
-                            <RadioButton x:Uid="SettingsShortcutMenuType_Show" Tag="ShortcutMenuType_Show" Checked="ShortcutMenuType_Checked"/>
-                            <RadioButton x:Uid="SettingsShortcutMenuType_Detailed" Tag="ShortcutMenuType_Detailed" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Name="SettingsShortcutMenuType_None" x:Uid="SettingsShortcutMenuType_None" Tag="ShortcutMenuType_None" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Name="SettingsShortcutMenuType_Show" x:Uid="SettingsShortcutMenuType_Show" Tag="ShortcutMenuType_Show" Checked="ShortcutMenuType_Checked"/>
+                            <RadioButton x:Name="SettingsShortcutMenuType_Detailed" x:Uid="SettingsShortcutMenuType_Detailed" Tag="ShortcutMenuType_Detailed" Checked="ShortcutMenuType_Checked"/>
                         </StackPanel>
                     </Grid>
                 </Expander>
@@ -202,7 +202,6 @@
                         x:Name="ShowSystemHealthToggleSwitch"
                         Style="{StaticResource SettingToggleSwitchStyle}"
                         Grid.Column="2"
-                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
                         Toggled="ShowSystemHealthToggleSwitch_Toggled"/>
                 </Grid>
 
@@ -238,8 +237,6 @@
                     <TextBlock x:Uid="SettingsAboutThisAppTextBlock" Grid.Row="0" Margin="0,0,0,15"/>
                     <TextBlock x:Uid="SettingsAppNameTextBlock" Grid.Row="1"/>
                     <TextBlock x:Name="AppVersionTextBlock" Grid.Row="2"/>
-
-                    
                 </Grid>
 
                 <Grid Grid.Row="0">

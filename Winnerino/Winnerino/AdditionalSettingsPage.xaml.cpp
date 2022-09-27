@@ -5,6 +5,7 @@
 #endif
 
 #include "DesktopTransparencyControllerType.h"
+#include "Helper.h"
 
 using namespace ::Winnerino;
 using namespace winrt;
@@ -240,22 +241,14 @@ namespace winrt::Winnerino::implementation
 
         // Search window settings
         {
-            ApplicationDataContainer searchWindowSettings = settings.Containers().TryLookup(L"FileSearchWindow");
-            if (!searchWindowSettings)
-            {
-                searchWindowSettings = settings.CreateContainer(L"FileSearchWindow", ApplicationDataCreateDisposition::Always);
-            }
+            ApplicationDataContainer searchWindowSettings = get_or_create_container(L"FileSearchWindow");
             SearchWindowTransparencyEffects().IsOn(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
             KeepSearchWindowOnTop().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"KeepOnTop")), true));
         }
 
         // File properties window settings
         {
-            ApplicationDataContainer filePropsWindow = settings.Containers().TryLookup(L"FilePropertiesWindow");
-            if (!filePropsWindow)
-            {
-                filePropsWindow = settings.CreateContainer(L"FilePropertiesWindow", ApplicationDataCreateDisposition::Always);
-            }
+            ApplicationDataContainer filePropsWindow = get_or_create_container(L"FilePropertiesWindow");
             FilePropsWindowTransparencyEffects().IsOn(unbox_value_or(filePropsWindow.Values().TryLookup(L"UsesAcrylic"), true));
             KeepFilePropertiesWindowOnTop().IsChecked(unbox_value_or(filePropsWindow.Values().TryLookup(L"KeepOnTop"), true));
         }

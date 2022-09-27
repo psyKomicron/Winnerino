@@ -44,22 +44,13 @@ namespace winrt::Winnerino::implementation
 #pragma region Event handlers
     void SettingsPage::ShowSpecialsFolderToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
+        ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
         container.Values().Insert(L"ShowSpecialFolders", box_value(ShowSpecialsFolderToggleSwitch().IsChecked()));
     }
 
     void SettingsPage::CalculateDirectorySizeToggleSwitch_Toggled(IInspectable const&, RoutedEventArgs const&)
     {
-        ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
-
+        ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
         container.Values().Insert(L"CalculateDirSize", box_value(CalculateDirectorySizeToggleSwitch().IsChecked()));
     }
 
@@ -90,7 +81,6 @@ namespace winrt::Winnerino::implementation
     void SettingsPage::HideSystemFilesCheckBox_Click(IInspectable const&, RoutedEventArgs const&)
     {
         ApplicationDataContainer container = ::Winnerino::get_or_create_container(L"Explorer");
-
         container.Values().Insert(L"HideSystemFiles", box_value(HideSystemFilesCheckBox().IsChecked().GetBoolean()));
     }
 
@@ -136,6 +126,20 @@ namespace winrt::Winnerino::implementation
             ShowPathToggleSwitch().IsChecked(unbox_value_or(specificSettings.Values().TryLookup(L"ShowFilePath"), false));
 
             ShowSystemHealthToggleSwitch().IsOn(unbox_value_or(specificSettings.Values().TryLookup(L"ShowSystemHealth"), true));
+
+            uint8_t type = unbox_value_or(specificSettings.Values().TryLookup(L"EntryShortcutMenuType"), 0);
+            switch (type)
+            {
+                case 0: // Quick menu none
+                    SettingsShortcutMenuType_None().IsChecked(true);
+                    break;
+                case 1: // Quick menu normal
+                    SettingsShortcutMenuType_Show().IsChecked(true);
+                    break;
+                case 2: // Quick menu detailed
+                    SettingsShortcutMenuType_Show().IsChecked(true);
+                    break;
+            }
         }
 
         // File search settings

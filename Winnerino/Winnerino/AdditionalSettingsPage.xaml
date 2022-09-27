@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Loaded="OnPageLoaded">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" MinWidth="20"/>
             <ColumnDefinition Width="*"/>
@@ -64,9 +64,8 @@
                 <local:AppExpanderHeader x:Uid="AdditionalSettingsNotificationsExpander" VerticalAlignment="Center" Glyph="&#xea8f;"/>
                 <ToggleSwitch
                     x:Name="NotificationsSwitch"
+                    Style="{StaticResource SettingToggleSwitchStyle}"
                     Grid.Column="1"
-                    Margin="{StaticResource ToggleSwitchCenterMargin}"
-                    VerticalAlignment="Center" 
                     Toggled="NotificationsSwitch_Toggled"/>
             </Grid>
 
@@ -128,9 +127,7 @@
                         <local:AppExpanderHeader.RightContent>
                             <ToggleSwitch 
                                 x:Name="UseAcrylicToggleSwitch"
-                                Margin="{StaticResource ToggleSwitchCenterMargin}" 
-                                VerticalAlignment="Center" 
-                                HorizontalAlignment="Right"
+                                Style="{StaticResource SettingToggleSwitchStyle}"
                                 Toggled="UseAcrylicCheckBox_Click"/>
                         </local:AppExpanderHeader.RightContent>
                     </local:AppExpanderHeader>
@@ -188,7 +185,7 @@
 
                         <RadioButton
                             x:Name="MicaRadioButton"
-                            x:Uid="MicaMicaRadioButton"
+                            x:Uid="AdditionalSettingsMicaRadioButton"
                             IsEnabled="{x:Bind TransparencyControlsEnabled}"
                             Click="MicaRadioButton_Click"/>
                     </StackPanel>
@@ -230,17 +227,17 @@
 
                     <Rectangle Grid.Row="1"/>
 
-                    <Button Grid.Column="1" Grid.Row="2" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
+                    <HyperlinkButton Grid.Column="0" Grid.Row="2" Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
+                    <Button Grid.Column="1" Grid.Row="2" Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
+
+                    <Rectangle Grid.Row="3"/>
+
+                    <Button Grid.Column="1" Grid.Row="4" Click="ResetSettingsFile_Click" HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource StackPanelButtonSpacing}">
                             <FontIcon Glyph="&#xe845;" FontSize="{StaticResource IconButtonFontSize}"/>
                             <TextBlock x:Uid="AdditionalSettingsResetSettingsTextBlock"/>
                         </StackPanel>
                     </Button>
-
-                    <Rectangle Grid.Row="3"/>
-
-                    <HyperlinkButton Grid.Column="0" Grid.Row="4" Content="Open temporary folder (File explorer)" Click="TempDataFolderHyperlink_Click"/>
-                    <Button Grid.Column="1" Grid.Row="4" Content="Clear temporary folder" Click="ClearTempFolderButton_Click"/>
                 </Grid>
             </Expander>
         </ListView>
