@@ -315,4 +315,43 @@
   <data name="TransparencyEffectsInFileSearchWindow.Text" xml:space="preserve">
     <value>Transparency effects in file search window</value>
   </data>
+  <data name="SettingsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="FolderNameDesktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="FolderNameDocuments" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="FolderNameDownloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="FolderNameMusic" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="FolderNamePictures" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="FolderNameVideos" xml:space="preserve">
+    <value>Videos</value>
+  </data>
+  <data name="FileTabDocumentsNavigationItem.Content" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="FileTabDownloadsNavigationItem.Content" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="FileTabMusicNavigationItem.Content" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="FileTabPathInputBox.PlaceholderText" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="FileTabPicturesNavigationItem.Content" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="FileTabVideosNavigationItem.Content" xml:space="preserve">
+    <value>Videos</value>
+  </data>
 </root>

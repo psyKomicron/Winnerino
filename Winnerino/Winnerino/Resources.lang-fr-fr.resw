@@ -198,8 +198,23 @@
   <data name="FileTabClearFavoritesButton.Label" xml:space="preserve">
     <value>Effacer les favoris</value>
   </data>
+  <data name="FileTabDocumentsNavigationItem.Content" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="FileTabDownloadsNavigationItem.Content" xml:space="preserve">
+    <value>Téléchargements</value>
+  </data>
   <data name="FileTabFavoriteButton.Label" xml:space="preserve">
     <value>Favoris</value>
+  </data>
+  <data name="FileTabMusicNavigationItem.Content" xml:space="preserve">
+    <value>Musique</value>
+  </data>
+  <data name="FileTabPathInputBox.PlaceholderText" xml:space="preserve">
+    <value>Chemin</value>
+  </data>
+  <data name="FileTabPicturesNavigationItem.Content" xml:space="preserve">
+    <value>Photos</value>
   </data>
   <data name="FileTabRefreshButton.Label" xml:space="preserve">
     <value>Rafraichir</value>
@@ -215,6 +230,27 @@
   </data>
   <data name="FileTabSpotlightImporterButton.Label" xml:space="preserve">
     <value>Importer les images Spotlight</value>
+  </data>
+  <data name="FileTabVideosNavigationItem.Content" xml:space="preserve">
+    <value>Vidéos</value>
+  </data>
+  <data name="FolderNameDesktop" xml:space="preserve">
+    <value>Bureau</value>
+  </data>
+  <data name="FolderNameDocuments" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="FolderNameDownloads" xml:space="preserve">
+    <value>Téléchargements</value>
+  </data>
+  <data name="FolderNameMusic" xml:space="preserve">
+    <value>Musique</value>
+  </data>
+  <data name="FolderNamePictures" xml:space="preserve">
+    <value>Photos</value>
+  </data>
+  <data name="FolderNameVideos" xml:space="preserve">
+    <value>Vidéos</value>
   </data>
   <data name="HideSystemFilesCheckBox.Content" xml:space="preserve">
     <value>Cacher les fichiers système</value>
@@ -254,6 +290,9 @@
   </data>
   <data name="SettingsGithubHyperlinkButton.Content" xml:space="preserve">
     <value>Visiter le répertoire du projet (GitHub)</value>
+  </data>
+  <data name="SettingsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Paramètres</value>
   </data>
   <data name="SettingsHelpHyperlinkButton.Content" xml:space="preserve">
     <value>Aide</value>
