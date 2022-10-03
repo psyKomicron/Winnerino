@@ -46,7 +46,7 @@ namespace winrt::Winnerino::implementation
         void ContentFrame_NavigationFailed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Navigation::NavigationFailedEventArgs const& e);
 
     private:
-        using BackdropController = winrt::Microsoft::UI::Composition::SystemBackdrops::DesktopAcrylicController;
+        using BackdropController = winrt::Microsoft::UI::Composition::SystemBackdrops::MicaController;
 
         static Winnerino::MainWindow singleton;
         bool isWindowFullscreen = false;

@@ -53,11 +53,9 @@ namespace winrt::Winnerino::implementation
             }
             else
             {
-                MessageData* messageData = new MessageData{ message, severity };
-                DispatcherQueue().TryEnqueue([this, messageData]()
+                DispatcherQueue().TryEnqueue([this, messageData = MessageData(message, severity)]() mutable
                 {
-                    UpdateInforBar(messageData->GetDataMessage(), messageData->GetSeverity());
-                    delete messageData;
+                    UpdateInforBar(messageData.GetDataMessage(), messageData.GetSeverity());
                 });
             }
             busy = true;
@@ -116,7 +114,7 @@ namespace winrt::Winnerino::implementation
     {
         if (ContentFrame().IsLoaded())
         {
-            if (ContentFrame().BackStackDepth() == 0)
+            if (ContentFrame().BackStackDepth() < 2)
             {
                 NavigateTo(xaml_typename<ExplorerPage>());
             }
@@ -130,6 +128,9 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::View_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
+        ContentFrame().Navigate(xaml_typename<ExplorerPage>());
+
+        /*
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
 
         IInspectable inspectable = settings.TryLookup(L"LoadLastPage");
@@ -146,6 +147,7 @@ namespace winrt::Winnerino::implementation
         {
             ContentFrame().Navigate(xaml_typename<Winnerino::MainPage>());
         }
+        */
     }
 
     void MainWindow::navigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
@@ -159,9 +161,6 @@ namespace winrt::Winnerino::implementation
 
     void MainWindow::ContentFrame_NavigationFailed(IInspectable const&, winrt::Microsoft::UI::Xaml::Navigation::NavigationFailedEventArgs const& e)
     {
-        /*auto&& pageType = e.SourcePageType();
-        auto&& ex = e.Exception();
-        auto&& handled = e.Handled();*/
         e.Handled(true);
     }
 
@@ -439,17 +438,13 @@ namespace winrt::Winnerino::implementation
         if (supportsBackdrop)
         {
             TitleBarGrid().Background(SolidColorBrush(Colors::Transparent()));
-            ContentGrid().Background(SolidColorBrush(Colors::Transparent()));
 
             appWindow.TitleBar().ButtonBackgroundColor(Colors::Transparent());
-
             appWindow.TitleBar().ButtonHoverBackgroundColor(
                 Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
-
             appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
             appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
             appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
-
 
             if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
             {
@@ -469,32 +464,52 @@ namespace winrt::Winnerino::implementation
             systemBackdropConfiguration.IsInputActive(true);
             systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
 
-            /*activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
+            activatedRevoker = Activated(auto_revoke, [this](IInspectable const&, WindowActivatedEventArgs const& args)
             {
                 systemBackdropConfiguration.IsInputActive(WindowActivationState::Deactivated != args.WindowActivationState());
-            });*/
+            });
 
             themeChangedRevoker = RootGrid().ActualThemeChanged(auto_revoke, [this](FrameworkElement const&, IInspectable const&)
             {
                 systemBackdropConfiguration.Theme((SystemBackdropTheme)RootGrid().ActualTheme());
+
+                if (systemBackdropConfiguration.Theme() == SystemBackdropTheme::Light)
+                {
+                    backdropController.TintColor(Colors::White());
+                    backdropController.FallbackColor(Colors::White());
+                }
+                else
+                {
+                    auto resources = Application::Current().Resources();
+                    backdropController.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+                    backdropController.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+                }
             });
 
 
-            ResourceDictionary resources = Application::Current().Resources();
-            backdropController = BackdropController();
-            //backdropController.Kind(MicaKind::BaseAlt);
+            auto resources = Application::Current().Resources();
 
-            backdropController.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
-            backdropController.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+            backdropController = BackdropController();
+
+            if (systemBackdropConfiguration.Theme() == SystemBackdropTheme::Light)
+            {
+                backdropController.TintColor(Colors::White());
+                backdropController.FallbackColor(Colors::White());
+            }
+            else
+            {
+                backdropController.TintColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+                backdropController.FallbackColor(resources.TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
+            }
+
             backdropController.TintOpacity(
-                static_cast<float>(resources.TryLookup(box_value(L"BackdropTintOpacity")).as<double>())
+                static_cast<float>(resources.TryLookup(box_value(L"BackdropSecondaryTintOpacity")).as<double>())
             );
             backdropController.LuminosityOpacity(
-                static_cast<float>(resources.TryLookup(box_value(L"BackdropLuminosityOpacity")).as<double>())
+                static_cast<float>(resources.TryLookup(box_value(L"BackdropSecondaryLuminosityOpacity")).as<double>())
             );
 
             backdropController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
-
             backdropController.AddSystemBackdropTarget(supportsBackdrop);
         }
     }
