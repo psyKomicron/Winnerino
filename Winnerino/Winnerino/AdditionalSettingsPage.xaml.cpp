@@ -33,6 +33,8 @@ namespace winrt::Winnerino::implementation
 
     void AdditionalSettingsPage::OnPageLoaded(IInspectable const&, RoutedEventArgs const&)
     {
+        //InitSettings();
+
         bool isOn = UseAcrylicToggleSwitch().IsOn();
         SearchWindowTransparencyEffects().IsEnabled(isOn);
         FilePropsWindowTransparencyEffects().IsEnabled(isOn);
@@ -219,15 +221,19 @@ namespace winrt::Winnerino::implementation
     {
         const ApplicationDataContainer& settings = ApplicationData::Current().LocalSettings();
 
+        // App theme
         {
             IInspectable inspectable = settings.Values().TryLookup(L"AppTheme");
-            ElementTheme requestedTheme = unbox_value_or<ElementTheme>(inspectable, ElementTheme::Default);
+            ElementTheme requestedTheme = unbox_value_or(inspectable, ElementTheme::Default);
             DarkThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Dark);
             LightThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Light);
             DefaultThemeRadioButton().IsChecked(requestedTheme == ElementTheme::Default);
+        }
 
-            inspectable = settings.Values().TryLookup(L"TransparencyEffectController");
-            DesktopTransparencyControllerType transparencyController = (DesktopTransparencyControllerType)unbox_value_or<uint8_t>(
+        // Transparency settings
+        {
+            IInspectable inspectable = settings.Values().TryLookup(L"TransparencyEffectController");
+            DesktopTransparencyControllerType transparencyController = (DesktopTransparencyControllerType)unbox_value_or(
                 inspectable,
                 (uint8_t)DesktopTransparencyControllerType::Acrylic
                 );
@@ -235,15 +241,15 @@ namespace winrt::Winnerino::implementation
             MicaRadioButton().IsChecked(transparencyController == DesktopTransparencyControllerType::Mica);
         }
 
-        LoadLastPageToggleSwitch().IsChecked(unbox_value_or<bool>(settings.Values().TryLookup(L"LoadLastPage"), true));
-        NotificationsSwitch().IsOn(unbox_value_or<bool>(settings.Values().TryLookup(L"NotificationsEnabled"), true));
+        LoadLastPageToggleSwitch().IsChecked(unbox_value_or(settings.Values().TryLookup(L"LoadLastPage"), true));
+        NotificationsSwitch().IsOn(unbox_value_or(settings.Values().TryLookup(L"NotificationsEnabled"), true));
         UseAcrylicToggleSwitch().IsOn(unbox_value_or(settings.Values().TryLookup(L"WindowsCanUseTransparencyEffects"), true));
 
         // Search window settings
         {
             ApplicationDataContainer searchWindowSettings = get_or_create_container(L"FileSearchWindow");
-            SearchWindowTransparencyEffects().IsOn(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
-            KeepSearchWindowOnTop().IsChecked(unbox_value_or<bool>(searchWindowSettings.Values().TryLookup((L"KeepOnTop")), true));
+            SearchWindowTransparencyEffects().IsOn(unbox_value_or(searchWindowSettings.Values().TryLookup((L"UsesAcrylic")), true));
+            KeepSearchWindowOnTop().IsChecked(unbox_value_or(searchWindowSettings.Values().TryLookup((L"KeepOnTop")), true));
         }
 
         // File properties window settings

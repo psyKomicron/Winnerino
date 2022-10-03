@@ -6,9 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="OnPageLoaded">
+    Loaded="OnPageLoaded"
+    MinWidth="{StaticResource ControlMinWidth}"
+    Background="{ThemeResource SubtleFillColorTransparentBrush}">
 
-    <Grid>
+    <Grid Padding="0,0,0,30">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" MinWidth="20"/>
             <ColumnDefinition Width="*"/>
@@ -18,7 +20,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None">
+        <ListView 
+            SelectionMode="None"
+            IsItemClickEnabled="False"
+            Margin="20,0,0,0"
+            Grid.Row="1" 
+            Grid.ColumnSpan="2">
             <ListView.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -76,11 +83,17 @@
                     <local:AppExpanderHeader x:Uid="AdditionalSettingsAppThemeExpander" Glyph="&#xe790;"/>
                 </Expander.Header>
 
-                <StackPanel Spacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
-                    <RadioButton x:Name="DarkThemeRadioButton" x:Uid="AdditionalSettingsDarkThemeRadioButton" Checked="DarkThemeButton_Click"/>
-                    <RadioButton x:Name="LightThemeRadioButton" x:Uid="AdditionalSettingsLightThemeRadioButton" Checked="LightThemeButton_Click"/>
-                    <RadioButton x:Name="DefaultThemeRadioButton" x:Uid="AdditionalSettingsDefaultThemeRadioButton" Checked="DefaultThemeButton_Click"/>
-                </StackPanel>
+                <Grid RowSpacing="{StaticResource StackPanelDefaultSpacing}" Margin="{StaticResource ExpanderContentMargin}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    
+                    <RadioButton IsChecked="True" x:Name="DarkThemeRadioButton" x:Uid="AdditionalSettingsDarkThemeRadioButton" Checked="DarkThemeButton_Click" Grid.Row="0"/>
+                    <RadioButton IsChecked="True" x:Name="LightThemeRadioButton" x:Uid="AdditionalSettingsLightThemeRadioButton" Checked="LightThemeButton_Click" Grid.Row="1"/>
+                    <RadioButton IsChecked="True" x:Name="DefaultThemeRadioButton" x:Uid="AdditionalSettingsDefaultThemeRadioButton" Checked="DefaultThemeButton_Click" Grid.Row="2"/>
+                </Grid>
             </Expander>
 
             <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
@@ -133,12 +146,14 @@
                     </local:AppExpanderHeader>
                 </Expander.Header>
 
-                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}" ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -152,13 +167,18 @@
                         </Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                        <Style TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
+                            <Setter Property="OnContent" Value=""/>
+                            <Setter Property="OffContent" Value=""/>
+                            <Setter Property="Margin" Value="0,0,-120,0"/>
                         </Style>
                     </Grid.Resources>
 
                     <TextBlock x:Uid="TransparencyEffectsInFileSearchWindow"/>
                     <ToggleSwitch 
                         x:Name="SearchWindowTransparencyEffects"
-                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
                         VerticalAlignment="Center" 
                         Grid.Column="1" 
                         Toggled="SearchWindowUsesAcrylic_Toggled"/>
@@ -168,15 +188,22 @@
                     <TextBlock x:Uid="TransparencyEffectsInFilePropertiesWindow" Grid.Row="2"/>
                     <ToggleSwitch 
                         x:Name="FilePropsWindowTransparencyEffects"
-                        Margin="{StaticResource ToggleSwitchCenterMargin}" 
                         Grid.Column="1" 
                         Grid.Row="2" 
                         Toggled="FilePropertiesWindowUsesAcrylic_Toggled"/>
 
                     <Rectangle Grid.Row="3"/>
 
-                    <TextBlock x:Uid="ChooseTransparencyEffectType" Grid.Row="4"/>
-                    <StackPanel Grid.Row="5" Spacing="3" Margin="5">
+                    <TextBlock x:Uid="AdditionalSettingsTransparencyEffectsInMainWindow" Grid.Row="4"/>
+                    <ToggleSwitch 
+                        x:Name="MainWindowTransparencyEffects"
+                        Grid.Column="1" 
+                        Grid.Row="4"/>
+                    
+                    <Rectangle Grid.Row="5"/>
+
+                    <TextBlock x:Uid="ChooseTransparencyEffectType" Grid.Row="6"/>
+                    <StackPanel Grid.Row="7" Spacing="3" Margin="5">
                         <RadioButton
                             x:Name="AcrylicRadioButton"
                             x:Uid="AdditionalSettingsAcrylicRadioButton"
