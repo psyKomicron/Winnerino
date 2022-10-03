@@ -5,6 +5,8 @@
 #endif
 
 #include "Helper.h"
+#include "DirectoryEnumerator.h"
+#include "DriveInfo.h"
 
 using namespace winrt;
 using namespace std;
@@ -21,11 +23,17 @@ using namespace Windows::Security::Cryptography::Core;
 using namespace Windows::Storage;
 using namespace Windows::Storage::Streams;
 
+using namespace ::Winnerino::Storage;
+
 
 namespace winrt::Winnerino::implementation
 {
     ExplorerPage::ExplorerPage()
     {
+#ifdef DEBUG
+        NavigationCacheMode(NavigationCacheMode::Disabled);
+#endif
+
         // subscribing to the closed event because Page_Unloaded doesn't get called when the window is closed
         windowClosedToken = MainWindow::Current().Closed({ this, &ExplorerPage::MainWindow_Closed });
         loadingEventToken = Loading({ this, &ExplorerPage::Page_Loading });
@@ -44,6 +52,7 @@ namespace winrt::Winnerino::implementation
         }
     }
 
+
     void ExplorerPage::OnNavigatedTo(NavigationEventArgs const& args)
     {
         auto&& tag = args.Parameter().try_as<hstring>();
@@ -55,7 +64,7 @@ namespace winrt::Winnerino::implementation
             TabViewItemHeader tabViewHeader{ tag.value() };
             tab.Header(tabViewHeader);
 
-            tab.Content(LibraryTabView{ tag.value() });
+            tab.Content(LibraryTabView(tag.value()));
 
             uint32_t tabIndex = Pages().TabItems().Size();
             Pages().TabItems().Append(tab);
@@ -67,19 +76,30 @@ namespace winrt::Winnerino::implementation
     {
         Loading(loadingEventToken);
 
-        // get last path
+        DirectoryEnumerator enumerator{};
+        unique_ptr<vector<DriveInfo>> driveInfos{ enumerator.GetDrives() };
+        if (driveInfos.get())
+        {
+            for (size_t i = 0; i < driveInfos->size(); i++)
+            {
+                DriveInfo info = driveInfos->at(i);
+
+                NavigationViewItem item{};
+                NavigationViewItemTag tag{};
+                tag.Action(L"Drive");
+                tag.Data(box_value(info.DriveName()));
+                item.Tag(tag);
+
+                TextBlock text{};
+                text.Text(L"Disk " + to_hstring(i + 1) + L" (" + (info.VolumeName().empty() ? info.DriveName() : info.VolumeName()) + L")");
+                item.Content(text);
+                DrivesNavigationItem().MenuItems().Append(item);
+            }
+        }
+
         ApplicationDataContainer settings = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Explorer");
         if (settings)
         {
-            if (unbox_value_or(settings.Values().TryLookup(L"ShowSystemHealth"), true))
-            {
-                TabViewItem tab{};
-                tab.IsClosable(false);
-                tab.Header(box_value(L"System health"));
-                tab.Content(SystemHealthView{});
-                Pages().TabItems().Append(tab);
-            }
-
             ApplicationDataContainer tabs = settings.Containers().TryLookup(L"ExplorerTabs");
             if (tabs)
             {
@@ -113,17 +133,70 @@ namespace winrt::Winnerino::implementation
                     AddTab(tabName, path);
                 }
             }
+
+            if (Pages().TabItems().Size() == 0)
+            {
+                AddTab(L"Empty", L"");
+            }
+
             // remove the container
             settings.DeleteContainer(L"ExplorerTabs");
+
+            if (unbox_value_or(settings.Values().TryLookup(L"ShowSystemHealth"), true))
+            {
+                TabViewItem tab{};
+                tab.IsClosable(false);
+                tab.Header(box_value(L"System health"));
+                tab.Content(SystemHealthView{});
+                Pages().TabItems().InsertAt(0, tab);
+            }
+
+            ApplicationDataContainer favorites = settings.Containers().TryLookup(L"Favorites");
+            if (favorites)
+            {
+                for (auto&& container : favorites.Containers())
+                {
+                    ApplicationDataCompositeValue composite = container.try_as<ApplicationDataCompositeValue>();
+                    std::optional<hstring> path = composite.TryLookup(L"Path").try_as<hstring>();
+                    if (path)
+                    {
+                        std::optional<hstring> name = composite.TryLookup(L"Name").try_as<hstring>();
+                        if (!name)
+                        {
+                            for (int i = path.value().size() - (path.value().ends_with(L'\\') ? 2 : 1); i >= 0; i--)
+                            {
+                                if (path.value()[i] == L'\\')
+                                {
+                                    wstring wPath = path.value().data();
+                                    name.emplace(
+                                        wPath.substr(i + 1, wPath.size() - i)
+                                    );
+                                    break;
+                                }
+                            }
+
+                            if (!name || name.value().empty())
+                            {
+                                name.emplace(L"");
+                            }
+                        }
+
+                        NavigationViewItem item{};
+                        TextBlock content{};
+                        content.Text(name.value());
+                        item.Content(content);
+                        FavoritesNavigationItem().MenuItems().Append(item);
+                    }
+                }
+            }
+            else
+            {
+                FavoritesNavigationItem().IsEnabled(false);
+            }
         }
         else
         {
             ApplicationData::Current().LocalSettings().CreateContainer(L"Explorer", ApplicationDataCreateDisposition::Always);
-        }
-
-        if (Pages().TabItems().Size() == 0)
-        {
-            AddTab(L"Empty", L"");
         }
     }
 
@@ -154,7 +227,51 @@ namespace winrt::Winnerino::implementation
 
     void ExplorerPage::ContentNavigationView_ItemInvoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& args)
     {
-        //MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>(), args.InvokedItem());
+        if (args.IsSettingsInvoked())
+        {
+            MainWindow::Current().NavigateTo(xaml_typename<SettingsPage>());
+        }
+        else
+        {
+            std::optional<hstring> tag = args.InvokedItem().try_as<hstring>();
+            if (tag)
+            {
+                if (tag == L"Documents")
+                {
+
+                }
+                else if (tag == L"Downloads")
+                {
+
+                }
+                else if (tag == L"Music")
+                {
+
+                }
+                else if (tag == L"Pictures")
+                {
+
+                }
+                else if (tag == L"Videos")
+                {
+
+                }
+            }
+        }
+    }
+
+    void ExplorerPage::ContentNavigationView_SelectionChanged(NavigationView const&, NavigationViewSelectionChangedEventArgs const& args)
+    {
+        auto selected = args.SelectedItem().as<FrameworkElement>();
+        NavigationViewItemTag tag = selected.Tag().try_as<NavigationViewItemTag>();
+        if (tag)
+        {
+            if (tag.Action() == L"Drive")
+            {
+                hstring path = unbox_value<hstring>(tag.Data());
+                AddTab(path, path);
+            }
+        }
     }
 
 

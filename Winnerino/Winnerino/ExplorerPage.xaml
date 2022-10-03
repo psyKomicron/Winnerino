@@ -6,22 +6,23 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded"
-    NavigationCacheMode="Required">
+    NavigationCacheMode="Required"
+    MinWidth="{StaticResource ControlMinWidth}"
+    Background="{ThemeResource SolidBackgroundFillColorSecondary}">
 
     <NavigationView 
         x:Name="ContentNavigationView"
         Grid.RowSpan="2" 
         Grid.Column="0"
-        OpenPaneLength="230"
         SelectionFollowsFocus="Disabled"
-        IsSettingsVisible="False"
-        IsBackButtonVisible="Collapsed"
         CornerRadius="0"
         BorderThickness="0"
         ItemInvoked="ContentNavigationView_ItemInvoked"
         PaneClosed="ContentNavigationView_PaneChanged"
-        PaneOpened="ContentNavigationView_PaneChanged">
+        PaneOpened="ContentNavigationView_PaneChanged"
+        SelectionChanged="ContentNavigationView_SelectionChanged">
         <NavigationView.MenuItems>
+            
             <NavigationViewItem x:Uid="FileTabDocumentsNavigationItem" x:Name="DocumentsNavigationItem" Tag="Documents">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe8a5;"/>
@@ -49,6 +50,22 @@
             <NavigationViewItem x:Uid="FileTabVideosNavigationItem" x:Name="VideosNavigationItem" Tag="Videos">
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xe714;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItemSeparator/>
+
+            <NavigationViewItem x:Name="DrivesNavigationItem" Content="Drives" SelectsOnInvoked="False" Tag="Drives" >
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xeda2;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItemSeparator/>
+
+            <NavigationViewItem x:Name="FavoritesNavigationItem" Content="Favorites" SelectsOnInvoked="False" Tag="Favorites">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xe728;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
         </NavigationView.MenuItems>
