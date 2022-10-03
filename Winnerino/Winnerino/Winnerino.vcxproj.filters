@@ -53,8 +53,11 @@
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
-    <Midl Include="DriveSearchModel.idl">
-      <Filter>Common</Filter>
+    <Midl Include="DriveViewModel.idl">
+      <Filter>ViewModels</Filter>
+    </Midl>
+    <Midl Include="NavigationViewItemTag.idl">
+      <Filter>ViewModels</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="ToastGenerator.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DriveInfo.cpp">
+      <Filter>Common\Storage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +133,9 @@
     <ClInclude Include="ToastGenerator.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="DriveInfo.h">
+      <Filter>Common\Storage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -146,6 +155,9 @@
     </Filter>
     <Filter Include="Common\Storage">
       <UniqueIdentifier>{173094b5-b6cf-4000-9c38-a81c2a75cea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ViewModels">
+      <UniqueIdentifier>{737cd17c-0419-49ea-ac1f-f827f065f784}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
