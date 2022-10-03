@@ -354,4 +354,25 @@
   <data name="FileTabVideosNavigationItem.Content" xml:space="preserve">
     <value>Videos</value>
   </data>
+  <data name="AdditionalSettingsTransparencyEffectsInMainWindow.Text" xml:space="preserve">
+    <value>Transparency effects in explorer window</value>
+  </data>
+  <data name="BytesFileSizeExtension" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="GigabytesFileSizeExtension" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="KilobytesFileSizeExtension" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="MegabytesFileSizeExtension" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="TerabytesFileSizeExtension" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="FilePropertiesWindowTitle" xml:space="preserve">
+    <value>File properties</value>
+  </data>
 </root>

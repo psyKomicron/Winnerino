@@ -186,11 +186,20 @@
   <data name="AdditionalSettingsTransparencyEffectExpander.Title" xml:space="preserve">
     <value>Effets de transparence</value>
   </data>
+  <data name="AdditionalSettingsTransparencyEffectsInMainWindow.Text" xml:space="preserve">
+    <value>Utiliser les effets de transparence pour la fenêtre d'explorateur de fichiers</value>
+  </data>
+  <data name="BytesFileSizeExtension" xml:space="preserve">
+    <value>O</value>
+  </data>
   <data name="CalculateDirectorySizeToggleSwitch.Content" xml:space="preserve">
     <value>Show directory size</value>
   </data>
   <data name="ChooseTransparencyEffectType.Text" xml:space="preserve">
     <value>Choix du type d'effet de transparence</value>
+  </data>
+  <data name="FilePropertiesWindowTitle" xml:space="preserve">
+    <value>Propriétés</value>
   </data>
   <data name="FileTabAlphabeticalSortButton.Text" xml:space="preserve">
     <value>Alphabétique</value>
@@ -252,8 +261,17 @@
   <data name="FolderNameVideos" xml:space="preserve">
     <value>Vidéos</value>
   </data>
+  <data name="GigabytesFileSizeExtension" xml:space="preserve">
+    <value>Go</value>
+  </data>
   <data name="HideSystemFilesCheckBox.Content" xml:space="preserve">
     <value>Cacher les fichiers système</value>
+  </data>
+  <data name="KilobytesFileSizeExtension" xml:space="preserve">
+    <value>Ko</value>
+  </data>
+  <data name="MegabytesFileSizeExtension" xml:space="preserve">
+    <value>Mo</value>
   </data>
   <data name="MoveOrDeleteFileCheckBox.Content" xml:space="preserve">
     <value>Déplacer les fichiers et répertoires dans la corbeille lors de la suppression</value>
@@ -348,10 +366,13 @@
   <data name="ShowSpecialsFolderToggleSwitch.Content" xml:space="preserve">
     <value>Afficher les dossiers speciaux (. et ..)</value>
   </data>
+  <data name="TerabytesFileSizeExtension" xml:space="preserve">
+    <value>To</value>
+  </data>
   <data name="TransparencyEffectsInFilePropertiesWindow.Text" xml:space="preserve">
-    <value>Utiliser les effets de transparence pour la fenetre de propriétés de fichiers</value>
+    <value>Utiliser les effets de transparence pour la fenêtre de propriétés de fichiers</value>
   </data>
   <data name="TransparencyEffectsInFileSearchWindow.Text" xml:space="preserve">
-    <value>Utiliser les effets de transparence pour la fenetre de recherche de fichiers</value>
+    <value>Utiliser les effets de transparence pour la fenêtre de recherche de fichiers</value>
   </data>
 </root>
