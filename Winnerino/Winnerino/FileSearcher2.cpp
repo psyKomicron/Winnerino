@@ -81,7 +81,7 @@ namespace Winnerino::Storage
 
     void FileSearcher2::GetFiles(wregex const& query, hstring path, vector<FileInfo>* files)
     {
-        unique_ptr<vector<hstring>> pathes{ new vector<hstring>() };
+        vector<hstring> pathes{};
 
         hstring toEnumerate = path.ends_with(L"\\") ? path : path + L"\\";
         WIN32_FIND_DATA findData{};
@@ -90,6 +90,7 @@ namespace Winnerino::Storage
         {
             do
             {
+                // TODO: Check search behavior for folders
                 // is file
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 {
@@ -111,7 +112,7 @@ namespace Winnerino::Storage
                             files->push_back(FileInfo(&findData, path));
                         }
 
-                        pathes->push_back(toEnumerate + dirName);
+                        pathes.push_back(toEnumerate + dirName);
                     }
                 }
             } 
@@ -120,9 +121,9 @@ namespace Winnerino::Storage
             FindClose(findHandle);
         }
 
-        for (size_t i = 0; i < pathes->size(); i++)
+        for (size_t i = 0; i < pathes.size(); i++)
         {
-            GetFiles(query, pathes->at(i), files);
+            GetFiles(query, pathes.at(i), files);
         }
     }
 
