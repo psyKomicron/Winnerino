@@ -1,0 +1,11 @@
+namespace Winnerino
+{
+    [bindable]
+    [default_interface]
+    runtimeclass NavigationViewItemTag 
+    {
+        NavigationViewItemTag();
+        String Action;
+        IInspectable Data;
+    }
+}
