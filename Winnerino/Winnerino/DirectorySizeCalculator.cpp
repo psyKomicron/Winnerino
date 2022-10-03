@@ -29,23 +29,33 @@ namespace Winnerino::Storage
         if (findHandle != INVALID_HANDLE_VALUE)
         {
             vector<hstring> pathes = vector<hstring>();
-            do
+            try
             {
-                if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                do
                 {
-                    uint_fast64_t fileSize = convert_large_uint(findData.nFileSizeHigh, findData.nFileSizeLow);
-                    dirSize += fileSize;
-                    RaiseProgress(fileSize);
-                }
-                else
-                {
-                    hstring filePath = hstring(std::move(findData.cFileName));
-                    if (filePath != L"." && filePath != L"..")
+                    if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                     {
-                        pathes.push_back(filePath);
+                        uint_fast64_t fileSize = convert_large_uint(findData.nFileSizeHigh, findData.nFileSizeLow);
+                        dirSize += fileSize;
+                        RaiseProgress(fileSize);
+                    }
+                    else
+                    {
+                        hstring filePath = hstring(findData.cFileName);
+                        if (filePath != L"." && filePath != L"..")
+                        {
+                            pathes.push_back(filePath);
+                        }
                     }
                 }
-            } while (FindNextFile(findHandle, &findData));
+                while (FindNextFile(findHandle, &findData));
+            }
+            catch (const std::exception&)
+            {
+            }
+            catch (const hresult_error&)
+            {
+            }
             FindClose(findHandle);
             
             atomic_uint_fast64_t atomicDirSize = atomic_uint_fast64_t();
