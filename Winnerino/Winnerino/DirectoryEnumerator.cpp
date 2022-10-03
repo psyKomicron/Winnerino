@@ -2,9 +2,11 @@
 #include "DirectoryEnumerator.h"
 
 #include <Shlwapi.h>
+#include <fileapi.h>
 
 using namespace winrt;
 using namespace std;
+
 
 namespace Winnerino::Storage
 {
@@ -14,19 +16,23 @@ namespace Winnerino::Storage
         hstring path = toEnumerate.ends_with(L"\\") ? toEnumerate : toEnumerate + L"\\";
 
         vector<hstring>* pathes = nullptr;
+
         WIN32_FIND_DATA findData{};
         HANDLE findHandle = FindFirstFile((path + L"*").c_str(), &findData);
-
         if (findHandle != INVALID_HANDLE_VALUE)
         {
+            const wchar_t dot[2]{ '.', '\0' };
+            const wchar_t dotdot[3]{ '.', '.', '\0' };
+
             pathes = new vector<hstring>();
+
             do
             {
-                hstring filePath{ findData.cFileName };
-                if (filePath != L"." && filePath != L"..")
+                if (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0)
                 {
-                    pathes->push_back(path + filePath);
+                    pathes->push_back(path + hstring(findData.cFileName));
                 }
+
             } while (FindNextFile(findHandle, &findData));
             FindClose(findHandle);
         }
@@ -37,22 +43,27 @@ namespace Winnerino::Storage
     vector<hstring>* DirectoryEnumerator::EnumerateFolders(winrt::hstring const& toEnumerate)
     {
         CheckArguments(toEnumerate);
+
         hstring path = toEnumerate.ends_with(L"\\") ? toEnumerate : toEnumerate + L"\\";
 
         vector<hstring>* pathes = nullptr;
+
         WIN32_FIND_DATA findData{};
         HANDLE findHandle = FindFirstFile((path + L"*").c_str(), &findData);
-
         if (findHandle != INVALID_HANDLE_VALUE)
         {
+            const wchar_t dot[2]{ '.', '\0' };
+            const wchar_t dotdot[3]{ '.', '.', '\0' };
+
             pathes = new vector<hstring>();
             do
             {
-                hstring filePath{ findData.cFileName };
-                if ((includeSpecials || (filePath != L"." && filePath != L"..")) && findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY &&
+                    (includeSpecials || (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0)))
                 {
-                    pathes->push_back(path + filePath);
+                    pathes->push_back(path + hstring(findData.cFileName));
                 }
+
             } while (FindNextFile(findHandle, &findData));
             FindClose(findHandle);
         }
@@ -63,19 +74,20 @@ namespace Winnerino::Storage
     vector<hstring>* DirectoryEnumerator::EnumerateFiles(winrt::hstring const& toEnumerate)
     {
         CheckArguments(toEnumerate);
+
         hstring path = toEnumerate.ends_with(L"\\") ? toEnumerate : toEnumerate + L"\\";
 
         vector<hstring>* pathes = nullptr;
+
         WIN32_FIND_DATA findData{};
         HANDLE findHandle = FindFirstFile((path + L"*").c_str(), &findData);
-
         if (findHandle != INVALID_HANDLE_VALUE)
         {
             pathes = new vector<hstring>();
             do
             {
                 hstring filePath{ findData.cFileName };
-                if ((includeSpecials || (filePath != L"." && filePath != L"..")) && (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && (includeSpecials || (filePath != L"." && filePath != L"..")))
                 {
                     pathes->push_back(path + filePath);
                 }
@@ -101,7 +113,43 @@ namespace Winnerino::Storage
                 {
                     break;
                 }
+
                 driveList->push_back(winrt::hstring{ pointer });
+                while (*pointer++);
+            }
+        }
+
+        return driveList;
+    }
+
+    std::vector<::Winnerino::Storage::DriveInfo>* DirectoryEnumerator::GetDrives()
+    {
+        WCHAR drives[512]{};
+        WCHAR* pointer = drives;
+        vector<DriveInfo>* driveList = nullptr;
+
+        if (GetLogicalDriveStrings(512, drives))
+        {
+            driveList = new vector<DriveInfo>();
+            uint16_t iterator = 1;
+            // TODO: Remove while(1) loop
+            while (iterator < 500)
+            {
+                if (*pointer == NULL)
+                {
+                    break;
+                }
+
+                WCHAR volumeName[MAX_PATH + 1];
+                if (SUCCEEDED(GetVolumeInformation(pointer, volumeName, MAX_PATH + 1, NULL, NULL, NULL, NULL, NULL)))
+                {
+                    driveList->push_back(DriveInfo(to_hstring(pointer), to_hstring(volumeName), PathFileExists(pointer)));
+                }
+                else
+                {
+                    driveList->push_back(DriveInfo(to_hstring(pointer), L"", PathFileExists(pointer)));
+                }
+
                 while (*pointer++);
             }
         }
@@ -112,6 +160,7 @@ namespace Winnerino::Storage
     vector<FileInfo>* DirectoryEnumerator::GetFiles(winrt::hstring const& directory)
     {
         CheckArguments(directory);
+
         vector<FileInfo>* files = nullptr;
 
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
@@ -139,6 +188,7 @@ namespace Winnerino::Storage
     bool DirectoryEnumerator::GetFiles(winrt::hstring const& directory, std::vector<::Winnerino::Storage::FileInfo>* files)
     {
         CheckArguments(directory);
+
         hstring toEnumerate = directory.ends_with(L"\\") ? directory : directory + L"\\";
 
         WIN32_FIND_DATA findData{};
@@ -169,6 +219,11 @@ namespace Winnerino::Storage
         }
     }
 
+    std::vector<::Winnerino::Storage::FileInfo>* DirectoryEnumerator::GetFolders(winrt::hstring const& directory)
+    {
+        return GetFolders(directory, includeSpecials);
+    }
+
     vector<FileInfo>* DirectoryEnumerator::GetFolders(winrt::hstring const& directory, bool const& includeNavigators)
     {
         CheckArguments(directory);
@@ -183,14 +238,12 @@ namespace Winnerino::Storage
         {
             const wchar_t dot[2]{ '.', '\0' };
             const wchar_t dotdot[3]{ '.', '.', '\0' };
-            folders = new vector<FileInfo>();
 
+            folders = new vector<FileInfo>();
             do
             {
-                if (
-                        (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
-                        (includeNavigators || (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0))
-                   )
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+                    (includeNavigators || (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0)))
                 {
                     folders->push_back(FileInfo(&findData, toEnumerate));
                 }
@@ -217,8 +270,8 @@ namespace Winnerino::Storage
         {
             const wchar_t dot[2]{ '.', '\0' };
             const wchar_t dotdot[3]{ '.', '.', '\0' };
-            entries = new vector<FileInfo>();
 
+            entries = new vector<FileInfo>();
             do
             {
                 if (wcscmp(findData.cFileName, dot) != 0 && wcscmp(findData.cFileName, dotdot) != 0)
