@@ -9,7 +9,6 @@
     PointerEntered="Grid_PointerEntered" 
     PointerExited="Grid_PointerExited"
     VerticalAlignment="Stretch"
-    FontStretch="SemiCondensed"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded">
 
@@ -114,7 +113,7 @@
                 </StackPanel.Resources>
             </StackPanel>
 
-            <Grid Grid.Column="4" VerticalAlignment="Center" Grid.RowSpan="2">
+            <Grid Grid.Column="4" VerticalAlignment="Center" Grid.RowSpan="2" ColumnSpacing="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
@@ -124,13 +123,10 @@
                     x:Name="FileSizeTextBlock" 
                     HorizontalAlignment="Right"
                     FontStretch="UltraExpanded"  
-                    FontSize="14"
                     Grid.Column="0"/>
                 <TextBlock 
-                    x:Name="FileSizeExtensionTextBlock" 
-                    FontStretch="UltraExpanded"
-                    HorizontalAlignment="Left" 
-                    FontSize="14"
+                    x:Name="FileSizeExtensionTextBlock"
+                    HorizontalAlignment="Center" 
                     Grid.Column="1"/>
             </Grid>
 

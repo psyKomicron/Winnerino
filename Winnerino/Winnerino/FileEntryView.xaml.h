@@ -56,7 +56,7 @@ namespace winrt::Winnerino::implementation
 
         void MenuFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void FileSizeFlyoutItem_Click(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
-        void OnLoaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
+        void OnLoading(winrt::Microsoft::UI::Xaml::FrameworkElement const&, winrt::Windows::Foundation::IInspectable const&);
         void OnUnloaded(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         Windows::Foundation::IAsyncAction ToolTip_Opened(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&);
         void Grid_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
@@ -67,6 +67,7 @@ namespace winrt::Winnerino::implementation
         atomic_bool loaded = false;
         atomic<uint64_t> fileSize = 1;
         Concurrency::cancellation_token_source cancellationToken{};
+        Concurrency::task<void> sizeTask;
         ::Winnerino::Storage::DirectorySizeCalculator calculator{};
         event_token sizeProgressToken;
         event_token loadedEventToken;
@@ -100,6 +101,8 @@ namespace winrt::Winnerino::implementation
         inline bool _IsDangerous();
         inline bool _IsDirectory();
         inline bool _IsSystem();
+    public:
+        void OnLoaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 
