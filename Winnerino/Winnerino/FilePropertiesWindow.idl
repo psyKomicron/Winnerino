@@ -4,5 +4,7 @@ namespace Winnerino
     runtimeclass FilePropertiesWindow : Microsoft.UI.Xaml.Window
     {
         FilePropertiesWindow();
+        Windows.Foundation.IAsyncAction LoadFile(String file);
+        Windows.Foundation.IAsyncAction LoadFolder(String folder);
     }
 }

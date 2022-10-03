@@ -15,6 +15,9 @@ namespace winrt::Winnerino::implementation
         FilePropertiesWindow();
         ~FilePropertiesWindow();
 
+        winrt::Windows::Foundation::IAsyncAction LoadFile(winrt::hstring file);
+        winrt::Windows::Foundation::IAsyncAction LoadFolder(winrt::hstring folder);
+
         void Control_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void RootGrid_SizeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e);
 
@@ -31,8 +34,9 @@ namespace winrt::Winnerino::implementation
         winrt::Microsoft::UI::Composition::SystemBackdrops::ISystemBackdropController backdropController = nullptr;
 
         void InitWindow();
-        void MainWindow_Closed(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&);
         void SetBackground(::Winnerino::DesktopTransparencyControllerType const& transparencyControllerType);
+        void OnAccessDenied(hstring path);
+        void MainWindow_Closed(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::WindowEventArgs const&);
         void AppWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const&);
     };
 }

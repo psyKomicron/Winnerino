@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="RootGrid" SizeChanged="RootGrid_SizeChanged" Loaded="Control_Loaded">
+    <Grid x:Name="RootGrid" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" SizeChanged="RootGrid_SizeChanged" Loaded="Control_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -19,24 +19,10 @@
         </Grid.Resources>
 
         <Grid x:Name="TitleBarGrid" BorderBrush="{ThemeResource AccentControlElevationBorderBrush}" Height="32" BorderThickness="0,0,0,2">
-            <Grid.Background>
-                <AcrylicBrush 
-                    FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
-                    TintColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
-                    TintOpacity="0.8"/>
-            </Grid.Background>
-
             <TextBlock Text="{x:Bind Title}" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
         </Grid>
 
-        <Grid Grid.Row="1" Padding="10">
-            <Grid.Background>
-                <AcrylicBrush 
-                    FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" 
-                    TintColor="{ThemeResource SolidBackgroundFillColorBase}" 
-                    TintOpacity="0.65"
-                    TintLuminosityOpacity="0"/>
-            </Grid.Background>
+        <Grid x:Name="ContentGrid" Grid.Row="1" Padding="10" Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2"/>
@@ -56,9 +42,9 @@
                 <Viewbox  x:Name="ImageViewBox" Grid.Column="0" Grid.RowSpan="2">
                     <SymbolIcon Symbol="AllApps"/>
                 </Viewbox>
-                <TextBox Text="veibae gachimuchi" Grid.Column="1" Height="30"/>
+                <TextBox x:Name="FileNameTextBox" Grid.Column="1" Height="30" IsEnabled="False"/>
                 <TextBlock 
-                    Text="C:\Users\julie\Videos\veibae gachimuchi" 
+                    x:Name="FilePathTextBlock"
                     Grid.Column="1" 
                     Grid.Row="1"
                     TextWrapping="Wrap"
@@ -76,6 +62,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                     <RowDefinition Height="2"/>
                     <RowDefinition/>
                     <RowDefinition Height="2"/>
@@ -86,30 +73,33 @@
 
                 <!--Type of file-->
                 <TextBlock Text="File type"/>
-                <TextBlock Text="Video" Grid.Column="1"/>
+                <TextBlock x:Name="FileTypeTextBlock" Grid.Column="1"/>
 
                 <!--Default app-->
                 <TextBlock Text="Opens with" Grid.Row="1"/>
-                <TextBlock Text="Youtube" Grid.Column="1" Grid.Row="1"/>
+                <TextBlock x:Name="DefaultAppTextBlock" Grid.Column="1" Grid.Row="1"/>
 
-                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="2"/>
+                <TextBlock Text="Contains" Grid.Row="2"/>
+                <TextBlock x:Name="ChildrenTextBlock" Grid.Column="1" Grid.Row="2"/>
+
+                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="3"/>
 
                 <!--Size (bytes)-->
                 <!--Size compressed-->
-                <TextBlock Text="Size on disk" Grid.Row="3"/>
-                <TextBlock Text="200 Mb" Grid.Row="3" Grid.Column="1"/>
+                <TextBlock Text="Size on disk" Grid.Row="4"/>
+                <TextBlock x:Name="SizeCompressedTextBlock" Grid.Row="4" Grid.Column="1"/>
 
-                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="4"/>
+                <Border Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}" Grid.ColumnSpan="3" Grid.Row="5"/>
 
                 <!--Created-->
-                <TextBlock Text="Created" Grid.Row="5"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="5"/>
+                <TextBlock Text="Created" Grid.Row="6"/>
+                <TextBlock x:Name="CreatedDateTextBlock" Grid.Column="1" Grid.Row="6"/>
                 <!--Modified-->
-                <TextBlock Text="Modified" Grid.Row="6"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="6"/>
+                <TextBlock Text="Modified" Grid.Row="7"/>
+                <TextBlock x:Name="ModifiedDateTextBlock" Grid.Column="1" Grid.Row="7"/>
                 <!--Accessed-->
-                <TextBlock Text="Accessed" Grid.Row="7"/>
-                <TextBlock Text="1/07/1984" Grid.Column="1" Grid.Row="7"/>
+                <TextBlock Text="Accessed" Grid.Row="8"/>
+                <TextBlock x:Name="AccessedDateTextBlock" Grid.Column="1" Grid.Row="8"/>
                 
             </Grid>
         </Grid>
