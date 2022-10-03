@@ -50,7 +50,7 @@ namespace winrt::Winnerino::implementation
         void OpenWithFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void CopyPathFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void SearchButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ShowPropertiesFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        winrt::Windows::Foundation::IAsyncAction ShowPropertiesFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void PathInputBox_PreviewKeyDown(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
         void ListViewFlyout_Opening(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& e);
         void ListViewButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
@@ -75,6 +75,7 @@ namespace winrt::Winnerino::implementation
         winrt::event_token windowSizeChangedToken;
         winrt::event_token loadingEventToken;
         ::Winnerino::Common::ToastGenerator toastGenerator{};
+        Concurrency::cancellation_token_source cancellationTokenSource{};
         bool listingDrives = false;
         bool tabRenamed = false;
         bool gridViewLoaded = false;
@@ -92,18 +93,19 @@ namespace winrt::Winnerino::implementation
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
         void CompletePath(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable>* const& suggestions);
+        void GoBack();
+        void GoForward();
         winrt::hstring GetRealPath(winrt::hstring const& dirtyPath);
         inline void GetOptions(bool* showSpecialFolders, bool* hideSystemFiles);
-        void LoadPath(hstring path);
-        Windows::Foundation::IAsyncAction LoadToGridView(winrt::hstring path);
+        Windows::Foundation::IAsyncAction LoadToGridView(winrt::hstring path, concurrency::cancellation_token token);
+        void LoadToListView(winrt::hstring path);
+        winrt::Windows::Foundation::IAsyncAction LoadPath(hstring path);
         Windows::Foundation::IAsyncAction Open(winrt::hstring const& info);
         void ProgressVisibility(bool const& value);
         void SavePage();
         void Search(winrt::hstring const& query, winrt::Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> const& suggestions);
         void SortFiles(const std::function<uint8_t(const winrt::Winnerino::FileEntryView&, const winrt::Winnerino::FileEntryView&)>& comparer);
         void SetLayout(float const& width);
-        void GoForward();
-        void GoBack();
 
         void Window_SizeChanged(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowSizeChangedEventArgs const& args);
         void MainWindow_Closed(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&);
