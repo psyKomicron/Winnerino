@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid ColumnSpacing="20" Padding="5" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}">
+    <Grid ColumnSpacing="20" Padding="5" Background="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="5*"/>

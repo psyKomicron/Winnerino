@@ -1,0 +1,12 @@
+namespace Winnerino
+{
+    [bindable]
+    [default_interface]
+    runtimeclass DriveView : Microsoft.UI.Xaml.Controls.Control
+    {
+        DriveView();
+
+        String DriveName;
+        String FriendlyName;
+    }
+}

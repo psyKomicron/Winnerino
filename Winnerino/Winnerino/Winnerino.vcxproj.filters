@@ -49,13 +49,11 @@
     <Page Include="SpotlightImporter.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="Themes\Generic.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
-    <Midl Include="DriveViewModel.idl">
-      <Filter>ViewModels</Filter>
-    </Midl>
     <Midl Include="NavigationViewItemTag.idl">
       <Filter>ViewModels</Filter>
     </Midl>
@@ -92,6 +90,9 @@
     </ClCompile>
     <ClCompile Include="DriveInfo.cpp">
       <Filter>Common\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="DriveView.cpp">
+      <Filter>Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

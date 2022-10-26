@@ -5,13 +5,15 @@
     xmlns:local="using:Winnerino"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}">
+    xmlns:w="using:Winnerino"
+    mc:Ignorable="d">
 
-    <Grid Background="{x:Bind Background, Mode=OneWay}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <CommandBar Grid.Row="0" HorizontalAlignment="Right">
@@ -44,11 +46,66 @@
         </CommandBar>
 
         <ScrollViewer x:Name="ControlScrollViewer" Grid.Row="1">
-            <VariableSizedWrapGrid
-                x:Name="FilesList"
-                ItemHeight="200"
-                ItemWidth="300"
-                Orientation="Horizontal"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <GridView
+                    x:Name="FilesList"
+                    IsDoubleTapEnabled="True"
+                    SelectionMode="Extended"
+                    DoubleTapped="FilesList_DoubleTapped">
+                    <GridView.ItemContainerTransitions>
+                        <TransitionCollection>
+                            <RepositionThemeTransition IsStaggeringEnabled="False"/>
+                        </TransitionCollection>
+                    </GridView.ItemContainerTransitions>
+                    <GridView.Resources>
+                        <Style TargetType="w:FileLargeView">
+                            <Setter x:Name="FileLargeViewHeight" Property="Width" Value="200"/>
+                        </Style>
+                    </GridView.Resources>
+                </GridView>
+
+                <ListView x:Name="FoldersListView" Grid.Row="1"/>
+            </Grid>
         </ScrollViewer>
+
+        <Grid HorizontalAlignment="Right" ColumnSpacing="10" Margin="0,0,5,0" Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" MinWidth="150"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Slider x:Name="SizeSlider" HorizontalAlignment="Stretch" Maximum="1000" Minimum="100" Value="200" ValueChanged="SizeSlider_ValueChanged"/>
+
+            <Grid ColumnSpacing="3" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <ToggleButton 
+                    x:Name="ListViewButton"
+                    Style="{StaticResource PathNavigationToggleButtonStyle}"
+                    Height="25"
+                    Width="25"
+                    IsChecked="True"
+                    Grid.Column="0">
+                    <FontIcon Glyph="&#xea37;" FontSize="13"/>
+                </ToggleButton>
+
+                <ToggleButton
+                    x:Name="GridViewButton"
+                    Style="{StaticResource PathNavigationToggleButtonStyle}"
+                    Height="25"
+                    Width="25"
+                    Grid.Column="1">
+                    <FontIcon Glyph="&#xf0e2;" FontSize="13"/>
+                </ToggleButton>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

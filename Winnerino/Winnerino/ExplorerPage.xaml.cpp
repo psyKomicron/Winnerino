@@ -236,26 +236,10 @@ namespace winrt::Winnerino::implementation
             std::optional<hstring> tag = args.InvokedItem().try_as<hstring>();
             if (tag)
             {
-                if (tag == L"Documents")
-                {
-
-                }
-                else if (tag == L"Downloads")
-                {
-
-                }
-                else if (tag == L"Music")
-                {
-
-                }
-                else if (tag == L"Pictures")
-                {
-
-                }
-                else if (tag == L"Videos")
-                {
-
-                }
+                TabViewItem tab{};
+                tab.Header(box_value(tag.value()));
+                tab.Content(LibraryTabView(tag.value()));
+                Pages().TabItems().Append(tab);
             }
         }
     }

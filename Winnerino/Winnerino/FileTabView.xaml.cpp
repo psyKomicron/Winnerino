@@ -92,17 +92,19 @@ namespace winrt::Winnerino::implementation
 
         if (listingDrives || s.empty())
         {
-            optional<hstring> opt = args.SelectedItem().try_as<hstring>();
-            if (opt)
+            if (optional<hstring> opt = args.SelectedItem().try_as<hstring>())
             {
                 sender.Text(unbox_value<hstring>(args.SelectedItem()));
             }
             else
             {
-                FrameworkElement element = args.SelectedItem().try_as<FrameworkElement>();
-                if (element)
+                if (TextBlock element = args.SelectedItem().try_as<TextBlock>())
                 {
-                    sender.Text(element.FindName(L"PathTextBlock").as<TextBlock>().Text());
+                    sender.Text(element.Text());
+                }
+                else if (DriveView element = args.SelectedItem().try_as<DriveView>())
+                {
+                    sender.Text(element.DriveName());
                 }
             }
         }
@@ -1058,10 +1060,10 @@ namespace winrt::Winnerino::implementation
             {
                 if (drives->at(i).IsConnected())
                 {
-                    DriveViewModel model{};
-                    model.FriendlyName(drives->at(i).VolumeName());
-                    model.Name(drives->at(i).DriveName());
-                    suggestions->Append(model);
+                    DriveView view{};
+                    view.FriendlyName(drives->at(i).VolumeName());
+                    view.DriveName(drives->at(i).DriveName());
+                    suggestions->Append(view);
                 }
             }
             listingDrives = true;
@@ -1200,21 +1202,22 @@ namespace winrt::Winnerino::implementation
                     }
                     catch (hresult_error const&)
                     {
-                        DispatcherQueue().TryEnqueue([this, /*path = vect->at(i).Path()*/ view]
+                        //DispatcherQueue().TryEnqueue([this, /*path = vect->at(i).Path()*/ view]
+                        //{
+                        //    
+                        //});
+                        try
                         {
-                            try
+                            uint32_t index;
+                            if (FilesGridView().Items().IndexOf(view, index))
                             {
-                                uint32_t index;
-                                if (FilesGridView().Items().IndexOf(view, index))
-                                {
-                                    FilesGridView().Items().RemoveAt(index);
-                                }
+                                FilesGridView().Items().RemoveAt(index);
                             }
-                            catch (hresult_error const&)
-                            {
-                                OutputDebugString(L"\n");
-                            }
-                        });
+                        }
+                        catch (hresult_error const&)
+                        {
+                            OutputDebugString(L"\n");
+                        }
                     }
                 }
             }

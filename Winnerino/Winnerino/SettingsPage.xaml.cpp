@@ -60,7 +60,8 @@ namespace winrt::Winnerino::implementation
 
     void winrt::Winnerino::implementation::SettingsPage::GoBackButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        MainWindow::Current().GoBack();
+        //MainWindow::Current().GoBack();
+        MainWindow::Current().NavigateTo(xaml_typename<ExplorerPage>());
     }
 
     void SettingsPage::Page_Unloaded(IInspectable const&, RoutedEventArgs const&)

@@ -4,6 +4,7 @@
 #undef GetCurrentTime
 
 #include "App.xaml.g.h"
+#include "DriveView.h"
 
 #pragma pop_macro("GetCurrentTime")
 

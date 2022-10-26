@@ -146,8 +146,8 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="DriveInfo.h" />
-    <ClInclude Include="DriveViewModel.h">
-      <DependentUpon>DriveViewModel.idl</DependentUpon>
+    <ClInclude Include="DriveView.h">
+      <DependentUpon>DriveView.cpp</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ExplorerPage.xaml.h">
@@ -275,6 +275,7 @@
     <Page Include="TabViewItemHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\Generic.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdditionalSettingsPage.xaml.cpp">
@@ -292,8 +293,7 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="DriveInfo.cpp" />
-    <ClCompile Include="DriveViewModel.cpp">
-      <DependentUpon>DriveViewModel.idl</DependentUpon>
+    <ClCompile Include="DriveView.cpp">
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ExplorerPage.xaml.cpp">
@@ -387,8 +387,9 @@
       <DependentUpon>DriveHealthView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="DriveViewModel.idl">
-      <SubType>Designer</SubType>
+    <Midl Include="DriveView.idl">
+      <DependentUpon>DriveView.cpp</DependentUpon>
+      <SubType>Code</SubType>
     </Midl>
     <Midl Include="ExplorerPage.idl">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>

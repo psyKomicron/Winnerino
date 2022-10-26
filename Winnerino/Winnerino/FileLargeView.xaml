@@ -15,11 +15,6 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <RepositionThemeTransition/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
 
         <Grid
             Background="{x:Bind Background, Mode=OneWay}" 
@@ -50,9 +45,9 @@
                 <FontIcon x:Name="FileTypeFontIcon" FontSize="16" VerticalAlignment="Center"/>
 
                 <TextBlock 
-                    x:Name="FileNameTextBlock" 
-                    MaxHeight="20" 
+                    x:Name="FileNameTextBlock"
                     TextWrapping="Wrap"
+                    MaxHeight="38"
                     VerticalAlignment="Center"
                     Grid.Column="1"/>
             </Grid>

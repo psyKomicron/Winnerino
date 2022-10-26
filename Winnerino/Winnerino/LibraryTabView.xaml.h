@@ -14,9 +14,12 @@ namespace winrt::Winnerino::implementation
         LibraryTabView(hstring const& tag);
 
         winrt::Windows::Foundation::IAsyncAction Load(hstring const& tag);
+        void SizeSlider_ValueChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::Primitives::RangeBaseValueChangedEventArgs const& e);
 
     private:
-        void GetFiles(hstring const& directory);
+        winrt::Windows::Foundation::IAsyncAction GetFiles(hstring directory);
+    public:
+        void FilesList_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
     };
 }
 

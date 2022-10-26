@@ -139,6 +139,7 @@ namespace winrt::Winnerino::implementation
                 }
             }
 
+            // TODO: Support cancellation on app close/user action
             concurrency::create_task([this, ctotalFormattedSize = totalFormattedSize]()
             {
                 wregex sysFiles{ L"(DumpStack\\.log)|(desktop\\.ini)|(hiberfil\\.sys)|(pagefile\\.sys)|(swapfile\\.sys)", regex_constants::icase };

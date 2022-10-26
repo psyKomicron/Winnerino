@@ -17,6 +17,8 @@
         SelectionFollowsFocus="Disabled"
         CornerRadius="0"
         BorderThickness="0"
+        IsBackButtonVisible="Collapsed"
+        OpenPaneLength="250"
         ItemInvoked="ContentNavigationView_ItemInvoked"
         PaneClosed="ContentNavigationView_PaneChanged"
         PaneOpened="ContentNavigationView_PaneChanged"

@@ -12,8 +12,6 @@ using namespace Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::UI::Xaml::Navigation;
 using namespace winrt::Winnerino::implementation;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 /// <summary>
 /// Initializes the singleton application object.  This is the first line of authored code
@@ -23,20 +21,20 @@ App::App()
 {
     
     InitializeComponent();
-#ifndef DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
-    UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
-    {
-        auto errorMessage = e.Message();
-        auto hres = e.Exception();
-        OutputDebugString(errorMessage.c_str());
-        MainWindow::Current().NotifyUser(errorMessage, InfoBarSeverity::Error);
-        MainWindow::Current().NotifyError(hres);
-        if (IsDebuggerPresent())
-        {
-            __debugbreak();
-        }
-    });
-#endif
+//#ifndef DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
+//    UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
+//    {
+//        auto errorMessage = e.Message();
+//        auto hres = e.Exception();
+//        OutputDebugString(errorMessage.c_str());
+//        MainWindow::Current().NotifyUser(errorMessage, InfoBarSeverity::Error);
+//        MainWindow::Current().NotifyError(hres);
+//        if (IsDebuggerPresent())
+//        {
+//            __debugbreak();
+//        }
+//    });
+//#endif
 }
 
 /// <summary>

@@ -8,16 +8,20 @@
 #include "FileInfo.h"
 
 using namespace std;
+
 using namespace ::Winnerino::Storage;
+
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI::Xaml::Controls::Primitives;
+using namespace winrt::Microsoft::UI::Xaml::Input;
+
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::Winnerino::implementation
 {
@@ -30,6 +34,7 @@ namespace winrt::Winnerino::implementation
     {
         Load(tag);
     }
+
 
     IAsyncAction LibraryTabView::Load(hstring const& tag)
     {
@@ -64,55 +69,112 @@ namespace winrt::Winnerino::implementation
 
         DispatcherQueue().TryEnqueue([&]()
         {
-            if (FilesList().Children().Size() == 0)
+            if (FilesList().Items().Size() == 0)
             {
                 TextBlock textBlock{};
                 textBlock.Style(Application::Current().Resources().Lookup(box_value(L"DisplayTextBlockStyle")).as<::Style>());
                 textBlock.Opacity(Application::Current().Resources().Lookup(box_value(L"CaptionTextBlockOpacity")).as<double>());
+                // I18N
                 textBlock.Text(L"No files found...");
+                textBlock.HorizontalAlignment(HorizontalAlignment::Center);
                 textBlock.VerticalAlignment(VerticalAlignment::Center);
-                textBlock.Margin(Thickness(0, 20, 0, 0));
-                ControlScrollViewer().Content(textBlock);
+
+                TextBlock ascii{};
+                ascii.Style(Application::Current().Resources().Lookup(box_value(L"DisplayTextBlockStyle")).as<::Style>());
+                ascii.HorizontalAlignment(HorizontalAlignment::Center);
+                ascii.VerticalAlignment(VerticalAlignment::Center);
+                ascii.Text(L"¯\\_(ツ)_/¯");
+
+                StackPanel panel{};
+                panel.HorizontalAlignment(HorizontalAlignment::Center);
+                panel.VerticalAlignment(VerticalAlignment::Center);
+                panel.Orientation(Orientation::Vertical);
+                panel.Spacing(7);
+
+                panel.Children().Append(ascii);
+                panel.Children().Append(textBlock);
+
+                ControlScrollViewer().Content(panel);
             }
         });
     }
 
-    void LibraryTabView::GetFiles(hstring const& directory)
+    void LibraryTabView::SizeSlider_ValueChanged(IInspectable const&, RangeBaseValueChangedEventArgs const& e)
     {
-        DirectoryEnumerator enumerator{};
-        unique_ptr<vector<FileInfo>> vect{ enumerator.GetFiles(directory) };
+        FileLargeViewHeight().Value(box_value(e.NewValue()));
+    }
 
-        if (vect)
+    void LibraryTabView::FilesList_DoubleTapped(IInspectable const&, DoubleTappedRoutedEventArgs const&)
+    {
+        if (auto selected = FilesList().SelectedItem())
         {
-            if (DispatcherQueue().HasThreadAccess())
+            FileLargeView view = selected.as<FileLargeView>();
+
+            if (view.IsDirectory())
             {
-                for (size_t i = 0; i < vect->size(); i++)
-                {
-                    FileLargeView view{};
-                    FilesList().Children().Append(view);
-                    view.Initialize(vect->at(i).Path(), true);
-                }
+                FilesList().Items().Clear();
+                GetFiles(view.FilePath());
             }
             else
             {
-                for (size_t i = 0; i < vect->size(); i++)
+                Launcher::LaunchUriAsync(Uri(view.FilePath()));
+            }
+        }
+    }
+
+
+    IAsyncAction LibraryTabView::GetFiles(hstring directory)
+    {
+        DirectoryEnumerator enumerator{};
+
+        unique_ptr<vector<FileInfo>> vect{ enumerator.GetFiles(directory) };
+        if (vect.get())
+        {
+            for (size_t i = 0; i < vect->size(); i++)
+            {
+                FileLargeView view{};
+                FilesList().Items().Append(view);
+                
+                try
                 {
-                    DispatcherQueue().TryEnqueue([this, i, _info = vect->at(i)]() mutable
+                    co_await view.Initialize(vect->at(i).Path(), !vect->at(i).IsDirectory());
+                }
+                catch (const hresult_access_denied&) 
+                {
+                    uint32_t indexof = 0;
+                    if (FilesList().Items().IndexOf(view, indexof))
                     {
-                        FileLargeView view{};
-                        FilesList().Children().Append(view);
-                        view.Initialize(_info.Path(), true);
-                    });
+                        FilesList().Items().RemoveAt(indexof);
+                    }
                 }
             }
         }
 
-        unique_ptr<vector<hstring>> dirs{ enumerator.EnumerateFolders(directory) };
-        if (dirs)
+        vect.reset(enumerator.GetFolders(directory));
+        if (vect.get())
         {
-            for (size_t i = 0; i < dirs->size(); i++)
+            for (size_t i = 0; i < vect->size(); i++)
             {
-                GetFiles(dirs->at(i));
+                Expander expander{};
+                expander.HorizontalAlignment(HorizontalAlignment::Stretch);
+                TextBlock name{};
+                TextBlock path{};
+                StackPanel panel{};
+                panel.Orientation(Orientation::Horizontal);
+
+                /*name.Text(vect->at(i).Name());
+                path.Text(vect->at(i).Path());
+                panel.Children().Append(name);
+                panel.Children().Append(path);*/
+
+                AppExpanderHeader header{};
+                header.Glyph(L"\ue838");
+                header.Title(vect->at(i).Name());
+                header.Subtitle(vect->at(i).Path());
+
+                expander.Header(header);
+
+                FoldersListView().Items().Append(expander);
             }
         }
     }
